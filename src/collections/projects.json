@@ -6,10 +6,10 @@
 		"url": "https://github.com/myogg/timeapk"
 	},
 	{
-		"name": "DNS.Surf",
-		"description": "Querying DNS Resolution Results in Different Regions Worldwide.",
-		"image": "/assets/images/projects/dns.surf.png",
-		"url": "https://dns.surf"
+		"name": "IPTV",
+		"description": "IPTV",
+		"image": "https://opengraph.githubassets.com/1/myogg/iptv",
+		"url": "https://github.com/myogg/iptv"
 	},
 	{
 		"name": "HTML.ZONE",
