@@ -1,9 +1,9 @@
 [
 	{
-		"name": "TempMail.Best",
-		"description": "Best Temporary Email.",
-		"image": "/assets/images/projects/tempmail.best.png",
-		"url": "https://tempmail.best"
+		"name": "TimeAPK",
+		"description": "TimeAPK",
+		"image": "/assets/images/projects/timeapk.png",
+		"url": "https://github.com/myogg/timeapk"
 	},
 	{
 		"name": "DNS.Surf",
