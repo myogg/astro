@@ -2,20 +2,24 @@
 	{
 		"url": "https://100412.xyz",
 		"name": "100412.xyz",
-		"description": "中文科技资讯与信息博客，聚焦软件、AI 和开源安全领域的最新动态。"
+		"description": "中文科技资讯与信息博客，聚焦软件、AI 和开源安全领域的最新动态。",
+		"icon": "📰"
 	},
 	{
 		"url": "https://829259.xyz",
 		"name": "做个有意思的人",
-		"description": "记录一些小事情，随意转载！涵盖科技、工具、天文与生活。"
+		"description": "记录一些小事情，随意转载！涵盖科技、工具、天文与生活。",
+		"icon": "🌈"
 	},
 	{
 		"url": "https://tel.qzz.io",
 		"name": "tel.qzz.io",
-		"description": "我的导航网站"
+		"description": "我的导航网站",
+		"icon": "🧭"
 	},
 	{
 		"url": "https://jreely.dpdns.org",
-		"name": "北方的博客"
+		"name": "北方的博客",
+		"icon": "📝"
 	}
 ]

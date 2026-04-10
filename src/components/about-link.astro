@@ -1,12 +1,12 @@
 ---
-const { url, name, description } = Astro.props;
+const { url, name, description, icon } = Astro.props;
 ---
 
 <div class="relative flex flex-col justify-start pl-12">
   <div
     class="absolute top-0 left-0 z-40 flex items-center justify-center -translate-x-1/2 bg-white border rounded-full dark:bg-neutral-950 w-14 h-14 border-neutral-300 dark:border-neutral-700"
   >
-    <span class="text-xl">🔗</span>
+    <span class="text-xl">{icon || "🔗"}</span>
   </div>
 
   <a
