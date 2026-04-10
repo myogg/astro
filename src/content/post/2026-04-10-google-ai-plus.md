@@ -4,7 +4,6 @@ title: "Google 正式推出「Google AI Plus」计划"
 description: "仅需7.99美元，Google推出AI Plus计划，包含Gemini3 Pro模型、Flow AI电影工具、NotebookLM及200GB云存储。"
 dateFormatted: "Apr 10, 2026"
 ---
-# Google 正式推出「Google AI Plus」计划
 
 仅需 ＄7.99 ！Google 正式推出「Google AI Plus」计划
 

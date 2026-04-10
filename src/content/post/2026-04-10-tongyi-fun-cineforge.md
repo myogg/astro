@@ -4,7 +4,6 @@ title: "通义实验室开源影视级配音大模型 Fun-CineForge"
 description: "通义实验室发布并开源首个支持影视级多场景配音的多模态大模型Fun-CineForge，首次引入时间模态实现音画同步。"
 dateFormatted: "Apr 10, 2026"
 ---
-# 通义实验室开源影视级配音大模型 Fun-CineForge
 
 通义实验室开源影视级配音大模型 Fun-CineForge，首次引入时间模态通义实验室发布并开源首个支持影视级多场景配音的多模态大模型 Fun-CineForge。
 
