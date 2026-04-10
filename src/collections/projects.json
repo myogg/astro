@@ -12,10 +12,10 @@
 		"url": "https://github.com/myogg/iptv"
 	},
 	{
-		"name": "HTML.ZONE",
-		"description": "Web Toolbox.",
-		"image": "/assets/images/projects/html.zone.png",
-		"url": "https://html.zone"
+		"name": "Astro",
+		"description": "Astro",
+		"image": "https://opengraph.githubassets.com/1/myogg/astro",
+		"url": "https://github.com/myogg/astro"
 	},
 	{
 		"name": "Sink",
