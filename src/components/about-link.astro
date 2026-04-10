@@ -1,0 +1,24 @@
+---
+const { url, name, description } = Astro.props;
+---
+
+<div class="relative flex flex-col justify-start pl-12">
+  <div
+    class="absolute top-0 left-0 z-40 flex items-center justify-center -translate-x-1/2 bg-white border rounded-full dark:bg-neutral-950 w-14 h-14 border-neutral-300 dark:border-neutral-700"
+  >
+    <span class="text-xl">🔗</span>
+  </div>
+
+  <a
+    href={url}
+    target="_blank"
+    class="my-1 text-lg font-bold text-indigo-600 underline dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+  >
+    {name}
+  </a>
+  {description && (
+    <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+      {description}
+    </p>
+  )}
+</div>

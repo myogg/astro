@@ -1,6 +1,6 @@
 ---
-import experiences from "../collections/experiences.json";
-import AboutExperience from "../components/about-experience.astro";
+import links from "../collections/links.json";
+import AboutLink from "../components/about-link.astro";
 import PageHeading from "../components/page-heading.astro";
 import Layout from "../layouts/main.astro";
 ---
@@ -9,7 +9,7 @@ import Layout from "../layouts/main.astro";
   <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
     <PageHeading
       title="About Me"
-      description="Hello 👋 I'm a frontend engineer from Nanjing, China. I'm passionate about building new products and learning new technology."
+      description="Hello 👋 I'm an ordinary person living in Xi'an. I love tinkering with things—blogs, forums, and all kinds of mobile apps."
     />
 
     <img src="/assets/images/about.jpg" class="relative z-30 w-full my-10 rounded-xl" />
@@ -18,25 +18,23 @@ import Layout from "../layouts/main.astro";
     <p
       class="text-sm leading-6 text-gray-600 dark:text-neutral-400 sm:leading-7 lg:leading-8 sm:text-base lg:text-lg"
     >
-      Front-end cutter 🧑🏻‍💻, back-end amateur 🤷🏻‍♂️, operations digging holes person 🤦🏻‍♂️.
+      I'm an ordinary person living in Xi'an, and I don't really know how to do anything special. I love tinkering with things—blogs, forums, and all kinds of mobile apps... I'll be here to chat about life, or any other topics that interest me.
     </p>
 
     <h2
       class="mt-5 mb-2 text-2xl font-bold lg:mt-10 sm:mt-6 dark:text-neutral-200"
     >
-      Experience
+      Links
     </h2>
     <div class="px-5 py-10">
       {
-        experiences.map((experience) => {
+        links.map((link) => {
           return (
             <div class="pb-10 border-l border-gray-200 last:border-l-0 dark:border-neutral-700">
-              <AboutExperience
-                dates={experience.dates}
-                role={experience.role}
-                company={experience.company}
-                description={experience.description}
-                logo={experience.logo}
+              <AboutLink
+                url={link.url}
+                name={link.name}
+                description={link.description}
               />
             </div>
           )
@@ -52,7 +50,7 @@ import Layout from "../layouts/main.astro";
         href="https://x.com/JLengYu"
         target="_blank"
         class="text-indigo-600 underline">follow me on twitter</a
-      >, or you can send me an <a href="mailto:astro-aria#miantiao.me" class="text-indigo-600 underline"
+      >, or you can send me an <a href="mailto:xxjss@hotmail.com" class="text-indigo-600 underline"
         >email</a
       > and I'll be sure to get back to you.
     </p>
