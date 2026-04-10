@@ -1,6 +1,6 @@
 ---
 layout: ../../layouts/post.astro
-title: "SpaceX 披露 Starlink V2 卫星性能：数据密度提升 100 倍，拟实现"太空 5G""
+title: "SpaceX 披露 Starlink V2 卫星性能：数据密度提升 100 倍，拟实现太空5G"
 description: "Starlink V2卫星将为移动用户提供100倍于V1代的数据密度，峰值速率预计可达150Mbps，兼容现有LTE手机。"
 dateFormatted: "Apr 10, 2026"
 ---
