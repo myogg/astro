@@ -12,12 +12,12 @@ const { url, name, description } = Astro.props;
   <a
     href={url}
     target="_blank"
-    class="my-1 text-lg font-bold text-indigo-600 underline dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+    class="my-1 text-lg font-bold text-black dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400"
   >
     {name}
   </a>
   {description && (
-    <p class="text-sm font-light text-neutral-600 dark:text-neutral-400">
+    <p class="text-sm font-light text-black dark:text-neutral-400">
       {description}
     </p>
   )}
