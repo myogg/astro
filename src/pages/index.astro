@@ -6,35 +6,29 @@ import Writings from "../components/home/writings.astro";
 import Layout from "../layouts/main.astro";
 ---
 
-<Layout title="Kai">
+<Layout title="首页">
   <div
-    class="relative z-20 w-full max-w-4xl mx-auto mt-16 px-7 md:mt-24 lg:mt-32 xl:px-0"
+    class="relative z-20 w-full max-w-4xl mx-auto mt-4 px-7 md:mt-8 lg:mt-12 xl:px-0"
   >
     <div class="flex flex-col items-center md:flex-row">
       <div class="relative w-full md:w-1/2">
         <h1
           class="mb-5 text-4xl font-bold leading-tight md:text-4xl lg:text-6xl dark:text-white"
         >
-          Hello, I'm Kai.
+          Hello, I'm <span class="font-mono">Jss</span>
         </h1>
+        <p class="mb-4 text-base text-neutral-600 dark:text-neutral-400">
+          I'm an ordinary person living in Xi'an, and I don't really know how to do anything special.
+        </p>
+        <p class="mb-4 text-base text-neutral-600 dark:text-neutral-400">
+          Xi'an is an ancient city rich in historical heritage, and it's wonderful to live here.
+        </p>
+        <p class="mb-4 text-base text-neutral-600 dark:text-neutral-400">
+          I love tinkering with things—blogs, forums, and all kinds of mobile apps...
+        </p>
         <p class="mb-6 text-base text-neutral-600 dark:text-neutral-400">
-          I'm a front-end programmer living in Nanjing. <br
-            class="hidden lg:block"
-          />I focus on Web development.
+          I'll be here to chat about life, or any other topics that interest me.
         </p>
-        <p class="mb-2 font-semibold text-neutral-800 dark:text-neutral-200">
-          I can help you out with:
-        </p>
-        <ul
-          class="py-2 space-y-[3px] text-sm list-disc list-inside text-neutral-500 dark:text-neutral-400"
-        >
-          <li>Vue.js Development</li>
-          <li>React.js Development</li>
-          <li>Node.js Development</li>
-          <li>Website Design</li>
-          <li>and more...</li>
-        </ul>
-        <Button text="Follow me on 𝕏" link="https://x.com/0xKaiBi" />
       </div>
       <div
         class="relative justify-end hidden w-full mt-10 md:flex md:pl-10 md:w-1/2 md:mt-0 md:translate-y-4 xl:translate-y-0"
@@ -69,8 +63,6 @@ import Layout from "../layouts/main.astro";
     </div>
   </div>
 
-  <Separator text="Check out my projects" />
   <Projects />
-  <Separator text="Some of my writing" />
   <Writings />
 </Layout>
