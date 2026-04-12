@@ -3,22 +3,16 @@ import { getCollection } from "astro:content";
 import Layout from "../layouts/main.astro";
 import PageHeading from "../components/page-heading.astro";
 
-export async function getStaticPaths({ paginate }: any) {
-	const allPosts = await getCollection("post");
+const allPosts = await getCollection("post");
 
-	function parseDate(dateStr: string) {
-		const [month, day, year] = dateStr.split(" ");
-		return new Date(`${month} ${parseInt(day)}, ${year}`);
-	}
-
-	const sortedPosts = allPosts.sort(
-		(a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime()
-	);
-
-	return paginate(sortedPosts, { pageSize: 10 });
+function parseDate(dateStr: string) {
+	const [month, day, year] = dateStr.split(" ");
+	return new Date(`${month} ${parseInt(day)}, ${year}`);
 }
 
-const { page } = Astro.props as { page: any };
+const sortedPosts = allPosts.sort(
+	(a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime()
+);
 ---
 
 <Layout title="文章">
@@ -29,7 +23,7 @@ const { page } = Astro.props as { page: any };
     />
 
     <div class="z-50 flex flex-col items-stretch w-full gap-5 my-8">
-      {page.data.map((post: any) => {
+      {sortedPosts.map((post) => {
         const link = `/post/${post.slug}`;
         const postTags: string[] = post.data.tags || [];
         return (
@@ -90,30 +84,5 @@ const { page } = Astro.props as { page: any };
         );
       })}
     </div>
-
-    <!-- 分页 -->
-    {page.lastPage > 1 && (
-      <div class="flex items-center justify-between mt-8">
-        {page.url.prev ? (
-          <a
-            href={page.url.prev}
-            class="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-          >
-            ← 上一页
-          </a>
-        ) : <div />}
-        <span class="text-sm text-neutral-400 dark:text-neutral-500">
-          第 {page.currentPage} 页 / 共 {page.lastPage} 页
-        </span>
-        {page.url.next ? (
-          <a
-            href={page.url.next}
-            class="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-          >
-            下一页 →
-          </a>
-        ) : <div />}
-      </div>
-    )}
   </section>
 </Layout>
