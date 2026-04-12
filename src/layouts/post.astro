@@ -20,12 +20,12 @@ const { frontmatter } = Astro.props;
       </div>
       <div class="w-full max-w-2xl mx-auto">
         <h1
-          class="text-3xl font-bold leading-tight tracking-tighter text-left md:mb-4 md:text-4xl dark:text-neutral-100 lg:text-5xl md:leading-none"
+          class="text-3xl font-bold leading-tight tracking-tighter text-left mb-4 md:mb-6 md:text-4xl dark:text-neutral-100 lg:text-5xl md:leading-none"
         >
           {frontmatter.title}
         </h1>
         <time
-          class="block text-sm text-neutral-500 dark:text-neutral-400 md:mb-16"
+          class="block text-sm text-neutral-500 dark:text-neutral-400 mb-12 md:mb-16"
         >
           {frontmatter.dateFormatted}
         </time>
@@ -34,7 +34,7 @@ const { frontmatter } = Astro.props;
 
     <article
       data-pagefind-body
-      class="w-full max-w-2xl mx-auto mb-8 prose-base prose px-5 lg:px-0 lg:prose-lg dark:prose-invert"
+      class="w-full max-w-2xl mx-auto mb-12 prose-base prose px-5 lg:px-0 lg:prose-lg dark:prose-invert"
     >
       <slot />
     </article>
