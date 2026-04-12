@@ -1,10 +1,9 @@
 ---
 import { getCollection } from "astro:content";
-import type { GetStaticPaths } from "astro";
 import Layout from "../layouts/main.astro";
 import PageHeading from "../components/page-heading.astro";
 
-export const getStaticPaths = (async ({ paginate }) => {
+export async function getStaticPaths({ paginate }: any) {
 	const allPosts = await getCollection("post");
 
 	function parseDate(dateStr: string) {
@@ -17,9 +16,9 @@ export const getStaticPaths = (async ({ paginate }) => {
 	);
 
 	return paginate(sortedPosts, { pageSize: 10 });
-}) satisfies GetStaticPaths;
+}
 
-const { page } = Astro.props;
+const page = Astro.props.page;
 ---
 
 <Layout title="文章">
@@ -30,7 +29,7 @@ const { page } = Astro.props;
     />
 
     <div class="z-50 flex flex-col items-stretch w-full gap-5 my-8">
-      {page.data.map((post) => {
+      {page.data.map((post: any) => {
         const link = `/post/${post.slug}`;
         const postTags: string[] = post.data.tags || [];
         return (
