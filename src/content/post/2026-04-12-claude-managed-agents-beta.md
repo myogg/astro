@@ -2,7 +2,7 @@
 title: "Claude 托管代理来了：不用写循环代码，让AI自己替你干活"
 description: "Anthropic 推出 Claude Managed Agents Beta 版，提供全托管环境，支持 Claude 自主执行读取文件、运行命令、浏览网页及编写代码等长任务。"
 dateFormatted: "Apr 12, 2026"
-tags: ["AI", "Claude", "Anthropic", "开发工具", "自动化"]
+tags: ["AI","Anthropic",]
 ---
 
 ![Claude 托管代理示意](https://i.829259.xyz/api/rfile/IMG_20260412_220457_709_edit_1632912652679069.jpg)
