@@ -1,16 +1,54 @@
 ---
 import { getCollection } from "astro:content";
+import PostLayout from "../../layouts/post.astro";
 
 export async function getStaticPaths() {
 	const postEntries = await getCollection("post");
-	return postEntries.map((entry) => ({
-		params: { slug: entry.slug },
-		props: { entry },
+	const sorted = postEntries
+		.map((entry) => {
+			const [month, day, year] = entry.data.dateFormatted.split(" ");
+			return { entry, date: new Date(`${month} ${parseInt(day)}, ${year}`) };
+		})
+		.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+	return sorted.map((item, index) => ({
+		params: { slug: item.entry.slug },
+		props: {
+			entry: item.entry,
+			prev: index > 0 ? sorted[index - 1].entry : null,
+			next: index < sorted.length - 1 ? sorted[index + 1].entry : null,
+		},
 	}));
 }
 
-const { entry } = Astro.props;
+const { entry, prev, next } = Astro.props;
 const { Content } = await entry.render();
 ---
 
-<Content />
+<PostLayout frontmatter={entry.data}>
+  <Content />
+  <nav slot="nav" class="flex items-center justify-between gap-4 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+    {prev ? (
+      <a
+        href={`/post/${prev.slug}`}
+        class="group flex-1 min-w-0 p-4 rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+      >
+        <span class="block text-xs text-neutral-400 dark:text-neutral-500 mb-1">上一篇</span>
+        <span class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 truncate group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">
+          {prev.data.title}
+        </span>
+      </a>
+    ) : <div class="flex-1" />}
+    {next ? (
+      <a
+        href={`/post/${next.slug}`}
+        class="group flex-1 min-w-0 p-4 rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors text-right"
+      >
+        <span class="block text-xs text-neutral-400 dark:text-neutral-500 mb-1">下一篇</span>
+        <span class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 truncate group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors">
+          {next.data.title}
+        </span>
+      </a>
+    ) : <div class="flex-1" />}
+  </nav>
+</PostLayout>

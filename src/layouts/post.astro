@@ -25,7 +25,7 @@ const { frontmatter } = Astro.props;
           {frontmatter.title}
         </h1>
         <time
-          class="block text-sm text-neutral-500 dark:text-neutral-400 md:mb-12"
+          class="block text-sm text-neutral-500 dark:text-neutral-400 md:mb-16"
         >
           {frontmatter.dateFormatted}
         </time>
@@ -33,9 +33,13 @@ const { frontmatter } = Astro.props;
     </div>
 
     <article
-      class="w-full max-w-2xl mx-auto mb-20 prose-lg prose px-5 lg:px-0 lg:prose-lg dark:prose-invert"
+      class="w-full max-w-2xl mx-auto mb-8 prose-base prose px-5 lg:px-0 lg:prose-lg dark:prose-invert"
     >
       <slot />
     </article>
+
+    <div class="w-full max-w-2xl mx-auto px-5 lg:px-0 mb-16">
+      <slot name="nav" />
+    </div>
   </main>
 </Layout>
