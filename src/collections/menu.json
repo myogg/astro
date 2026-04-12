@@ -8,14 +8,6 @@
 		"url": "/projects"
 	},
 	{
-		"name": "Tags",
-		"url": "/tags"
-	},
-	{
-		"name": "Search",
-		"url": "/search"
-	},
-	{
 		"name": "About",
 		"url": "/about"
 	}

@@ -17,9 +17,6 @@ pnpm-debug.log*
 .env
 .env.production
 
-# pagefind search index (generated at build time)
-public/pagefind/
-
 # macOS-specific files
 .DS_Store
 
