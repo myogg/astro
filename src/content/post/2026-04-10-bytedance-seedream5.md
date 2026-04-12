@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "字节跳动上线 Seedream 5.0 图像生成模型"
 description: "字节跳动图像生成模型Seedream 5.0正式上线，已接入剪映、CapCut及小云雀，并在即梦AI平台开启灰度测试。"
 dateFormatted: "Apr 10, 2026"

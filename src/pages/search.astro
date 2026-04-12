@@ -1,0 +1,101 @@
+---
+import Layout from "../layouts/main.astro";
+---
+
+<Layout title="搜索">
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <h1 class="mb-6 text-4xl font-bold tracking-tight dark:text-white">搜索</h1>
+    <div id="search" class="relative">
+      <input
+        id="search-input"
+        type="search"
+        placeholder="输入关键词搜索文章..."
+        class="w-full px-5 py-3 text-base border border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:border-neutral-500 dark:focus:border-neutral-400 transition-colors"
+      />
+    </div>
+    <div id="search-results" class="mt-6"></div>
+  </section>
+</Layout>
+
+<style>
+  .search-result {
+    padding: 1rem 0;
+    border-bottom: 1px dashed #d4d4d4;
+  }
+  .dark .search-result {
+    border-bottom-color: #404040;
+  }
+  .search-result:last-child {
+    border-bottom: none;
+  }
+  .search-result a {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .search-result .excerpt {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #737373;
+  }
+  .dark .search-result .excerpt {
+    color: #a3a3a3;
+  }
+  .search-result mark {
+    background: #fbbf24;
+    color: #000;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+</style>
+
+<script>
+  // Pagefind will inject its UI logic after build
+  const searchResults = document.getElementById('search-results');
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+
+  async function initSearch() {
+    // @ts-ignore - Pagefind is loaded at build time
+    if (typeof PagefindUI !== 'undefined') {
+      // @ts-ignore
+      new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+      });
+      return;
+    }
+
+    // Fallback: manual Pagefind search
+    try {
+      // @ts-ignore
+      const pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.init();
+
+      searchInput?.addEventListener('input', async () => {
+        const query = searchInput.value.trim();
+        if (!query) {
+          searchResults!.innerHTML = '';
+          return;
+        }
+        const search = await pagefind.search(query);
+        const results = await Promise.all(
+          search.results.slice(0, 10).map((r: any) => r.data())
+        );
+        searchResults!.innerHTML = results
+          .map(
+            (r: any) => `
+              <div class="search-result">
+                <a href="${r.url}">${r.meta?.title || ''}</a>
+                <p class="excerpt">${(r.sub_results?.[0]?.excerpt || r.excerpt || '').replace(/</g, '&lt;')}</p>
+              </div>
+            `
+          )
+          .join('');
+      });
+    } catch (e) {
+      searchResults!.innerHTML = '<p class="text-sm text-neutral-400">搜索功能需要先构建站点后才能使用。</p>';
+    }
+  }
+
+  initSearch();
+</script>

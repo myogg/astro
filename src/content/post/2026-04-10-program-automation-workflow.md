@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "程序在调动人力，完成自动化流程"
 description: "程序已能调动人力完成计算机无法处理的环节，外卖员成为自带API的自动化人力，AI与人力结合将重塑社会经济。"
 dateFormatted: "Apr 10, 2026"

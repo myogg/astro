@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "GitHub 大量仓库 issues 疑似被爆破，遭遇巨量黑产广告攻击"
 description: "多个机器人高并发在GitHub热门仓库Issues中大量发布黑产引流信息，举报和拉黑流程似乎无法生效。"
 dateFormatted: "Apr 10, 2026"

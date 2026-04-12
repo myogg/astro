@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "00后也开始唱土味情歌了"
 description: "当20岁的年轻人开始唱起《老大》和《魔力歌先生》，我们听到的不是土味，是这一代人终于敢说出口的真心。"
 dateFormatted: "Apr 10, 2026"

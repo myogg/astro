@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "美国 FAA 招募游戏玩家填补空管缺口"
 description: "美国联邦航空管理局与交通部启动面向游戏玩家的空管人员招聘，以缓解约 3000 人的人员短缺。"
 dateFormatted: "Apr 12, 2026"

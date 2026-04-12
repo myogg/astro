@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/main.astro";
+import PageHeading from "../components/page-heading.astro";
+
+const allPosts = await getCollection("post");
+const tagMap = new Map<string, number>();
+
+allPosts.forEach((post) => {
+	(post.data.tags || []).forEach((tag: string) => {
+		tagMap.set(tag, (tagMap.get(tag) || 0) + 1);
+	});
+});
+
+const sortedTags = [...tagMap.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<Layout title="标签">
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <PageHeading
+      title="标签"
+      description="按标签浏览文章"
+    />
+    <div class="flex flex-wrap gap-3 mt-8">
+      {sortedTags.map(([tag, count]) => (
+        <a
+          href={`/tags/${tag}`}
+          class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full hover:border-neutral-500 dark:hover:border-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+        >
+          <span>{tag}</span>
+          <span class="text-xs text-neutral-400 dark:text-neutral-500">{count}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

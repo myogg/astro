@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "水泡千万别挑破！让它自己待着好得快"
 description: "手痒想挑水泡？忍住！那层皮是你自带的创可贴。"
 date: 2026-04-11T10:30:00+08:00

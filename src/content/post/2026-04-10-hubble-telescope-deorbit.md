@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "哈勃望远镜高度降至300英里或于2030年前坠毁"
 description: "哈勃空间望远镜轨道持续衰减，高度已从2020年的330英里降至300英里，可能在2030年前脱轨坠毁。"
 dateFormatted: "Apr 10, 2026"

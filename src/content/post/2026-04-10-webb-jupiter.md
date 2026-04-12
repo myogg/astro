@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "韦伯太空望远镜观测到的木星"
 description: "韦伯望远镜拍摄的高解析度木星红外线影像，清晰展现木星云层、大红斑、尘埃环、极光及卫星等细节。"
 dateFormatted: "Apr 10, 2026"

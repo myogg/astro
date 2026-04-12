@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "城市地图海报生成器"
 description: "Python工具，自动从OpenStreetMap获取街道网络、水体和公园信息，生成任何城市的精美极简地图海报。"
 dateFormatted: "Apr 10, 2026"

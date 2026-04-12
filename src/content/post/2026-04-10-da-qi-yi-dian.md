@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "大气一点"
 description: "一句炒鸡蛋的话，影响了我一辈子。"
 dateFormatted: "Apr 10, 2026"

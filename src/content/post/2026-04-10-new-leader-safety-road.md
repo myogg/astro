@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "新来的领导认为安全道有点宽"
 description: "新来的领导认为安全道有点宽，于是把安全带调整到原来的三分之二，真是人才啊!"
 dateFormatted: "Apr 10, 2026"

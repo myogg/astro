@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "奥特曼遭遇死亡威胁：凌晨家中被投燃烧瓶"
 description: "所幸无人受伤。奥特曼发文报平安，反思AI行业冲突与叙事的力量。"
 dateFormatted: "Apr 11, 2026"

@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "延髓星云"
 description: "CTB 1是约一万年前仙后座附近一颗大质量恒星爆炸后留下的膨胀气体壳层，因形似大脑而得名延髓星云。"
 dateFormatted: "Apr 10, 2026"

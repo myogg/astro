@@ -23,10 +23,23 @@ export async function getStaticPaths() {
 
 const { entry, prev, next } = Astro.props;
 const { Content } = await entry.render();
+const tags = entry.data.tags || [];
 ---
 
 <PostLayout frontmatter={entry.data}>
   <Content />
+  {tags.length > 0 && (
+    <div class="not-prose flex flex-wrap gap-2 mt-6 mb-4">
+      {tags.map((tag: string) => (
+        <a
+          href={`/tags/${tag}`}
+          class="text-xs px-3 py-1 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-500 dark:hover:border-neutral-400 transition-colors"
+        >
+          {tag}
+        </a>
+      ))}
+    </div>
+  )}
   <nav slot="nav" class="flex items-center justify-between gap-4 pt-8 border-t border-neutral-200 dark:border-neutral-800">
     {prev ? (
       <a

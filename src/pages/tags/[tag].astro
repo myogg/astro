@@ -1,0 +1,68 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/main.astro";
+import PageHeading from "../../components/page-heading.astro";
+
+export async function getStaticPaths() {
+	const allPosts = await getCollection("post");
+	const tagMap = new Map<string, any[]>();
+
+	allPosts.forEach((post) => {
+		(post.data.tags || []).forEach((tag: string) => {
+			if (!tagMap.has(tag)) tagMap.set(tag, []);
+			tagMap.get(tag)!.push(post);
+		});
+	});
+
+	return [...tagMap.entries()].map(([tag, posts]) => ({
+		params: { tag },
+		props: { tag, posts },
+	}));
+}
+
+const { tag, posts } = Astro.props;
+
+function parseDate(dateStr: string) {
+	const [month, day, year] = dateStr.split(" ");
+	return new Date(`${month} ${parseInt(day)}, ${year}`);
+}
+
+const sortedPosts = posts.sort(
+	(a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime()
+);
+---
+
+<Layout title={`标签: ${tag}`}>
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <PageHeading
+      title={tag}
+      description={`共 ${sortedPosts.length} 篇文章`}
+    />
+    <div class="flex flex-col gap-5 mt-8">
+      {sortedPosts.map((post) => (
+        <a
+          href={`/post/${post.slug}`}
+          class="group block p-6 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+        >
+          <h2 class="text-base font-bold leading-tight tracking-tight sm:text-lg dark:text-neutral-100 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+            {post.data.title}
+          </h2>
+          <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            {post.data.description}
+          </p>
+          <div class="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
+            {post.data.dateFormatted}
+          </div>
+        </a>
+      ))}
+    </div>
+    <div class="mt-8">
+      <a
+        href="/tags"
+        class="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+      >
+        ← 返回全部标签
+      </a>
+    </div>
+  </section>
+</Layout>

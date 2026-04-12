@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "高通将在今年9月发布骁龙8系新平台"
 description: "高通将在今年9月发布骁龙8系新平台——骁龙8 Elite Gen6和骁龙8 Elite Gen6 Pro，采用台积电2nm制程N2P，是高通首款2nm芯片。"
 dateFormatted: "Apr 10, 2026"

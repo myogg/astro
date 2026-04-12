@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "极客湾曝光手机厂商媒体送测机乱象"
 description: "极客湾发布深度评测视频，揭露多家手机厂商对媒体送测机进行芯片特挑与性能特调，使测试数据明显优于零售机型。"
 dateFormatted: "Apr 10, 2026"

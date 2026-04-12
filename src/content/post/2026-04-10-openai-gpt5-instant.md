@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "OpenAI推出GPT-5.3 Instant模型，今日起在 ChatGPT 中面向所有用户开放"
 description: "GPT-5.3 Instant让日常对话更流畅实用，提供更准确的答案和更丰富的搜索结果，减少不必要的冗长警示。"
 dateFormatted: "Apr 10, 2026"

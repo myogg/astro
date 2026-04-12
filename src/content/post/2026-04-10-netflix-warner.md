@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "Netflix放弃对华纳公司的竞标"
 description: "Netflix放弃对华纳公司的竞标，认为匹配派拉蒙报价在财务上不再具有吸引力，为派拉蒙接手铺平道路。"
 dateFormatted: "Apr 10, 2026"

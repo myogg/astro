@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/post.astro
 title: "忘天忘地忘不了你"
 description: "个个都说见过花开就好，管它花落谁家，可我见过花开，未看见花结果，又怎么会甘心花落别家。"
 dateFormatted: "Apr 10, 2026"
