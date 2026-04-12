@@ -6,6 +6,8 @@ dateFormatted: "Apr 12, 2026"
 tags: ["AI", "Claude", "Anthropic", "开发工具", "自动化"]
 ---
 
+![Claude 托管代理示意](https://i.829259.xyz/api/rfile/IMG_20260412_220457_709_edit_1632912652679069.jpg)
+
 Anthropic 刚放了个大招。
 
 今天他们正式推出了 **Claude 托管代理（Managed Agents）Beta 版**。说白了，就是 Claude 现在能在云端自己“住”在一个小容器里，然后**自动帮你读文件、跑命令、上网查东西、写代码**——而且全程不用你盯着。
