@@ -4,10 +4,6 @@ description: "韩国强制三大运营商，用户流量用尽后必须提供400
 dateFormatted: "Apr 12, 2026"
 tags:
   - 韩国
-  - 网络权利
-  - 运营商
-  - 5G
-  - 消费者权益
 categories:
   - 科技
   - 政策
