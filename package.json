@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
-		"build": "astro check && astro build && pagefind --site dist && xcopy dist\\pagefind public\\pagefind /E /I /Y /Q",
+		"build": "astro check && astro build && pagefind --site dist && mkdir -p public/pagefind && cp -r dist/pagefind/* public/pagefind/",
 		"preview": "astro preview",
 		"astro": "astro",
 		"check": "biome check --apply-unsafe ."

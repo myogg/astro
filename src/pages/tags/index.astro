@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../layouts/main.astro";
-import PageHeading from "../components/page-heading.astro";
+import Layout from "../../layouts/main.astro";
+import PageHeading from "../../components/page-heading.astro";
 
 const allPosts = await getCollection("post");
 const tagMap = new Map<string, number>();
