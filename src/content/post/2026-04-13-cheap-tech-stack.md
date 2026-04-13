@@ -1,7 +1,7 @@
 ---
 title: 每月20美元的技术栈，怎么撑起好几家月入一万刀的公司
 description: 不融资、不搞复杂架构，就靠VPS、Go、SQLite和本地AI，一个人同时运营多家月入一万美元的公司。
-date: 2026-04-13
+dateFormatted: 2026-04-13
 tags:
   - 创业
   - 技术栈
