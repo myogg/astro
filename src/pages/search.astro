@@ -41,14 +41,14 @@ const posts = allPosts
     </div>
 
     <p id="search-summary" class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-      共 {posts.length} 篇文章
+      输入关键词后开始搜索，共 {posts.length} 篇文章
     </p>
 
     <div id="search-results" class="flex flex-col gap-5 mt-6">
       {posts.map((post) => (
         <a
           href={`/post/${post.slug}`}
-          class="search-card group block p-6 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+          class="search-card hidden group block p-6 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
           data-search-text={post.searchText}
           data-title={post.title.toLowerCase()}
           data-description={post.description.toLowerCase()}
@@ -96,15 +96,15 @@ const posts = allPosts
 
       cards.forEach((card) => {
         const text = card.dataset.searchText || '';
-        const matched = !keyword || text.includes(keyword);
+        const matched = keyword && text.includes(keyword);
         card.classList.toggle('hidden', !matched);
         if (matched) visibleCount += 1;
       });
 
       summary.textContent = keyword
         ? `找到 ${visibleCount} / ${total} 篇文章`
-        : `共 ${total} 篇文章`;
-      empty.classList.toggle('hidden', visibleCount !== 0);
+        : `输入关键词后开始搜索，共 ${total} 篇文章`;
+      empty.classList.toggle('hidden', !keyword || visibleCount !== 0);
     }
 
     input?.addEventListener('input', runSearch);
