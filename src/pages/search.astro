@@ -41,7 +41,7 @@ const posts = allPosts
     </div>
 
     <p id="search-summary" class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-      输入关键词后开始搜索，共 {posts.length} 篇文章
+      输入关键词后开始搜索
     </p>
 
     <div id="search-results" class="flex flex-col gap-5 mt-6">
@@ -102,8 +102,8 @@ const posts = allPosts
       });
 
       summary.textContent = keyword
-        ? `找到 ${visibleCount} / ${total} 篇文章`
-        : `输入关键词后开始搜索，共 ${total} 篇文章`;
+        ? `找到 ${visibleCount} 篇文章`
+        : '输入关键词后开始搜索';
       empty.classList.toggle('hidden', !keyword || visibleCount !== 0);
     }
 
