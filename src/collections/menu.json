@@ -4,6 +4,10 @@
 		"url": "/posts"
 	},
 	{
+		"name": "搜索",
+		"url": "/search"
+	},
+	{
 		"name": "项目",
 		"url": "/projects"
 	},

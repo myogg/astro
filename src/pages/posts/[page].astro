@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import PostsList from "../../components/posts-list.astro";
+import PostsPagination from "../../components/posts-pagination.astro";
+import PageHeading from "../../components/page-heading.astro";
+import Layout from "../../layouts/main.astro";
+
+export async function getStaticPaths() {
+	const pageSize = 20;
+
+	function parseDate(dateStr: string) {
+		const [month, day, year] = dateStr.split(" ");
+		return new Date(`${month} ${parseInt(day)}, ${year}`);
+	}
+
+	const allPosts = await getCollection("post");
+	const sortedPosts = allPosts.sort(
+		(a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime()
+	);
+	const totalPages = Math.ceil(sortedPosts.length / pageSize);
+
+	return Array.from({ length: Math.max(totalPages - 1, 0) }, (_, index) => {
+		const currentPage = index + 2;
+		const start = (currentPage - 1) * pageSize;
+		const end = start + pageSize;
+
+		return {
+			params: { page: String(currentPage) },
+			props: {
+				currentPage,
+				totalPages,
+				posts: sortedPosts.slice(start, end),
+				totalPosts: sortedPosts.length,
+			},
+		};
+	});
+}
+
+const { currentPage, totalPages, posts, totalPosts } = Astro.props;
+---
+
+<Layout title={`博客第 ${currentPage} 页`}>
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <PageHeading title="博客" description={`共 ${totalPosts} 篇文章`} />
+    <PostsList posts={posts} />
+    <PostsPagination currentPage={currentPage} totalPages={totalPages} />
+  </section>
+</Layout>

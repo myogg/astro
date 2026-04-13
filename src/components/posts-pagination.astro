@@ -1,0 +1,36 @@
+---
+const { currentPage, totalPages } = Astro.props;
+
+const prevHref = currentPage === 2 ? "/posts" : `/posts/${currentPage - 1}`;
+const nextHref = `/posts/${currentPage + 1}`;
+---
+
+{totalPages > 1 && (
+  <nav class="mt-10 border-t border-dashed border-neutral-300 pt-5 text-sm dark:border-neutral-700">
+    <div class="flex items-center justify-center gap-3 text-neutral-500 dark:text-neutral-400">
+      {currentPage > 1 ? (
+        <a href={prevHref} class="transition-colors hover:text-neutral-900 dark:hover:text-white">
+          上一页
+        </a>
+      ) : (
+        <span class="text-neutral-300 dark:text-neutral-700">上一页</span>
+      )}
+
+      <span class="select-none text-neutral-300 dark:text-neutral-700">/</span>
+
+      <span class="text-center text-neutral-600 dark:text-neutral-300">
+        第 {currentPage} 页，共 {totalPages} 页
+      </span>
+
+      <span class="select-none text-neutral-300 dark:text-neutral-700">/</span>
+
+      {currentPage < totalPages ? (
+        <a href={nextHref} class="transition-colors hover:text-neutral-900 dark:hover:text-white">
+          下一页
+        </a>
+      ) : (
+        <span class="text-neutral-300 dark:text-neutral-700">下一页</span>
+      )}
+    </div>
+  </nav>
+)}

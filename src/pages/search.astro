@@ -1,0 +1,113 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/main.astro";
+import PageHeading from "../components/page-heading.astro";
+
+const allPosts = await getCollection("post");
+
+function parseDate(dateStr: string) {
+	const [month, day, year] = dateStr.split(" ");
+	return new Date(`${month} ${parseInt(day)}, ${year}`);
+}
+
+const posts = allPosts
+	.map((post) => ({
+		title: post.data.title,
+		description: post.data.description,
+		dateFormatted: post.data.dateFormatted,
+		tags: post.data.tags || [],
+		slug: post.slug,
+		searchText: [post.data.title, post.data.description, ...(post.data.tags || [])]
+			.join(" ")
+			.toLowerCase(),
+		date: parseDate(post.data.dateFormatted).getTime(),
+	}))
+	.sort((a, b) => b.date - a.date);
+---
+
+<Layout title="搜索" description="搜索文章标题、描述和标签">
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <PageHeading title="搜索" description="按标题、描述和标签快速找文章" />
+
+    <div class="mt-8">
+      <label for="search-input" class="sr-only">搜索文章</label>
+      <input
+        id="search-input"
+        type="search"
+        placeholder="输入关键词..."
+        autocomplete="off"
+        class="w-full px-4 py-3 text-sm bg-white border border-dashed rounded-2xl border-neutral-300 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-100 outline-none focus:border-neutral-500 dark:focus:border-neutral-400"
+      />
+    </div>
+
+    <p id="search-summary" class="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+      共 {posts.length} 篇文章
+    </p>
+
+    <div id="search-results" class="flex flex-col gap-5 mt-6">
+      {posts.map((post) => (
+        <a
+          href={`/post/${post.slug}`}
+          class="search-card group block p-6 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+          data-search-text={post.searchText}
+          data-title={post.title.toLowerCase()}
+          data-description={post.description.toLowerCase()}
+          data-tags={post.tags.join(" ").toLowerCase()}
+        >
+          <h2 class="text-base font-bold leading-tight tracking-tight sm:text-lg dark:text-neutral-100 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+            {post.title}
+          </h2>
+          <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+            {post.description}
+          </p>
+          <div class="flex items-center justify-between mt-3 gap-4">
+            <div class="text-xs text-neutral-400 dark:text-neutral-500">{post.dateFormatted}</div>
+            {post.tags.length > 0 && (
+              <div class="flex flex-wrap justify-end gap-1.5">
+                {post.tags.map((tag) => (
+                  <span class="text-xs px-2 py-0.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div
+      id="search-empty"
+      class="hidden mt-6 p-6 text-sm border border-dashed rounded-2xl border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400"
+    >
+      没有找到相关文章。
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ total: posts.length }}>
+    const input = document.getElementById('search-input');
+    const summary = document.getElementById('search-summary');
+    const cards = Array.from(document.querySelectorAll('.search-card'));
+    const empty = document.getElementById('search-empty');
+
+    function runSearch() {
+      const keyword = input.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const text = card.dataset.searchText || '';
+        const matched = !keyword || text.includes(keyword);
+        card.classList.toggle('hidden', !matched);
+        if (matched) visibleCount += 1;
+      });
+
+      summary.textContent = keyword
+        ? `找到 ${visibleCount} / ${total} 篇文章`
+        : `共 ${total} 篇文章`;
+      empty.classList.toggle('hidden', visibleCount !== 0);
+    }
+
+    input?.addEventListener('input', runSearch);
+    runSearch();
+  </script>
+</Layout>
