@@ -24,6 +24,38 @@ const { frontmatter } = Astro.props;
         >
           {frontmatter.title}
         </h1>
+        <div class="mb-6 md:mb-7">
+          <div class="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white/90 px-3 py-2 text-sm text-neutral-700 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-200">
+            <button
+              id="listen-article-button"
+              type="button"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
+              aria-label="听全文"
+            >
+              <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="h-4 w-4"
+              >
+                <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
+              </svg>
+            </button>
+            <div class="min-w-0">
+              <button
+                id="listen-article-toggle"
+                type="button"
+                class="block text-left font-medium leading-none text-neutral-900 transition hover:text-neutral-600 dark:text-neutral-100 dark:hover:text-neutral-300"
+              >
+                <span id="listen-article-label">听全文</span>
+              </button>
+              <p id="listen-article-status" class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                使用浏览器语音朗读正文
+              </p>
+            </div>
+          </div>
+        </div>
         <time
           class="block text-sm text-neutral-500 dark:text-neutral-400 mb-12 md:mb-16"
         >
@@ -33,6 +65,7 @@ const { frontmatter } = Astro.props;
     </div>
 
     <article
+      id="article-content"
       class="w-full max-w-2xl mx-auto mb-12 prose-base prose px-5 lg:px-0 lg:prose-lg dark:prose-invert"
     >
       <slot />
@@ -42,4 +75,119 @@ const { frontmatter } = Astro.props;
       <slot name="nav" />
     </div>
   </main>
+
+  <script is:inline>
+    const listenButton = document.getElementById('listen-article-button');
+    const listenToggle = document.getElementById('listen-article-toggle');
+    const listenLabel = document.getElementById('listen-article-label');
+    const listenStatus = document.getElementById('listen-article-status');
+    const articleContent = document.getElementById('article-content');
+
+    if (listenButton && listenToggle && listenLabel && listenStatus && articleContent && 'speechSynthesis' in window) {
+      let utterance;
+      let isSpeaking = false;
+
+      const playIcon = `
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="h-4 w-4"
+        >
+          <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
+        </svg>
+      `;
+
+      const stopIcon = `
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="h-4 w-4"
+        >
+          <rect x="7" y="7" width="10" height="10" rx="2"></rect>
+        </svg>
+      `;
+
+      const updateState = ({ label, status, icon, pressed }) => {
+        listenLabel.textContent = label;
+        listenStatus.textContent = status;
+        listenButton.setAttribute('aria-label', label);
+        listenButton.setAttribute('aria-pressed', String(pressed));
+        listenToggle.setAttribute('aria-label', label);
+        listenButton.innerHTML = icon;
+      };
+
+      const stopReading = () => {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        updateState({
+          label: '听全文',
+          status: '使用浏览器语音朗读正文',
+          icon: playIcon,
+          pressed: false,
+        });
+      };
+
+      const startReading = () => {
+        const text = articleContent.innerText.replace(/\s+/g, ' ').trim();
+        if (!text) return;
+
+        window.speechSynthesis.cancel();
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+
+        utterance.onstart = () => {
+          isSpeaking = true;
+          updateState({
+            label: '停止朗读',
+            status: '正在朗读正文',
+            icon: stopIcon,
+            pressed: true,
+          });
+        };
+
+        utterance.onend = () => {
+          isSpeaking = false;
+          updateState({
+            label: '听全文',
+            status: '使用浏览器语音朗读正文',
+            icon: playIcon,
+            pressed: false,
+          });
+        };
+
+        utterance.onerror = () => {
+          isSpeaking = false;
+          updateState({
+            label: '听全文',
+            status: '当前浏览器暂时无法朗读',
+            icon: playIcon,
+            pressed: false,
+          });
+        };
+
+        window.speechSynthesis.speak(utterance);
+      };
+
+      const handleToggle = () => {
+        if (isSpeaking) {
+          stopReading();
+          return;
+        }
+
+        startReading();
+      };
+
+      listenButton.addEventListener('click', handleToggle);
+      listenToggle.addEventListener('click', handleToggle);
+      window.addEventListener('beforeunload', stopReading);
+    } else if (listenButton?.parentElement?.parentElement) {
+      listenButton.parentElement.parentElement.hidden = true;
+    }
+  </script>
 </Layout>
