@@ -5,7 +5,7 @@ This file provides guidance to CodeBuddy Code when working with code in this rep
 ## Commands
 
 - **Dev server**: `pnpm dev` or `pnpm start`
-- **Build**: `pnpm build` (runs `astro check` → `astro build` → `pagefind --site dist` → copies index to `public/pagefind/`)
+- **Build**: `pnpm build` (runs `astro check` → `astro build`)
 - **Lint/Format**: `pnpm check` (Biome with `--apply-unsafe`)
 - **Preview built site**: `pnpm preview`
 
@@ -13,7 +13,7 @@ Package manager is **pnpm** (v9). Site URL: `https://134688.xyz` (set in `astro.
 
 ## Architecture
 
-Astro 4 static site (personal blog), deployed on Cloudflare Pages. No SSR adapter — purely static output.
+Astro 4 static site (personal blog "北方的博客"), deployed on Cloudflare Pages. No SSR adapter — purely static output.
 
 ### Content System
 
@@ -22,7 +22,7 @@ Blog posts live in `src/content/post/` as Markdown files with Astro content coll
 ```yaml
 ---
 title: "Post Title"
-description: "Short description for post list"
+description: "Short description for SEO and post list"
 dateFormatted: "Apr 10, 2026"
 tags:
   - tag1
@@ -31,8 +31,9 @@ tags:
 ```
 
 Key rules:
-- **No `layout` field** in frontmatter — post layout is applied by `post/[slug].astro`, not per-file layout
+- **No `layout` field** in frontmatter — post layout is applied by `post/[slug].astro`, not per-file layout. Adding `layout` causes double title rendering.
 - **Do not** add `# Title` in post body — `post.astro` layout renders `frontmatter.title` as h1
+- **Do not** use `date` field — must use `dateFormatted` (format: `"Mon DD, YYYY"`) for the schema
 - File names: `YYYY-MM-DD-slug.md` (Jekyll convention)
 - Avoid special characters (colons, quotes) in file names — they break YAML parsing
 - `tags` is optional, defaults to empty array
@@ -40,15 +41,15 @@ Key rules:
 ### Data Files
 
 `src/collections/` holds JSON data:
-- `menu.json` — navigation menu (Posts, Projects, Tags, Search, About)
+- `menu.json` — navigation menu (博客, 项目, 关于)
 - `projects.json` — project cards (name, description, image, url)
 - `links.json` — friend links on About page (name, url, description, icon)
 - `experiences.json` — work experience entries on About page
 
 ### Layouts
 
-- `main.astro` — root layout (HTML shell, header, footer, dark mode, Chinese serif fonts, external link handling)
-- `post.astro` — blog post layout (wraps main, renders title + date, article body with `data-pagefind-body`, nav slot for prev/next)
+- `main.astro` — root layout (HTML shell, SEO meta tags, header, footer, dark mode, Chinese serif fonts, external link handling). Accepts `title` and optional `description` props. Title format: `{page} | 北方的博客`.
+- `post.astro` — blog post layout (wraps main, renders title + date, article body, nav slot for prev/next)
 
 ### Pages
 
@@ -56,12 +57,11 @@ Key rules:
 |---|---|---|
 | `index.astro` | `/` | Homepage (intro, projects, writings with RSS subscribe) |
 | `posts.astro` | `/posts` | Full post listing with tags |
-| `post/[slug].astro` | `/post/:slug` | Dynamic post page with prev/next navigation |
+| `post/[slug].astro` | `/post/:slug` | Dynamic post page with prev/next navigation and tags |
 | `projects.astro` | `/projects` | Project listing |
 | `about.astro` | `/about` | Bio, experiences, friend links |
-| `tags/index.astro` | `/tags` | Tag cloud |
+| `tags/index.astro` | `/tags` | Tag cloud (not in nav, accessible via URL) |
 | `tags/[tag].astro` | `/tags/:tag` | Posts filtered by tag |
-| `search.astro` | `/search` | Pagefind-powered search |
 | `rss.xml.ts` | `/rss.xml` | RSS feed endpoint |
 
 ### Key Components
@@ -77,13 +77,12 @@ Key rules:
 - `button.astro` — CTA button
 - `square.astro` / `square-line.astro` / `square-lines.astro` — decorative elements
 
-### Search (Pagefind)
+### SEO
 
-Search uses Pagefind for static site search:
-- Build generates index in `dist/pagefind/`, copied to `public/pagefind/` for dev mode
-- `search.astro` uses `is:inline` script to dynamically load Pagefind JS (avoids Vite build errors)
-- Article content has `data-pagefind-body` attribute for indexing
-- `public/pagefind/` is gitignored — regenerated each build
+- Title format: `{page} | 北方的博客`
+- Default meta description: "北方的博客 — 生活感悟与技术探索"
+- Pages/posts can override `description` via layout props or frontmatter
+- Open Graph and Twitter card meta tags included in `main.astro`
 
 ### Typography & Styling
 

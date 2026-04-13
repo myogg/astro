@@ -36,12 +36,12 @@ export async function getStaticPaths() {
 	});
 }
 
-const { currentPage, totalPages, posts, totalPosts } = Astro.props;
+const { currentPage, totalPages, posts } = Astro.props;
 ---
 
 <Layout title={`博客第 ${currentPage} 页`}>
   <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
-    <PageHeading title="博客" description={`共 ${totalPosts} 篇文章`} />
+    <PageHeading title="博客" />
     <PostsList posts={posts} />
     <PostsPagination currentPage={currentPage} totalPages={totalPages} />
   </section>

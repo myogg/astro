@@ -23,7 +23,7 @@ const currentPosts = sortedPosts.slice(0, pageSize);
 
 <Layout title="文章">
   <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
-    <PageHeading title="博客" description={`共 ${sortedPosts.length} 篇文章`} />
+    <PageHeading title="博客" />
     <PostsList posts={currentPosts} />
     <PostsPagination currentPage={1} totalPages={totalPages} />
   </section>
