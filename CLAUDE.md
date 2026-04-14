@@ -54,7 +54,7 @@ A lot of route logic depends on `dateFormatted` being a string that can be parse
 
 `src/layouts/post.astro` wraps article pages and provides the article container plus the bottom nav slot.
 
-Navigation is data-driven from `src/collections/`, which contains JSON data files (`menu.json`, `projects.json`, `experiences.json`, `links.json`). `src/components/header.astro` renders the menu for both desktop and mobile states. The tag index exists as a route but is not part of the main nav.
+Navigation is data-driven from `src/collections/menu.json`, and `src/components/header.astro` renders that menu for both desktop and mobile states. The tag index exists as a route but is not part of the main nav.
 
 ### Routing structure
 

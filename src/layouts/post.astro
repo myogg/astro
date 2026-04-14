@@ -25,11 +25,11 @@ const { frontmatter } = Astro.props;
           {frontmatter.title}
         </h1>
         <div class="mb-6 md:mb-7">
-          <div class="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white/90 px-3.5 py-2.5 text-sm text-neutral-700 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-200">
+          <div class="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white/90 px-3 py-2 text-sm text-neutral-700 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-200">
             <button
               id="listen-article-button"
               type="button"
-              class="group relative flex h-11 w-11 items-center justify-center rounded-full bg-neutral-900 text-white shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 dark:bg-white dark:text-neutral-900"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
               aria-label="听全文"
             >
               <svg
@@ -37,9 +37,9 @@ const { frontmatter } = Astro.props;
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                class="h-5 w-5 ml-0.5 transition-transform duration-200 group-hover:scale-110"
+                class="h-4 w-4"
               >
-                <path d="M8 5v14l11-7z"></path>
+                <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
               </svg>
             </button>
             <div class="min-w-0">
@@ -93,9 +93,9 @@ const { frontmatter } = Astro.props;
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          class="h-5 w-5 ml-0.5 transition-transform duration-200 group-hover:scale-110"
+          class="h-4 w-4"
         >
-          <path d="M8 5v14l11-7z"></path>
+          <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
         </svg>
       `;
 
@@ -105,9 +105,9 @@ const { frontmatter } = Astro.props;
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          class="h-5 w-5 transition-transform duration-200 group-hover:scale-110"
+          class="h-4 w-4"
         >
-          <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+          <rect x="7" y="7" width="10" height="10" rx="2"></rect>
         </svg>
       `;
 
