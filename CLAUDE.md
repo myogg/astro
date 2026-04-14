@@ -20,17 +20,16 @@ pnpm install
 pnpm dev
 pnpm build
 pnpm preview
-npm run build
-npm run check
-npx astro check
-npx astro build
+pnpm astro check
+pnpm astro build
+pnpm check
 ```
 
 Notes:
-- `package.json` declares `pnpm@9.12.2`, so prefer `pnpm` for dependency and script commands.
-- `npm run build` also works in this repo and runs `astro check && astro build`.
-- `npm run check` runs `biome check --apply-unsafe .`, which formats/fixes files in place; do not treat it as a read-only lint command.
-- There is no dedicated automated test suite at the moment. Validation is done with `astro check` and a production build.
+- `package.json` declares `pnpm@9.12.2`, so prefer `pnpm`.
+- `pnpm build` runs `astro check && astro build`.
+- `pnpm check` runs `biome check --apply-unsafe .` and may rewrite files in place.
+- There is no dedicated automated test suite or single-test command in this repo; validation is `pnpm astro check` plus a production build.
 
 ## Architecture
 
@@ -55,13 +54,13 @@ A lot of route logic depends on `dateFormatted` being a string that can be parse
 
 `src/layouts/post.astro` wraps article pages and provides the article container plus the bottom nav slot.
 
-Navigation is data-driven from `src/collections/menu.json`, and `src/components/header.astro` renders that menu for both desktop and mobile states.
+Navigation is data-driven from `src/collections/menu.json`, and `src/components/header.astro` renders that menu for both desktop and mobile states. The tag index exists as a route but is not part of the main nav.
 
 ### Routing structure
 
 Important route patterns:
 - `src/pages/index.astro` assembles the homepage from section components
-- `src/pages/post/[slug].astro` renders individual posts and computes previous/next post links from a globally sorted post list
+- `src/pages/post/[slug].astro` renders individual posts, tag chips, and previous/next links from a globally sorted post list
 - `src/pages/posts/index.astro` is archive page 1 (`/posts`)
 - `src/pages/posts/[page].astro` statically generates later archive pages (`/posts/2`, `/posts/3`, ...)
 - `src/pages/tags/[tag].astro` groups posts by tag at build time

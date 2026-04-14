@@ -16,23 +16,5 @@
 		"description": "Astro",
 		"image": "https://opengraph.githubassets.com/1/myogg/astro",
 		"url": "https://github.com/myogg/astro"
-	},
-	{
-		"name": "BroadcastChannel",
-		"description": "BroadcastChannel",
-		"image": "https://opengraph.githubassets.com/1/myogg/BroadcastChannel",
-		"url": "https://github.com/myogg/BroadcastChannel"
-	},
-	{
-		"name": "BroadcastChannel",
-		"description": "Turn your Telegram Channel into a MicroBlog.",
-		"image": "/assets/images/projects/broadcast-channel.png",
-		"url": "https://github.com/ccbikai/BroadcastChannel"
-	},
-	{
-		"name": "L(O*62).ONG",
-		"description": "Make your URL looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonger",
-		"image": "/assets/images/projects/long.png",
-		"url": "https://loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo.ong"
 	}
 ]
