@@ -1,7 +1,7 @@
 ---
 title: "别慌！Claude Pro 还是能用 Opus，工程师亲自辟谣了"
 description: "之前一篇支持文章说 Claude Pro 用 Opus 要额外付费，结果被 Claude 工程师打脸：那是老黄历了，1 月起 Pro 就能用 Opus 4.5。"
-dateFormatted: "Apr 12, 2026"
+dateFormatted: "Apr 28, 2026"
 tags: ["AI", "Claude", "Anthropic", "辟谣", "自动化"]
 ---
 
