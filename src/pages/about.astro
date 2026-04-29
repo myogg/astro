@@ -1,12 +1,12 @@
 ---
-import links from "../collections/links.json";
+import categories from "../collections/links.json";
 import AboutLink from "../components/about-link.astro";
 import PageHeading from "../components/page-heading.astro";
 import Layout from "../layouts/main.astro";
 ---
 
 <Layout title="About Me">
-  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+  <section class="relative z-20 max-w-4xl mx-auto my-12 px-7 lg:px-0">
     <PageHeading
       title="About Me"
       description="Hello 👋 I'm an ordinary person living in Xi'an. I love tinkering with things—blogs, forums, and all kinds of mobile apps."
@@ -21,26 +21,26 @@ import Layout from "../layouts/main.astro";
       I'm an ordinary person living in Xi'an, and I don't really know how to do anything special. I love tinkering with things—blogs, forums, and all kinds of mobile apps... I'll be here to chat about life, or any other topics that interest me.
     </p>
 
-    <h2
-      class="mt-5 mb-2 text-2xl font-bold lg:mt-10 sm:mt-6 dark:text-neutral-200"
-    >
-      Links
-    </h2>
-    <div class="px-5 py-10">
-      {
-        links.map((link) => {
-          return (
-            <div class="pb-10 border-l border-gray-200 last:border-l-0 dark:border-neutral-700">
+    <div class="nav-page">
+      <div class="nav-page-title">
+        <h2 class="text-2xl font-bold dark:text-neutral-200">我的导航</h2>
+        <p class="text-sm text-gray-400">常用网址收藏</p>
+      </div>
+
+      {categories.map((cat) => (
+        <div class="nav-category">
+          <div class="nav-category-title">{cat.title}</div>
+          <div class="nav-grid">
+            {cat.links.map((link) => (
               <AboutLink
                 url={link.url}
                 name={link.name}
-                description={link.description}
-                icon={link.icon}
+                desc={link.desc}
               />
-            </div>
-          )
-        })
-      }
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
 
     <h2 class="mt-5 mb-2 text-2xl font-bold lg:mt-10 sm:mt-6 dark:text-neutral-200">Let's Connect</h2>
@@ -57,3 +57,45 @@ import Layout from "../layouts/main.astro";
     </p>
   </section>
 </Layout>
+
+<style>
+  .nav-page {
+    margin-top: 2rem;
+  }
+  .nav-page-title {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .nav-page-title h2 {
+    margin-bottom: 8px;
+  }
+  .nav-category {
+    margin-bottom: 36px;
+  }
+  .nav-category-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-left: 12px;
+    border-left: 3px solid #3498db;
+    color: #333;
+  }
+  :global(.dark) .nav-category-title {
+    color: #d4d4d4;
+  }
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .nav-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .nav-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

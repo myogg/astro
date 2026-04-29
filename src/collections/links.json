@@ -1,26 +1,44 @@
 [
 	{
-		"url": "https://100412.xyz",
-		"name": "100412.xyz",
-		"description": "中文科技资讯与信息博客，聚焦软件、AI 和开源安全领域的最新动态。",
-		"icon": "📰"
+		"title": "我的站点",
+		"links": [
+			{ "name": "134688", "url": "https://134688.xyz", "desc": "个人站点" },
+			{ "name": "100412", "url": "https://100412.xyz", "desc": "个人站点" },
+			{ "name": "829259", "url": "https://829259.xyz", "desc": "个人站点" }
+		]
 	},
 	{
-		"url": "https://829259.xyz",
-		"name": "做个有意思的人",
-		"description": "记录一些小事情，随意转载！涵盖科技、工具、天文与生活。",
-		"icon": "🌈"
+		"title": "云服务 & 域名",
+		"links": [
+			{ "name": "Cloudflare", "url": "https://cloudflare.com", "desc": "CDN & DNS" },
+			{ "name": "InfinityFree", "url": "https://infinityfree.com", "desc": "免费托管" },
+			{ "name": "Serv00", "url": "https://serv00.com", "desc": "免费VPS" },
+			{ "name": "Name.com", "url": "https://name.com", "desc": "域名注册" },
+			{ "name": "DigitalPlat", "url": "https://digitalplat.org", "desc": "数字平台" }
+		]
 	},
 	{
-		"url": "https://tel.qzz.io",
-		"name": "tel.qzz.io",
-		"description": "我的导航网站",
-		"icon": "🧭"
+		"title": "技术社区",
+		"links": [
+			{ "name": "GitHub", "url": "https://github.com", "desc": "代码托管" },
+			{ "name": "Linux.do", "url": "https://linux.do", "desc": "Linux社区" },
+			{ "name": "NodeSeek", "url": "https://nodeseek.com", "desc": "VPS交流" }
+		]
 	},
 	{
-		"url": "https://jreely.dbdns.org",
-		"name": "jreely.dbdns.org",
-		"description": "北方的博客",
-		"icon": "📝"
+		"title": "社交 & 购物",
+		"links": [
+			{ "name": "Instagram", "url": "https://instagram.com", "desc": "图片社交" },
+			{ "name": "Pinterest", "url": "https://pinterest.com", "desc": "灵感收藏" },
+			{ "name": "Amazon", "url": "https://amazon.com", "desc": "在线购物" }
+		]
+	},
+	{
+		"title": "科技 & 工具",
+		"links": [
+			{ "name": "NVIDIA", "url": "https://nvidia.com", "desc": "GPU & AI" },
+			{ "name": "Superbed", "url": "https://superbed.cc", "desc": "图床工具" },
+			{ "name": "Hidoha", "url": "https://hidoha.net", "desc": "图床工具" }
+		]
 	}
 ]

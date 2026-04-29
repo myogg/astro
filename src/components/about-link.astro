@@ -1,24 +1,92 @@
 ---
-const { url, name, description, icon } = Astro.props;
+const { url, name, desc } = Astro.props;
+const domain = new URL(url).hostname;
 ---
 
-<div class="relative flex flex-col justify-start pl-12">
-  <div
-    class="absolute top-0 left-0 z-40 flex items-center justify-center -translate-x-1/2 bg-white border rounded-full dark:bg-neutral-950 w-14 h-14 border-neutral-300 dark:border-neutral-700"
-  >
-    <span class="text-xl">{icon || "🔗"}</span>
+<a
+  class="nav-card group"
+  href={url}
+  target="_blank"
+  rel="noopener"
+>
+  <div class="nav-card-icon">
+    <img
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+      alt=""
+      loading="lazy"
+    />
   </div>
+  <div class="nav-card-info">
+    <div class="nav-card-name">{name}</div>
+    {desc && <div class="nav-card-desc">{desc}</div>}
+  </div>
+</a>
 
-  <a
-    href={url}
-    target="_blank"
-    class="my-1 text-lg font-bold text-black dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400"
-  >
-    {name}
-  </a>
-  {description && (
-    <p class="text-sm font-light text-black dark:text-neutral-400">
-      {description}
-    </p>
-  )}
-</div>
+<style>
+  .nav-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s ease;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+  .nav-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #3498db;
+  }
+
+  :global(.dark) .nav-card {
+    background: #171717;
+    border-color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  :global(.dark) .nav-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: #3498db;
+  }
+
+  .nav-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  :global(.dark) .nav-card-icon {
+    background: #262626;
+  }
+  .nav-card-icon img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-card-info {
+    min-width: 0;
+  }
+  .nav-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-card-desc {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
