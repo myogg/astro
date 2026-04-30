@@ -1,46 +1,21 @@
 ---
 const { posts } = Astro.props;
-
-// 格式化日期：让它看起来更像官方公告
-const formatDate = (dateStr: string) => {
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch (e) {
-    return dateStr;
-  }
-};
 ---
 
-<div class="flex flex-col border-t border-black/5 dark:border-white/10">
+<div class="flex flex-col border-t border-black/5 dark:border-white/10 mt-8">
   {
     posts.map((post) => (
       <a 
         href={`/post/${post.slug}/`} 
-        class="group block py-10 border-b border-black/5 dark:border-white/10 transition-opacity hover:opacity-60"
+        class="group block py-8 border-b border-black/5 dark:border-white/10 transition-opacity hover:opacity-60"
       >
-        <article class="flex flex-col gap-3">
-          <div class="flex items-center gap-4 text-[10px] tracking-[0.2em] uppercase text-neutral-500 font-medium">
-            <time datetime={post.data.dateFormatted}>
-              {post.data.dateFormatted}
-            </time>
-            {post.data.category && (
-              <span class="bg-neutral-100 dark:bg-neutral-900 px-2 py-0.5 rounded-sm">
-                {post.data.category}
-              </span>
-            )}
+        <article class="flex flex-col gap-1.5">
+          <div class="text-[10px] tracking-[0.2em] uppercase text-neutral-400 font-medium mb-1">
+            {post.data.dateFormatted}
           </div>
-
-          <h2 class="text-2xl md:text-3xl font-medium text-black dark:text-white leading-tight tracking-tight">
-            {post.data.title}
-          </h2>
-
+          <h2 class="text-black dark:text-white">{post.data.title}</h2>
           {post.data.description && (
-            <p class="text-base text-neutral-500 line-clamp-2 max-w-2xl mt-1">
+            <p class="text-sm text-neutral-500 line-clamp-2 max-w-2xl">
               {post.data.description}
             </p>
           )}
