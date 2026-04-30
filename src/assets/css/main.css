@@ -2,71 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add Your Custom CSS Here */
+/* --- OpenAI 风格中西合璧定制版 --- */
 
+:root {
+  --oa-black: #1a1a1a;
+}
+
+body {
+  /* 核心：Inter 处理数字和西文，苹方/微软雅黑处理中文 */
+  font-family: "Inter Variable", "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #ffffff;
+  color: var(--oa-black);
+  /* 针对中文长文优化的行高 */
+  line-height: 1.75;
+}
+
+/* 标题：黑、稳、轻微收紧字间距产生高级感 */
+h1, h2, h3, h4, .font-semibold {
+  color: #000000 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.3 !important;
+}
+
+/* OpenAI 风格：正文宽度不宜过宽，保持阅读专注 */
+.prose {
+  max-width: 70ch !important;
+  color: #374151 !important;
+}
+
+/* 图片圆角：从 30px 改为更锋利的 12px */
 .prose img {
-  border-radius: 30px;
+  border-radius: 12px !important;
 }
 
-#sun {
+/* 链接交互：纯粹、无颜色干扰 */
+a {
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+/* --- 暗黑模式：深邃纯黑 --- */
+html.dark {
+  background-color: #000000;
+  color: #ededed;
+}
+
+html.dark h1, html.dark h2, html.dark h3 {
+  color: #ffffff !important;
+}
+
+/* --- 原有动画保留并微调 --- */
+#sun, #moon {
   transform: translate3d(0, 0px, 0);
 }
 
-#moon {
-  transform: translate3d(0, 0px, 0);
-}
-
-#darkToggle:hover #sun {
-  transform: translate3d(0, 10px, 0);
-}
-
+#darkToggle:hover #sun, 
 #darkToggle:hover #moon {
   transform: translate3d(0, 10px, 0);
 }
 
-html.dark #darkToggle:hover .horizon {
-  border-color: #718096 !important;
-}
-
-html.dark {
-    color-scheme: dark;
-}
-
-.horizon .setting {
-  animation: 1s ease 0s 1 setting;
-}
-
-.horizon .rising {
-  animation: 1s ease 0s 1 rising;
-}
-
 @keyframes setting {
-  0% {
-    transform: translate3d(0, 10px, 0)
-  }
-
-  40% {
-    transform: translate3d(0, -2px, 0)
-  }
-
-  to {
-    transform: translate3d(0, 30px, 0)
-  }
+  0% { transform: translate3d(0, 10px, 0) }
+  40% { transform: translate3d(0, -2px, 0) }
+  to { transform: translate3d(0, 30px, 0) }
 }
 
 @keyframes rising {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 30px, 0)
-  }
-
-  40% {
-    opacity: 1;
-    transform: translate3d(0, -2px, 0)
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 10, 0)
-  }
+  0% { opacity: 0; transform: translate3d(0, 30px, 0) }
+  40% { opacity: 1; transform: translate3d(0, -2px, 0) }
+  to { opacity: 1; transform: translate3d(0, 0, 0) }
 }
