@@ -89,6 +89,7 @@ const { frontmatter } = Astro.props;
     if (listenButton && listenToggle && listenLabel && listenStatus && articleContent) {
       let audio;
       let isSpeaking = false;
+      let activeRead = false;
       let abortController;
 
       const playIcon = `
@@ -136,6 +137,7 @@ const { frontmatter } = Astro.props;
       }
 
       const stopReading = () => {
+        activeRead = false;
         abortController?.abort();
         if (audio) {
           audio.pause();
@@ -150,6 +152,7 @@ const { frontmatter } = Astro.props;
         const fullText = articleContent.innerText.replace(/\s+/g, ' ').trim();
         if (!fullText) return;
 
+        activeRead = true;
         abortController = new AbortController();
         const chunks = splitText(fullText, 300);
 
@@ -158,6 +161,7 @@ const { frontmatter } = Astro.props;
         try {
           const firstBlob = await fetchAudio(chunks[0]);
           const playNext = async (index) => {
+            if (!activeRead) return;
             if (index >= chunks.length) {
               isSpeaking = false;
               audio = null;
@@ -173,11 +177,12 @@ const { frontmatter } = Astro.props;
               try {
                 blob = await fetchAudio(chunks[index]);
               } catch {
-                if (abortController.signal.aborted) return;
+                if (!activeRead) return;
                 throw new Error('fetch failed');
               }
             }
 
+            if (!activeRead) return;
             const url = URL.createObjectURL(blob);
             audio = new Audio(url);
             audio.onplay = () => {
