@@ -8,10 +8,6 @@
 		"url": "/search"
 	},
 	{
-		"name": "项目",
-		"url": "/projects"
-	},
-	{
 		"name": "关于",
 		"url": "/about"
 	}

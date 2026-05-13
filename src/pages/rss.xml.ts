@@ -14,7 +14,7 @@ export async function GET(context: any) {
 	);
 
 	return rss({
-		title: "xxjss",
+		title: "姜小小",
 		description: "生活感悟与技术探索",
 		site: context.site,
 		items: sortedPosts.map((post) => ({
