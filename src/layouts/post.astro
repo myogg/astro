@@ -161,11 +161,8 @@ const { frontmatter } = Astro.props;
         });
 
         try {
-          const response = await fetch(TTS_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text }),
-          });
+          const params = new URLSearchParams({ text, voice: 'zh-CN-XiaoxiaoNeural' });
+          const response = await fetch(`${TTS_API}/api/tts?${params}`);
 
           if (!response.ok) throw new Error('TTS API error');
 
