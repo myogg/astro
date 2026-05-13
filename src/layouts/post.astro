@@ -89,43 +89,21 @@ const { frontmatter } = Astro.props;
     if (listenButton && listenToggle && listenLabel && listenStatus && articleContent) {
       let audio;
       let isSpeaking = false;
+      let abortController;
 
       const playIcon = `
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="h-4 w-4"
-        >
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
           <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
-        </svg>
-      `;
-
+        </svg>`;
       const stopIcon = `
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="h-4 w-4"
-        >
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
           <rect x="7" y="7" width="10" height="10" rx="2"></rect>
-        </svg>
-      `;
-
+        </svg>`;
       const spinnerIcon = `
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          class="h-4 w-4 animate-spin"
-        >
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-4 w-4 animate-spin">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
           <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
-        </svg>
-      `;
+        </svg>`;
 
       const updateState = ({ label, status, icon, pressed }) => {
         listenLabel.textContent = label;
@@ -136,93 +114,92 @@ const { frontmatter } = Astro.props;
         listenButton.innerHTML = icon;
       };
 
+      function splitText(text, maxLen) {
+        const parts = [];
+        while (text.length > maxLen) {
+          let cut = maxLen;
+          const chunk = text.slice(0, maxLen);
+          const lastPeriod = Math.max(chunk.lastIndexOf('。'), chunk.lastIndexOf('！'), chunk.lastIndexOf('？'), chunk.lastIndexOf('\n'));
+          if (lastPeriod > maxLen * 0.4) cut = lastPeriod + 1;
+          parts.push(text.slice(0, cut).trim());
+          text = text.slice(cut).trim();
+        }
+        if (text.trim()) parts.push(text.trim());
+        return parts;
+      }
+
+      async function fetchAudio(text) {
+        const params = new URLSearchParams({ text, voiceName: 'zh-CN-XiaoxiaoNeural', token: TTS_TOKEN });
+        const response = await fetch(`${TTS_API}/api/synthesis?${params}`, { signal: abortController.signal });
+        if (!response.ok) throw new Error('TTS API error');
+        return response.blob();
+      }
+
       const stopReading = () => {
+        abortController?.abort();
         if (audio) {
           audio.pause();
+          audio.src = '';
           audio = null;
         }
         isSpeaking = false;
-        updateState({
-          label: '听全文',
-          status: 'AI 语音朗读正文',
-          icon: playIcon,
-          pressed: false,
-        });
+        updateState({ label: '听全文', status: 'AI 语音朗读正文', icon: playIcon, pressed: false });
       };
 
       const startReading = async () => {
-        const text = articleContent.innerText.replace(/\s+/g, ' ').trim();
-        if (!text) return;
+        const fullText = articleContent.innerText.replace(/\s+/g, ' ').trim();
+        if (!fullText) return;
 
-        updateState({
-          label: '加载中',
-          status: '正在请求语音合成',
-          icon: spinnerIcon,
-          pressed: true,
-        });
+        abortController = new AbortController();
+        const chunks = splitText(fullText, 300);
+
+        updateState({ label: '加载中', status: `正在合成第 1/${chunks.length} 段`, icon: spinnerIcon, pressed: true });
 
         try {
-          const params = new URLSearchParams({ text, voiceName: 'zh-CN-XiaoxiaoNeural', token: TTS_TOKEN });
-          const response = await fetch(`${TTS_API}/api/synthesis?${params}`);
+          const firstBlob = await fetchAudio(chunks[0]);
+          const playNext = async (index) => {
+            if (index >= chunks.length) {
+              isSpeaking = false;
+              audio = null;
+              updateState({ label: '听全文', status: 'AI 语音朗读正文', icon: playIcon, pressed: false });
+              return;
+            }
 
-          if (!response.ok) throw new Error('TTS API error');
+            let blob;
+            if (index === 0) {
+              blob = firstBlob;
+            } else {
+              updateState({ label: '停止朗读', status: `正在合成第 ${index + 1}/${chunks.length} 段`, icon: spinnerIcon, pressed: true });
+              try {
+                blob = await fetchAudio(chunks[index]);
+              } catch {
+                if (abortController.signal.aborted) return;
+                throw new Error('fetch failed');
+              }
+            }
 
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          audio = new Audio(url);
-
-          audio.onplay = () => {
-            isSpeaking = true;
-            updateState({
-              label: '停止朗读',
-              status: '正在朗读正文',
-              icon: stopIcon,
-              pressed: true,
-            });
+            const url = URL.createObjectURL(blob);
+            audio = new Audio(url);
+            audio.onplay = () => {
+              isSpeaking = true;
+              updateState({ label: '停止朗读', status: `正在朗读第 ${index + 1}/${chunks.length} 段`, icon: stopIcon, pressed: true });
+            };
+            audio.onended = () => { URL.revokeObjectURL(url); playNext(index + 1); };
+            audio.onerror = () => { URL.revokeObjectURL(url); playNext(index + 1); };
+            audio.play();
           };
 
-          audio.onended = () => {
-            isSpeaking = false;
-            URL.revokeObjectURL(url);
-            audio = null;
-            updateState({
-              label: '听全文',
-              status: 'AI 语音朗读正文',
-              icon: playIcon,
-              pressed: false,
-            });
-          };
-
-          audio.onerror = () => {
-            isSpeaking = false;
-            URL.revokeObjectURL(url);
-            audio = null;
-            updateState({
-              label: '听全文',
-              status: '语音播放失败',
-              icon: playIcon,
-              pressed: false,
-            });
-          };
-
-          audio.play();
+          playNext(0);
         } catch {
-          isSpeaking = false;
-          updateState({
-            label: '听全文',
-            status: '语音合成失败，请稍后重试',
-            icon: playIcon,
-            pressed: false,
-          });
+          if (!abortController.signal.aborted) {
+            isSpeaking = false;
+            updateState({ label: '听全文', status: '语音合成失败，请稍后重试', icon: playIcon, pressed: false });
+          }
         }
       };
 
       const handleToggle = () => {
-        if (isSpeaking) {
-          stopReading();
-          return;
-        }
-
+        if (isSpeaking) { stopReading(); return; }
         startReading();
       };
 
