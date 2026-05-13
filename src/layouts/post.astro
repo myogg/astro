@@ -84,6 +84,7 @@ const { frontmatter } = Astro.props;
     const articleContent = document.getElementById('article-content');
 
     const TTS_API = 'https://tts.134688.xyz';
+    const TTS_TOKEN = 'tts100412';
 
     if (listenButton && listenToggle && listenLabel && listenStatus && articleContent) {
       let audio;
@@ -161,7 +162,7 @@ const { frontmatter } = Astro.props;
         });
 
         try {
-          const params = new URLSearchParams({ text, voice: 'zh-CN-XiaoxiaoNeural' });
+          const params = new URLSearchParams({ text, voice: 'zh-CN-XiaoxiaoNeural', token: TTS_TOKEN });
           const response = await fetch(`${TTS_API}/api/tts?${params}`);
 
           if (!response.ok) throw new Error('TTS API error');
