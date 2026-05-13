@@ -162,8 +162,8 @@ const { frontmatter } = Astro.props;
         });
 
         try {
-          const params = new URLSearchParams({ text, voice: 'zh-CN-XiaoxiaoNeural', token: TTS_TOKEN });
-          const response = await fetch(`${TTS_API}/api/tts?${params}`);
+          const params = new URLSearchParams({ text, voiceName: 'zh-CN-XiaoxiaoNeural', token: TTS_TOKEN });
+          const response = await fetch(`${TTS_API}/api/synthesis?${params}`);
 
           if (!response.ok) throw new Error('TTS API error');
 
