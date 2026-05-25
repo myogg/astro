@@ -1,7 +1,7 @@
 ---
 title: "APKPure 平台 Telegram 官方版遭植入间谍后门"
 description: "APKPure 分发的 Telegram 12.6.5 被篡改打包，植入窃密框架，可窃取聊天记录、相册、定位等隐私数据并外传。"
-dateFormatted: "May 15, 2026"
+dateFormatted: "May 25, 2026"
 tags: ["安全", "隐私"]
 ---
 
