@@ -4,8 +4,6 @@ description: "当20岁的年轻人开始唱起《老大》和《魔力歌先生�
 dateFormatted: "Apr 10, 2026"
 ---
 
-![Screenshot_20260410_232109_com_tencent_mm_FinderHomeAffinityUI_edit_1547548955246529.jpg](https://i.829259.xyz/api/rfile/Screenshot_20260410_232109_com_tencent_mm_FinderHomeAffinityUI_edit_1547548955246529.jpg)
-
 昨晚加班打车回家，司机是个看起来刚毕业没多久的男孩。
 
 他的手机连着车载蓝牙，歌单一首接一首地播。起初是些嘈杂的电子乐，我戴着耳机处理工作，没太在意。直到车驶上高架，窗外的路灯开始有规律地掠过车窗，一首旋律简单到近乎粗糙的歌响了起来。

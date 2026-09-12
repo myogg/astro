@@ -9,8 +9,6 @@ dateFormatted: "Apr 10, 2026"
 
 <!-- more -->
 
-![Jupiter2_WebbSchmidt_1080_annotated.jpg](https://i.829259.xyz/api/rfile/Jupiter2_WebbSchmidt_1080_annotated.jpg)
-
 韦伯望远镜拍摄的这张木星红外线影像令人叹为观止。
 
 詹姆斯·韦伯太空望远镜(韦伯)拍摄的高解析度木星红外线影像清晰地展现了木星高空明亮的云层(包括大红斑)和低空暗云之间的差异。

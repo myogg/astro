@@ -5,8 +5,6 @@ dateFormatted: "Apr 14, 2026"
 tags: ["Telegram", "反垃圾", "机器人"]
 ---
 
-![coffee.jpg](https://i.829259.xyz/api/rfile/coffee.jpg)
-
 用过 Telegram 大群的人应该都见过这个场面——
 
 一条消息下面，几十个甚至上百个表情反应，仔细一看全是机器人刷的。正常用户想看点真实的反馈，翻半天翻不到头。

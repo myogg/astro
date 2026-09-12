@@ -7,8 +7,6 @@ tags: ["天文", "星空"]
 
 影像提供与版权：Chester Hall-Fernandez
 
-![R3Orion_Hall_960.jpg](https://i.829259.xyz/api/rfile/R3Orion_Hall_960.jpg)
-
 说明：
 彗星R3 PanSTARRS或许将以「猎户座彗星」之名被人铭记。
 一个关键原因是彗星C/2025 R3 (PanSTARRS)在掠过标志性的猎户座时，其彗尾的可见度达到了近乎最壮观的程度。

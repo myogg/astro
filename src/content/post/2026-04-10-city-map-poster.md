@@ -8,6 +8,4 @@ dateFormatted: "Apr 10, 2026"
 
 <!-- more -->
 
-![IMG_20260128_222659_074.jpg](https://i.829259.xyz/api/rfile/IMG_20260128_222659_074.jpg)
-
 [仓库地址](https://github.com/anvaka/city-roads)

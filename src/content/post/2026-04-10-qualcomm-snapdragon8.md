@@ -8,8 +8,6 @@ dateFormatted: "Apr 10, 2026"
 
 <!-- more -->
 
-![IMG_20260203_223949_080.jpg](https://i.829259.xyz/api/rfile/IMG_20260203_223949_080.jpg)
-
 得益于台积电更先进的工艺制程，骁龙8 Elite Gen6系列芯片组将会实现更高的频率，爆料称骁龙8 Elite Gen6 Pro的超大核主频将突破5GHz，这将是行业内CPU主频最高的手机芯片。作为对比，骁龙8 Elite Gen5的CPU主频是4.61GHz。
 
 据悉，为了让性能释放更激进，高通骁龙8 Elite Gen6 Pro采用三星Exynos 2600已经使用的Heat Pass Block散热技术，并且它还支持全新的LPDDR6内存以及UFS 5.0闪存。

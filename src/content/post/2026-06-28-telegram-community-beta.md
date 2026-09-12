@@ -5,8 +5,6 @@ dateFormatted: "Jun 28, 2026"
 tags: ["Telegram", "社区"]
 ---
 
-![IMG_20260628_184143_166.jpg](https://i.829259.xyz/api/rfile/IMG_20260628_184143_166.jpg)
-
 Telegram Android 12.9 Beta 测试社区功能
 
 Telegram 在 Android 12.9 Beta 版中测试社区功能，允许用户将多个群组围绕同一主题聚合为社区。

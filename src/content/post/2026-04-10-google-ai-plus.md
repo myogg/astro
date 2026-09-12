@@ -8,8 +8,6 @@ dateFormatted: "Apr 10, 2026"
 
 <!-- more -->
 
-![IMG_20260128_172129_726.jpg](https://i.829259.xyz/api/rfile/IMG_20260128_172129_726.jpg)
-
 🔗 https://one.google.com/about/google-ai-plans/
 
 订阅用户将获得如下权益：

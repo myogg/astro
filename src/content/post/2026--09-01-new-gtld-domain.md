@@ -7,8 +7,6 @@ tags: ["域名", "互联网", "New gTLD"]
 
 2026 年 New gTLD 域名申请已经结束，最终结果不知何时揭晓。
 
-
-
 Telegram 申请了 `.gram`，以后应该会看到 `Tele.gram`，Domain Hack，大概是被上次 `.me` 搞怕了。
 
 有趣的是一家叫西游记（Journey to the West）的公司申请了 300 多中国文化相关的词语。

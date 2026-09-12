@@ -12,9 +12,6 @@ Sam Altman刚刚发文报了平安：所幸燃烧瓶偏离了房屋，无人受�
 
 事件发生后，奥特曼罕见发布家人照片：
 
-![Screenshot_20260411_125444_org_telegram_messenger_web_LaunchActivity.jpg](https://i.829259.xyz/api/rfile/Screenshot_20260411_125444_org_telegram_messenger_web_LaunchActivity.jpg)
-
-
 > 我分享这张照片，希望它能劝阻下一个想袭击我们家的人，不管他们对我有何看法。
 
 奥特曼在回应文章中，也正面写下了自己对AI行业现状的思考，以及对于马斯克等的冲突的反思。

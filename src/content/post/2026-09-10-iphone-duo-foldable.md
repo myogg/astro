@@ -5,9 +5,6 @@ dateFormatted: "Sep 10, 2026"
 tags: ["Apple", "iPhone", "折叠屏", "ESIM"]
 ---
 
-
-![1000044784.jpg](https://pic1.imgdb.cn/i/034M6ctR7mI12zkDGQFtN8.jpg)
-
 Apple 于今日发布折叠 iPhone。
 
 iPhone Duo 采用纳米纹理表层减少炫光，最高支持 3000 尼特亮度。

@@ -5,8 +5,6 @@ dateFormatted: "May 1, 2026"
 tags: ["Google Cloud", "AI代理"]
 ---
 
-![tempmail.best.png](https://i.829259.xyz/api/rfile/tempmail.best.png)
-
 ## 重點有哪些？
 
 - **統一 AI 技術堆疊 + 第八代 TPU**：Google Cloud 在 Next '26 大會上發表了全新的統一 AI 技術堆疊、第八代 TPU，以及多項橫跨數據、資安與生產力的「代理式」創新。

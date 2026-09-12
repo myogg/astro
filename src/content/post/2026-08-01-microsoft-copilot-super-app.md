@@ -4,7 +4,6 @@ description: "微软正在开发一款 AI“超级应用”，将 Copilot 的聊
 dateFormatted: "Aug 1, 2026"
 tags: ["微软", "Copilot", "AI"]
 ---
-![IMG_20260801_210634_853.jpg](https://i.829259.xyz/api/rfile/IMG_20260801_210634_853.jpg)
 
 微软正在开发一款 AI“超级应用”，将 Copilot 的聊天、编程和智能代理功能集于一体。
 
