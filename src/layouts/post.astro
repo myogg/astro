@@ -45,9 +45,19 @@ const { frontmatter } = Astro.props;
               </svg>
             </button>
             <span
+              id="tts-label"
+              data-tts-idle
+              class="shrink-0 text-base font-medium text-neutral-900 dark:text-neutral-100 sm:text-lg"
+            >
+              听全文
+            </span>
+            <span
+              data-tts-idle
+              class="h-6 w-px shrink-0 bg-neutral-200 dark:bg-neutral-700"
+              aria-hidden="true"></span>
+            <span
               id="tts-time"
-              data-tts-extra
-              class="hidden text-base font-medium tabular-nums text-neutral-900 dark:text-neutral-100 sm:text-lg"
+              class="shrink-0 text-base font-medium tabular-nums text-neutral-900 dark:text-neutral-100 sm:text-lg"
             >
               0:00
             </span>
@@ -96,9 +106,8 @@ const { frontmatter } = Astro.props;
             </button>
             <button
               id="tts-share"
-              data-tts-extra
               type="button"
-              class="hidden ml-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-neutral-900 transition hover:text-neutral-500 dark:text-neutral-100 dark:hover:text-neutral-400"
+              class="ml-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-neutral-900 transition hover:text-neutral-500 dark:text-neutral-100 dark:hover:text-neutral-400"
               aria-label="分享本文"
             >
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="h-5 w-5">
@@ -142,6 +151,8 @@ const { frontmatter } = Astro.props;
     const TTS_TOKEN = 'tts100412';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
     const SKIP = 15;
+    // 合成前拿不到真实音频长度，按中文语速估算总时长
+    const CHARS_PER_SEC = 4.8;
 
     if (player && toggleBtn && articleContent) {
       const playIcon = `
@@ -178,6 +189,7 @@ const { frontmatter } = Astro.props;
       let started = false;
       let abortController = null;
       let speedIndex = 0;
+      let estimated = 0;
 
       const formatTime = (seconds) => {
         const total = Math.max(0, Math.floor(seconds || 0));
@@ -191,7 +203,10 @@ const { frontmatter } = Astro.props;
       };
 
       const renderTime = () => {
-        timeEl.textContent = formatTime(offsetOf(index) + (audio ? audio.currentTime : 0));
+        timeEl.textContent =
+          started || loading
+            ? formatTime(offsetOf(index) + (audio ? audio.currentTime : 0))
+            : formatTime(estimated);
       };
 
       const setStatus = (text) => {
@@ -200,10 +215,14 @@ const { frontmatter } = Astro.props;
         statusEl.hidden = !text;
       };
 
-      // 未开始播放时只露出播放按钮，其余控件在开播后出现
+      // 未开播时显示"听全文 | 估算总时长"，开播后换成进度和快进控件
+      const idleEls = player.querySelectorAll('[data-tts-idle]');
       const extras = player.querySelectorAll('[data-tts-extra]');
       const updateUI = () => {
-        for (const el of extras) el.classList.toggle('hidden', !loading && !started);
+        const idle = !loading && !started;
+        for (const el of idleEls) el.classList.toggle('hidden', !idle);
+        for (const el of extras) el.classList.toggle('hidden', idle);
+        renderTime();
         toggleBtn.innerHTML = loading ? spinnerIcon : playing ? pauseIcon : playIcon;
         const label = loading ? '加载中' : playing ? '暂停' : started ? '继续播放' : '听全文';
         toggleBtn.setAttribute('aria-label', label);
@@ -415,7 +434,9 @@ const { frontmatter } = Astro.props;
       shareBtn?.addEventListener('click', handleShare);
       window.addEventListener('beforeunload', stopAll);
 
-      if (!readableText()) player.hidden = true;
+      const initialText = readableText();
+      if (initialText) estimated = initialText.length / CHARS_PER_SEC;
+      else player.hidden = true;
       updateUI();
     } else if (player) {
       player.hidden = true;
