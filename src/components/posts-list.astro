@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 
-const { posts } = Astro.props as { posts: CollectionEntry<"post">[] };
+const { posts, showMoreTag = true } = Astro.props as { posts: CollectionEntry<"post">[]; showMoreTag?: boolean };
 ---
 
 <div class="z-50 flex flex-col items-stretch w-full gap-5 my-8">
@@ -30,8 +30,8 @@ const { posts } = Astro.props as { posts: CollectionEntry<"post">[] };
               {post.data.dateFormatted}
             </div>
             {postTags.length > 0 && (
-              <div class="flex gap-1.5">
-                {postTags.map((tagName: string) => (
+              <div class="flex gap-1.5 flex-wrap">
+                {postTags.slice(0, 3).map((tagName: string) => (
                   <a
                     href={`/tags/${tagName}`}
                     class="relative z-40 text-xs px-2 py-0.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
@@ -39,6 +39,14 @@ const { posts } = Astro.props as { posts: CollectionEntry<"post">[] };
                     {tagName}
                   </a>
                 ))}
+                {showMoreTag !== false && postTags.length > 3 && (
+                  <a
+                    href={`/post/${post.slug}`}
+                    class="relative z-40 text-xs px-2 py-0.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                  >
+                    +{postTags.length - 3}
+                  </a>
+                )}
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/main.astro";
 import PageHeading from "../../components/page-heading.astro";
+import PostsList from "../../components/posts-list.astro";
 
 export async function getStaticPaths() {
 	const allPosts = await getCollection("post");
@@ -36,22 +37,7 @@ const sortedPosts = posts.sort(
   <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
     <PageHeading title={tag} />
     <div class="flex flex-col gap-5 mt-8">
-      {sortedPosts.map((post) => (
-        <a
-          href={`/post/${post.slug}`}
-          class="group block p-6 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
-        >
-          <h2 class="text-base font-bold leading-tight tracking-tight sm:text-lg dark:text-neutral-100 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
-            {post.data.title}
-          </h2>
-          <p class="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-            {post.data.description}
-          </p>
-          <div class="mt-2 text-xs text-neutral-400 dark:text-neutral-500">
-            {post.data.dateFormatted}
-          </div>
-        </a>
-      ))}
+      <PostsList posts={sortedPosts} showMoreTag={false} />
     </div>
     <div class="mt-8">
       <a

@@ -64,11 +64,16 @@ const posts = allPosts
             <div class="text-xs text-neutral-400 dark:text-neutral-500">{post.dateFormatted}</div>
             {post.tags.length > 0 && (
               <div class="flex flex-wrap justify-end gap-1.5">
-                {post.tags.map((tag) => (
+                {post.tags.slice(0, 3).map((tag) => (
                   <span class="text-xs px-2 py-0.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400">
                     {tag}
                   </span>
                 ))}
+                {post.tags.length > 3 && (
+                  <span class="text-xs px-2 py-0.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400">
+                    +{post.tags.length - 3}
+                  </span>
+                )}
               </div>
             )}
           </div>
