@@ -1,0 +1,83 @@
+---
+import allComments from "../data/comments.json";
+
+const { issue } = Astro.props as { issue: number };
+
+const repo = "myogg/astro";
+const issueUrl = `https://github.com/${repo}/issues/${issue}`;
+const comments = (allComments as Record<string, Comment[]>)[String(issue)] ?? [];
+
+interface Comment {
+  id: number;
+  author: string;
+  authorUrl: string;
+  avatar: string;
+  date: string;
+  url: string;
+  body: string;
+}
+---
+
+<section class="not-prose mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-base font-bold tracking-tight dark:text-neutral-100">
+      {comments.length > 0 ? `${comments.length} 条评论` : "评论"}
+    </h2>
+    <a
+      href={issueUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-xs px-3 py-1.5 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-full text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-500 dark:hover:border-neutral-400 transition-colors"
+    >
+      在 GitHub 上评论
+    </a>
+  </div>
+
+  {comments.length === 0 ? (
+    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+      还没有评论。评论托管在 GitHub Issues，
+      <a href={issueUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-neutral-900 dark:hover:text-white">
+        去留下第一条
+      </a>
+      。
+    </p>
+  ) : (
+    <ul class="flex flex-col gap-5">
+      {comments.map((comment) => (
+        <li class="flex gap-3">
+          <img
+            src={comment.avatar}
+            alt=""
+            width="32"
+            height="32"
+            loading="lazy"
+            class="w-8 h-8 rounded-full shrink-0 bg-neutral-100 dark:bg-neutral-800"
+          />
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline gap-2 mb-1">
+              <a
+                href={comment.authorUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-medium text-neutral-800 dark:text-neutral-200 hover:underline"
+              >
+                {comment.author}
+              </a>
+              <a
+                href={comment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xs text-neutral-400 dark:text-neutral-500 hover:underline"
+              >
+                {comment.date}
+              </a>
+            </div>
+            <div class="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 whitespace-pre-line break-words">
+              {comment.body}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>

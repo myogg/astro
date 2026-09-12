@@ -8,6 +8,7 @@
  * - 带 draft / 草稿 标签的 Issue 视为草稿，不生成文件
  * - labels 转成 tags，created_at 转成 dateFormatted
  * - 正文末尾的 #话题标签 会被抽走并合并进 tags
+ * - Issue 的评论会写进 src/data/comments.json，文章页按纯文本渲染
  * - Issue 正文顶部可用 HTML 注释覆盖元数据：
  *     <!--
  *     slug: my-custom-slug
@@ -24,6 +25,7 @@ import process from "node:process";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const POST_DIR = path.join(ROOT, "src", "content", "post");
+const COMMENTS_FILE = path.join(ROOT, "src", "data", "comments.json");
 const MANIFEST = path.join(ROOT, "scripts", "issues-manifest.json");
 
 const REPO = process.env.GITHUB_REPOSITORY || "myogg/astro";
@@ -50,27 +52,60 @@ const MONTHS = [
 	"Dec",
 ];
 
-async function fetchAllIssues() {
+function apiHeaders() {
 	const headers = {
 		Accept: "application/vnd.github+json",
 		"X-GitHub-Api-Version": "2022-11-28",
 		"User-Agent": "astro-issue-sync",
 	};
 	if (TOKEN) headers.Authorization = `Bearer ${TOKEN}`;
+	return headers;
+}
 
-	const issues = [];
-	for (let page = 1; page <= 20; page++) {
-		const url = `https://api.github.com/repos/${OWNER}/${NAME}/issues?state=all&per_page=100&page=${page}`;
+/** 按页取完某个列表接口 */
+async function fetchPaged(pathAndQuery, maxPages = 20) {
+	const headers = apiHeaders();
+	const items = [];
+	for (let page = 1; page <= maxPages; page++) {
+		const sep = pathAndQuery.includes("?") ? "&" : "?";
+		const url = `https://api.github.com/repos/${OWNER}/${NAME}${pathAndQuery}${sep}per_page=100&page=${page}`;
 		const res = await fetch(url, { headers });
 		if (!res.ok) {
 			throw new Error(`GitHub API ${res.status}: ${await res.text()}`);
 		}
 		const batch = await res.json();
-		issues.push(...batch);
+		items.push(...batch);
 		if (batch.length < 100) break;
 	}
-	return issues;
+	return items;
 }
+
+function fetchAllIssues() {
+	return fetchPaged("/issues?state=all");
+}
+
+/**
+ * 取某个 Issue 的评论。
+ * 评论是陌生人能写的内容，这里只留纯文本字段，
+ * 渲染侧用 Astro 的 {} 表达式转义，绝不拼进 Markdown。
+ */
+async function fetchComments(issue) {
+	if (!issue.comments) return [];
+	const raw = await fetchPaged(`/issues/${issue.number}/comments`);
+	return raw
+		.filter((c) => c.user && c.user.type !== "Bot")
+		.map((c) => ({
+			id: c.id,
+			author: c.user.login,
+			authorUrl: c.user.html_url,
+			avatar: `${c.user.avatar_url}${c.user.avatar_url.includes("?") ? "&" : "?"}s=64`,
+			date: fileDate(c.created_at),
+			url: c.html_url,
+			body: (c.body || "").replace(/\r\n/g, "\n").trim(),
+		}))
+		.filter((c) => c.body);
+}
+
 
 /** 北京时间的 "Apr 10, 2026" */
 function formatDate(iso) {
@@ -211,11 +246,14 @@ async function main() {
 		? JSON.parse(fs.readFileSync(MANIFEST, "utf-8"))
 		: {};
 	const next = {};
+	const comments = {};
 	let created = 0;
 	let updated = 0;
 	let removed = 0;
+	let commentCount = 0;
 
 	fs.mkdirSync(POST_DIR, { recursive: true });
+	fs.mkdirSync(path.dirname(COMMENTS_FILE), { recursive: true });
 
 	for (const issue of issues) {
 		if (issue.pull_request) continue;
@@ -258,6 +296,12 @@ async function main() {
 		}
 
 		next[key] = { file, updatedAt: issue.updated_at };
+
+		const thread = await fetchComments(issue);
+		if (thread.length) {
+			comments[key] = thread;
+			commentCount += thread.length;
+		}
 	}
 
 	// Issue 被物理删除后，记账里的残留文件也要清掉
@@ -273,10 +317,15 @@ async function main() {
 	}
 
 	fs.writeFileSync(MANIFEST, `${JSON.stringify(next, null, 2)}\n`, "utf-8");
+	fs.writeFileSync(
+		COMMENTS_FILE,
+		`${JSON.stringify(comments, null, 2)}\n`,
+		"utf-8",
+	);
 	console.log(
 		`\n完成：新增 ${created}，更新 ${updated}，删除 ${removed}，共记账 ${
 			Object.keys(next).length
-		} 篇`,
+		} 篇，评论 ${commentCount} 条`,
 	);
 }
 
