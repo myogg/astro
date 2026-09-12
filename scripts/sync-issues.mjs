@@ -7,6 +7,7 @@
  * - open = 已发布，closed = 撤稿（对应的 md 文件会被删除）
  * - 带 draft / 草稿 标签的 Issue 视为草稿，不生成文件
  * - labels 转成 tags，created_at 转成 dateFormatted
+ * - 正文末尾的 #话题标签 会被抽走并合并进 tags
  * - Issue 正文顶部可用 HTML 注释覆盖元数据：
  *     <!--
  *     slug: my-custom-slug
@@ -132,15 +133,43 @@ function firstParagraph(body) {
 	return "";
 }
 
+/**
+ * 抽走正文末尾的 #话题标签，转成 tags。
+ * 只认文末连续的一串，且 # 前面必须是行首、空白或中文标点，
+ * 这样 URL 里的 `#anchor`、代码里的 `C#编程` 都不会被误伤。
+ * 纯数字的 #123 视为 Issue 引用，不当标签。
+ */
+function extractTrailingHashtags(body) {
+	const TAG = "#[\\p{Script=Han}\\p{L}_][\\p{Script=Han}\\p{L}\\p{N}_]*";
+	const match = body.match(new RegExp(`(^|[\\s。，、！？；：）)\\]】」』…—])((?:${TAG}\\s*)+)$`, "u"));
+	if (!match) return { body, hashtags: [] };
+
+	const kept = body.slice(0, match.index + match[1].length).trimEnd();
+	if (!kept) return { body, hashtags: [] }; // 全文只有标签，不动
+
+	const hashtags = match[2].match(new RegExp(TAG, "gu")).map((t) => t.slice(1));
+	return { body: kept, hashtags };
+}
+
 function buildPost(issue) {
 	const { meta, body } = extractMeta((issue.body || "").replace(/\r\n/g, "\n"));
 
 	// 布局层已经渲染 h1，正文里的一级标题要去掉
-	const content = body.replace(/^\s*#\s+.*\r?\n+/, "").trim();
+	const stripped = body.replace(/^\s*#\s+.*\r?\n+/, "").trim();
+	const { body: content, hashtags } = extractTrailingHashtags(stripped);
 
-	const tags = issue.labels
+	const labelTags = issue.labels
 		.map((l) => (typeof l === "string" ? l : l.name))
 		.filter((n) => n && !DRAFT_LABELS.has(n.toLowerCase()));
+
+	const tags = [];
+	const seen = new Set();
+	for (const tag of [...labelTags, ...hashtags]) {
+		const key = tag.toLowerCase();
+		if (seen.has(key)) continue;
+		seen.add(key);
+		tags.push(tag);
+	}
 
 	const frontmatter = [
 		"---",
