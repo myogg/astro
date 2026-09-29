@@ -40,6 +40,6 @@ jobs:
             echo "没有内容变化，跳过提交"
           else
             git commit -m "chore(sync): 同步 GitHub Issues 到文章"
-git pull --rebase origin main
-git push origin main
+            git pull --rebase origin main
+            git push origin main
           fi
