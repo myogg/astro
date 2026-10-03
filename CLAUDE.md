@@ -103,7 +103,7 @@ There is no external search service and no Pagefind integration in the app code.
 `src/layouts/post.astro` contains a significant inline TTS player that reads article content aloud:
 
 - Splits article text into ~300-char chunks at sentence boundaries (`。！？\n`)
-- Calls `https://tts.134688.xyz/api/synthesis` with `voiceName=zh-CN-XiaoxiaoNeural` and a hardcoded `token=tts100412`
+- Calls `https://tts.100412.xyz/api/synthesis` with `voiceName=zh-CN-XiaoxiaoNeural` and a hardcoded `token=ra_haivjIMNVML8GHXBuWqWDNQK`
 - Plays the first chunk immediately while the rest continue synthesizing in the background
 - A stop button (or `beforeunload`) aborts the current `AbortController` and stops all playback
 

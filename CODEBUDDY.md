@@ -131,7 +131,7 @@ issue: 12                      # 可选，来自 GitHub Issue 的文章才有
 
 - 两个状态：未开播 `▶ 听全文 │ 估算总时长 ⋯ 🔗 分享`；播放中 `⏸ 已播时长 │ ↺15 ↻15 1x ⋯ 🔗 分享`。分隔线做了两个各自切换，因为两种布局里它位置不同。
 - 显示/隐藏用 Tailwind 的 `hidden` **类**而非 HTML `hidden` 属性 —— 带 `flex` 的元素会盖掉 `[hidden]` 的 `display:none`。产物 CSS 里 `.hidden` 排在 `.flex` 之后，所以类的写法压得住。
-- 正文按 300 字切段（在 `。！？\n` 处断），调 `https://tts.134688.xyz/api/synthesis`（`zh-CN-XiaoxiaoNeural`，token 硬编码在脚本里），blob 缓存 + 预取下一段，支持跨分段 ±15 秒 seek 和 1x~2x 五档倍速。
+- 正文按 300 字切段（在 `。！？\n` 处断），调 `https://tts.100412.xyz/api/synthesis`（`zh-CN-XiaoxiaoNeural`，token 硬编码在脚本里），blob 缓存 + 预取下一段，支持跨分段 ±15 秒 seek 和 1x~2x 五档倍速。
 - 总时长是**估算值**（`CHARS_PER_SEC = 4.8`），因为音频要点播放才逐段合成，事前拿不到真实长度。
 - `readableText()` 只取 `#article-content` 直接子元素中**不含 `not-prose` class** 的部分。标签块和评论区都带 `not-prose`，靠这个避免被朗读。**新增文章底部区块时记得加 `not-prose`**，否则会被念出来。
 - 找不到 `#article-content` 时整个播放器隐藏。
