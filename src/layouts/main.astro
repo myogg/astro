@@ -2,7 +2,7 @@
 import Footer from "../components/footer.astro";
 import Header from "../components/header.astro";
 import SquareLines from "../components/square-lines.astro";
-const { title, description = "姜小小 — 生活感悟与技术探索" } = Astro.props;
+const { title, description = "姜小小 — 生活感悟与技术探索", noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -12,6 +12,7 @@ const { title, description = "姜小小 — 生活感悟与技术探索" } = Ast
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} | 姜小小</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={`${title} | 姜小小`} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
