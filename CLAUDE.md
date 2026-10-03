@@ -104,7 +104,7 @@ There is no external search service and no Pagefind integration in the app code.
 
 - Splits article text into ~300-char chunks at sentence boundaries (`。！？\n`)
 - Calls the same-origin `GET /api/tts` with `voiceName=zh-CN-XiaoxiaoNeural`; the token is **not** in the front end
-- `functions/api/tts.ts` (Cloudflare Pages Function) appends `env.TTS_TOKEN` server-side and forwards to `env.TTS_API` (defaults to `https://tts.134688.xyz`) — the API host and token live in the Pages project's environment variables, so neither the page source nor this repo holds the secret
+- `functions/api/tts.ts` (Cloudflare Pages Function) appends `env.TTS_API_TOKEN` server-side and forwards to `env.TTS_API_URL` (defaults to `https://tts.134688.xyz`) — the API host and token live in the Pages project's environment variables, so neither the page source nor this repo holds the secret
 - Plays the first chunk immediately while the rest continue synthesizing in the background
 - A stop button (or `beforeunload`) aborts the current `AbortController` and stops all playback
 
@@ -173,7 +173,7 @@ The `public/assets/` directory contains:
 ## Build and deployment assumptions
 
 - `astro.config.mjs` sets `site` to `https://134688.xyz`; feeds and canonical absolute URLs depend on this.
-- `functions/api/tts.ts` is a Cloudflare Pages Function, not part of the Astro build: `astro dev` and `astro preview` do not serve `/api/tts`, so read-aloud only works on a deployed build (or under `wrangler pages dev`). It reads `TTS_API` / `TTS_TOKEN` from the Pages project's environment variables.
+- `functions/api/tts.ts` is a Cloudflare Pages Function, not part of the Astro build: `astro dev` and `astro preview` do not serve `/api/tts`, so read-aloud only works on a deployed build (or under `wrangler pages dev`). It reads `TTS_API_URL` / `TTS_API_TOKEN` from the Pages project's environment variables.
 - `tsconfig.json` excludes `dist`, so generated output should not be pulled into diagnostics.
 - `dist/` is build output; do not edit it directly.
 
