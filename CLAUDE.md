@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository is a fully static (SSG) Astro 4 personal blog/portfolio site built from the `astro-aria` template and then customized for a Chinese-language blog. There is no SSR or hybrid mode — all pages are pre-rendered at build time.
+This repository is a fully static (SSG) Astro 4 personal blog/portfolio site built from the `astro-aria` template and then customized for a Chinese-language blog. There is no SSR or hybrid mode — all pages are pre-rendered at build time. The one piece of server-side code is the Cloudflare Pages Function at `functions/api/tts.ts` (the read-aloud proxy), which runs at the edge alongside the static assets.
 
 The site is content-driven:
 - blog posts live in `src/content/post/*.md`
@@ -103,7 +103,8 @@ There is no external search service and no Pagefind integration in the app code.
 `src/layouts/post.astro` contains a significant inline TTS player that reads article content aloud:
 
 - Splits article text into ~300-char chunks at sentence boundaries (`。！？\n`)
-- Calls `https://tts.100412.xyz/api/synthesis` with `voiceName=zh-CN-XiaoxiaoNeural` and a hardcoded `token=ra_haivjIMNVML8GHXBuWqWDNQK`
+- Calls the same-origin `GET /api/tts` with `voiceName=zh-CN-XiaoxiaoNeural`; the token is **not** in the front end
+- `functions/api/tts.ts` (Cloudflare Pages Function) appends `env.TTS_TOKEN` server-side and forwards to `env.TTS_API` (defaults to `https://tts.134688.xyz`) — the API host and token live in the Pages project's environment variables, so neither the page source nor this repo holds the secret
 - Plays the first chunk immediately while the rest continue synthesizing in the background
 - A stop button (or `beforeunload`) aborts the current `AbortController` and stops all playback
 
@@ -172,6 +173,7 @@ The `public/assets/` directory contains:
 ## Build and deployment assumptions
 
 - `astro.config.mjs` sets `site` to `https://134688.xyz`; feeds and canonical absolute URLs depend on this.
+- `functions/api/tts.ts` is a Cloudflare Pages Function, not part of the Astro build: `astro dev` and `astro preview` do not serve `/api/tts`, so read-aloud only works on a deployed build (or under `wrangler pages dev`). It reads `TTS_API` / `TTS_TOKEN` from the Pages project's environment variables.
 - `tsconfig.json` excludes `dist`, so generated output should not be pulled into diagnostics.
 - `dist/` is build output; do not edit it directly.
 

@@ -147,8 +147,8 @@ const { frontmatter } = Astro.props;
     const statusEl = document.getElementById('tts-status');
     const articleContent = document.getElementById('article-content');
 
-    const TTS_API = 'https://tts.100412.xyz';
-    const TTS_TOKEN = 'ra_haivjIMNVML8GHXBuWqWDNQK';
+    // token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
+    const TTS_ENDPOINT = '/api/tts';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
     const SKIP = 15;
     // 合成前拿不到真实音频长度，按中文语速估算总时长
@@ -254,9 +254,8 @@ const { frontmatter } = Astro.props;
         const params = new URLSearchParams({
           text: chunks[i],
           voiceName: 'zh-CN-XiaoxiaoNeural',
-          token: TTS_TOKEN,
         });
-        const res = await fetch(`${TTS_API}/api/synthesis?${params}`, {
+        const res = await fetch(`${TTS_ENDPOINT}?${params}`, {
           signal: abortController.signal,
         });
         if (!res.ok) throw new Error('TTS API error');
