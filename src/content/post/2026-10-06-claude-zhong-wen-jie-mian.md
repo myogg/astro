@@ -1,6 +1,7 @@
 ---
 title: "Claude 现已支持简体中文与繁体中文界面"
 date: 2026-10-06 08:00
+description: "Claude 的 Web 端与桌面客户端现已支持简体 / 繁体中文切换，官网的 Claude Code、Platform、Support 页面也一并完成中文化。"
 tags: ["Claude", "Anthropic", "中文支持", "产品更新"]
 ---
 

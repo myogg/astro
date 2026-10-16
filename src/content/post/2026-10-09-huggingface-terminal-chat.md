@@ -1,6 +1,7 @@
 ---
 title: "我试了试 Hugging Face 的终端聊天：不值得专门折腾"
 date: 2026-10-09 08:00
+description: "Hugging Face 的终端聊天不用配置、不用 API Key，SSH 连上就能聊。实测功能有限、响应偏慢，不值得专门折腾。"
 tags:
   - AI
   - 工具

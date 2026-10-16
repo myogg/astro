@@ -1,6 +1,7 @@
 ---
 title: "字体的心路历程"
 date: 2026-10-10
+description: "拆解博客现用的字体加载方案：preconnect、link stylesheet、font-display: swap、unicode-range 子集。方式已近乎教科书，真正贵的是字体文件本身太大。"
 tags: ["Astro", "性能优化", "字体"]
 ---
 

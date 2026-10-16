@@ -4,20 +4,6 @@
 
 /* Add Your Custom CSS Here */
 
-/* 全站字体：正文与 UI（导航、按钮、页脚等）用霞鹜文楷，标题保留黑体 */
-body {
-  font-family: "LXGW WenKai", "Noto Serif SC", "Source Han Serif SC", "STSong", Georgia, "Times New Roman", serif;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-}
-
 .prose img {
   border-radius: 30px;
 }
