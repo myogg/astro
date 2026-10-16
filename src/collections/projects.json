@@ -16,5 +16,23 @@
 		"description": "Astro",
 		"image": "https://opengraph.githubassets.com/1/myogg/astro",
 		"url": "https://github.com/myogg/astro"
+	},
+	{
+		"name": "Telegram Writer",
+		"description": "Telegram Writer",
+		"image": "https://github.html.zone/myogg/telegram-writer",
+		"url": "https://github.com/myogg/telegram-writer"
+	},
+	{
+		"name": "Astro T9Tio",
+		"description": "Astro T9Tio",
+		"image": "https://github.html.zone/myogg/astro-t9tio",
+		"url": "https://github.com/myogg/astro-t9tio"
+	},
+	{
+		"name": "Rss-tg",
+		"description": "Rss-tg",
+		"image": "https://github.html.zone/meektion/Rss-tg",
+		"url": "https://github.com/meektion/Rss-tg"
 	}
 ]
