@@ -1,23 +1,5 @@
 [
 	{
-		"name": "TimeAPK",
-		"description": "TimeAPK",
-		"image": "/assets/images/projects/timeapk.png",
-		"url": "https://github.com/myogg/timeapk"
-	},
-	{
-		"name": "IPTV",
-		"description": "IPTV",
-		"image": "https://opengraph.githubassets.com/1/myogg/iptv",
-		"url": "https://github.com/myogg/iptv"
-	},
-	{
-		"name": "Astro",
-		"description": "Astro",
-		"image": "https://opengraph.githubassets.com/1/myogg/astro",
-		"url": "https://github.com/myogg/astro"
-	},
-	{
 		"name": "Telegram Writer",
 		"description": "Telegram Writer",
 		"image": "https://github.html.zone/myogg/telegram-writer",
