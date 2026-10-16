@@ -150,6 +150,10 @@ const { frontmatter } = Astro.props;
 
     // token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
     const TTS_ENDPOINT = '/api/tts';
+    const VOICE = 'zh-CN-XiaoxiaoNeural';
+    const PITCH = '-20%';
+    const TTS_RATE = '5%';
+    const TTS_FORMAT = 'audio-24khz-48kbitrate-mono-mp3';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
     const SKIP = 15;
     // 合成前拿不到真实音频长度，按中文语速估算总时长
@@ -254,7 +258,10 @@ const { frontmatter } = Astro.props;
         if (blobs.has(i)) return blobs.get(i);
         const params = new URLSearchParams({
           text: chunks[i],
-          voiceName: 'zh-CN-XiaoxiaoNeural',
+          voiceName: VOICE,
+          pitch: PITCH,
+          rate: TTS_RATE,
+          format: TTS_FORMAT,
         });
         const res = await fetch(`${TTS_ENDPOINT}?${params}`, {
           signal: abortController.signal,
