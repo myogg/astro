@@ -1,7 +1,7 @@
 ---
 title: "2026 New gTLD 域名申请近况"
+date: 2026-09-01 08:00
 description: "2026年新通用顶级域名申请落幕，Telegram、西游记公司以及国内大厂的申请情况。"
-dateFormatted: "Sep 1, 2026"
 tags: ["域名", "互联网", "New gTLD"]
 ---
 

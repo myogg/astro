@@ -1,7 +1,7 @@
 ---
 title: "Telegram 扩展文本编辑器：Markdown 取代 AI 编辑器，消息输入框变身全屏文章编辑器"
+date: 2026-06-27 08:00
 description: "iOS 版 Telegram 12.9.0 Beta 中 Markdown 编辑器取代 AI 编辑器按钮，消息输入框可扩展为全屏编辑器，支持标题、表格、LaTeX、待办事项等富文本格式。"
-dateFormatted: "Jun 27, 2026"
 tags: ["Telegram", "更新"]
 ---
 Telegram 中的扩展文本编辑器

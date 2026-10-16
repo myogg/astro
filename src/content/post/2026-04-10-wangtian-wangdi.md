@@ -1,9 +1,7 @@
 ---
 title: "忘天忘地忘不了你"
+date: 2026-04-10 08:21
 description: "个个都说见过花开就好，管它花落谁家，可我见过花开，未看见花结果，又怎么会甘心花落别家。"
-dateFormatted: "Apr 10, 2026"
 ---
 
 个个都说见过花开就好，管它花落谁家，可我见过花开，未看见花结果，又怎么会甘心花落别家…曾经的最美，现在就是放心底，忘天忘地忘不了。
-
-<audio src="https://i.829259.xyz/api/cfile/CQACAgUAAx0ER6IxDQACTsBp1wABYaTJ_Y7xQTakpU_IMe4bw2MAAnUeAALzBblWhAABqJGiNiQWOwQ" controls></audio>

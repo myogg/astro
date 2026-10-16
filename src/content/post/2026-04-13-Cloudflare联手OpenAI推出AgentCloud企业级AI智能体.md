@@ -1,7 +1,7 @@
 ---
 title: "Cloudflare 联手 OpenAI 推出 Agent Cloud：企业级 AI 智能体来了"
+date: 2026-04-13 08:00
 description: "Cloudflare 宣布在其 Agent Cloud 平台中接入 OpenAI 的前沿模型，包括 GPT-5.4 和 Codex，数百万企业客户可直接在边缘网络部署 AI 智能体。"
-dateFormatted: "Apr 13, 2026"
 tags: ["AI", "OpenAI"]
 ---
 

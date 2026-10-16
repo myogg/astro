@@ -2,27 +2,23 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/main.astro";
 import PageHeading from "../components/page-heading.astro";
+import { formatDisplayDate } from "../utils/date";
 
-const allPosts = await getCollection("post");
-
-function parseDate(dateStr: string) {
-	const [month, day, year] = dateStr.split(" ");
-	return new Date(`${month} ${parseInt(day)}, ${year}`);
-}
+const allPosts = await getCollection("post", ({ data }) => !data.draft);
 
 const posts = allPosts
 	.map((post) => ({
 		title: post.data.title,
-		description: post.data.description,
-		dateFormatted: post.data.dateFormatted,
+		description: post.data.description || "",
+		dateDisplay: formatDisplayDate(post.data.date),
 		tags: post.data.tags || [],
 		slug: post.slug,
-		searchText: [post.data.title, post.data.description, ...(post.data.tags || [])]
+		searchText: [post.data.title, post.data.description || "", ...(post.data.tags || [])]
 			.join(" ")
 			.toLowerCase(),
-		date: parseDate(post.data.dateFormatted).getTime(),
+		ts: post.data.date.getTime(),
 	}))
-	.sort((a, b) => b.date - a.date);
+	.sort((a, b) => b.ts - a.ts);
 ---
 
 <Layout title="搜索" description="搜索文章标题、描述和标签">
@@ -61,7 +57,7 @@ const posts = allPosts
             {post.description}
           </p>
           <div class="flex items-center justify-between mt-3 gap-4">
-            <div class="text-xs text-neutral-400 dark:text-neutral-500">{post.dateFormatted}</div>
+            <div class="text-xs text-neutral-400 dark:text-neutral-500">{post.dateDisplay}</div>
             {post.tags.length > 0 && (
               <div class="flex flex-wrap justify-end gap-1.5">
                 {post.tags.slice(0, 3).map((tag) => (

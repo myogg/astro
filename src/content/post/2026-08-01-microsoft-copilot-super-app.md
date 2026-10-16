@@ -1,7 +1,7 @@
 ---
 title: "微软确认 Copilot“超级应用”将于今年上线"
+date: 2026-08-01 08:00
 description: "微软正在开发一款 AI“超级应用”，将 Copilot 的聊天、编程和智能代理功能集于一体，计划今年同时面向消费者和商业用户推出。"
-dateFormatted: "Aug 1, 2026"
 tags: ["微软", "Copilot", "AI"]
 ---
 

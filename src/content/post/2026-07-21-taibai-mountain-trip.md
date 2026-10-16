@@ -1,7 +1,7 @@
 ---
 title: "太白山一日游记：一日历四季"
+date: 2026-07-21 08:00
 description: "晴日登太白，云海接天，风雪骤至。一日之间历尽春夏秋冬，一步之遥看遍山川日月。"
-dateFormatted: "Jul 21, 2026"
 tags: ["游记", "太白山", "秦岭"]
 ---
 
@@ -16,8 +16,6 @@ tags: ["游记", "太白山", "秦岭"]
 缆车穿云而上，不过一刻钟，已入另一重天地。
 
 云雾翻涌如海，山脊时隐时现，似游龙行于天际。气温骤降，凉意浸骨，草木渐黄，秋色满山。游人纷纷添衣，方觉已至“天圆地方”。
-
-<video src="https://i.829259.xyz/api/cfile/BAACAgUAAx0ER6IxDQACTtlqXtxsB5xvxFBcoJe5PZ7Lgd8bOwACNyAAArdM-Val5Pj8PESxLz0E" controls style="max-width: 100%; height: auto;"></video>
 
 循汤峪古道而上，林荫蔽日，溪声潺潺。山花烂漫，野芳幽香，鸟鸣深树，恍若三月江南。
 

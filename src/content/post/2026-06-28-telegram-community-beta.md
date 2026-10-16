@@ -1,7 +1,7 @@
 ---
 title: "Telegram Android 12.9 Beta 测试社区功能：群组可聚合为社区"
+date: 2026-06-28 08:00
 description: "Telegram Android 12.9 Beta 版测试社区功能，允许将多个群组围绕同一主题聚合为社区，支持合并为单一入口及隐藏对话，目前仅限群组加入。"
-dateFormatted: "Jun 28, 2026"
 tags: ["Telegram", "社区"]
 ---
 

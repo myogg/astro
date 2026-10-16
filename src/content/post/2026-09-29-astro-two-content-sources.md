@@ -1,7 +1,7 @@
 ---
 title: "让 Astro 同时拥有两个发文源"
+date: 2026-09-29 08:00
 description: "自己写 Markdown 和 GitHub Issues 两套发文系统各自独立，最后汇合到同一个仓库。真正麻烦的不是 Astro，而是 Git。"
-dateFormatted: "Sep 29, 2026"
 tags: ["Astro", "GitHub", "Cloudflare", "博客"]
 ---
 

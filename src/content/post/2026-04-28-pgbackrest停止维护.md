@@ -1,7 +1,7 @@
 ---
 title: "pgBackRest 作者宣布停止维护该项目"
+date: 2026-04-28 08:01
 description: "PostgreSQL 知名备份恢复工具 pgBackRest 的维护者 David Steele 正式宣布项目存档停止维护，因被 Snowflake 收购后新东家无意资助。"
-dateFormatted: "Apr 28, 2026"
 tags: ["PostgreSQL", "pgBackRest", "开源", "数据库", "备份工具"]
 ---
 

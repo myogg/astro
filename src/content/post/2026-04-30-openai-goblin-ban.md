@@ -1,7 +1,7 @@
 ---
 title: "OpenAI 明令禁止 AI 提及哥布林和鸽子？原因笑死"
+date: 2026-04-30 08:00
 description: "OpenAI 在最新 Codex 和 GPT-5.5 系统指令中加入硬性禁令：严禁提及哥布林、小精灵、巨魔、浣熊、鸽子等奇幻生物和动物，重复强调两次。原因竟是 AI 乱用“哥布林”当语气词。"
-dateFormatted: "Apr 30, 2026"
 tags: ["OpenAI", "GPT-5.5", "Codex", "AI", "趣闻"]
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "每月20美元的技术栈，如何撑起多家月入1万美元的公司"
+date: 2026-04-13 08:02
 description: "拒绝融资、不依赖昂贵云服务，Steve Hanov 分享他用 VPS、Go、SQLite 和本地 AI 同时运营多个盈利产品的极简架构。"
-dateFormatted: "Apr 13, 2026"
 tags: ["创业", "技术架构"]
 ---
 

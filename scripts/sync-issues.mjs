@@ -6,14 +6,14 @@
  * - 只处理仓库所有者（或 ALLOWED_AUTHORS）创建的 Issue，PR 一律跳过
  * - open = 已发布，closed = 撤稿（对应的 md 文件会被删除）
  * - 带 draft / 草稿 标签的 Issue 视为草稿，不生成文件
- * - labels 转成 tags，created_at 转成 dateFormatted
+ * - labels 转成 tags，created_at 转成 date（"2026-04-10 08:00"）
  * - 正文末尾的 #话题标签 会被抽走并合并进 tags
  * - Issue 的评论会写进 src/data/comments.json，文章页按纯文本渲染
  * - Issue 正文顶部可用 HTML 注释覆盖元数据：
  *     <!--
  *     slug: my-custom-slug
  *     description: 自定义摘要
- *     date: Apr 10, 2026
+ *     date: 2026-04-10 08:00
  *     -->
  *
  * 生成的文件由 scripts/issues-manifest.json 记账，手写的 md 不会被碰。
@@ -107,10 +107,14 @@ async function fetchComments(issue) {
 }
 
 
-/** 北京时间的 "Apr 10, 2026" */
-function formatDate(iso) {
+/** 北京时间的 "2026-04-10 08:00"，与 astro-t9tio 的 frontmatter 写法一致 */
+function formatDateTime(iso) {
 	const d = new Date(new Date(iso).getTime() + 8 * 3600 * 1000);
-	return `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+	const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+	const dd = String(d.getUTCDate()).padStart(2, "0");
+	const hh = String(d.getUTCHours()).padStart(2, "0");
+	const mi = String(d.getUTCMinutes()).padStart(2, "0");
+	return `${d.getUTCFullYear()}-${mm}-${dd} ${hh}:${mi}`;
 }
 
 /** 北京时间的 "2026-04-10" */
@@ -119,6 +123,34 @@ function fileDate(iso) {
 	const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
 	const dd = String(d.getUTCDate()).padStart(2, "0");
 	return `${d.getUTCFullYear()}-${mm}-${dd}`;
+}
+
+/**
+ * 把 `<!-- date: xxx -->` 里手写的日期归一化成 `YYYY-MM-DD HH:mm`。
+ * 接受 `2026-04-10`、`2026-04-10 08:00`、`Apr 10, 2026` 等写法。
+ */
+function normalizeMetaDate(value) {
+	const text = String(value).trim();
+
+	// Apr 10, 2026 / April 10, 2026
+	const en = text.match(/^([A-Za-z]{3,})\s+(\d{1,2}),?\s+(\d{4})$/);
+	if (en) {
+		const idx = MONTHS.findIndex((m) => m.toLowerCase() === en[1].slice(0, 3).toLowerCase());
+		if (idx >= 0) {
+			const mm = String(idx + 1).padStart(2, "0");
+			const dd = String(Number(en[2])).padStart(2, "0");
+			return `${en[3]}-${mm}-${dd} 08:00`;
+		}
+	}
+
+	// 2026-04-10 [08:00]
+	const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/);
+	if (iso) {
+		const [, y, m, d, hh, mi] = iso;
+		return `${y}-${m}-${d} ${hh && mi ? `${hh}:${mi}` : "08:00"}`;
+	}
+
+	return formatDateTime(new Date(text).toISOString());
 }
 
 function slugify(text) {
@@ -206,22 +238,26 @@ function buildPost(issue) {
 		tags.push(tag);
 	}
 
+	// 日期统一成 "2026-04-10 08:00"；meta.date 允许手写覆盖
+	const dateText = meta.date
+		? normalizeMetaDate(meta.date)
+		: formatDateTime(issue.created_at);
+
 	const frontmatter = [
 		"---",
 		`title: ${yamlString(issue.title)}`,
+		`date: ${yamlString(dateText)}`,
 		`description: ${yamlString(
 			meta.description || firstParagraph(content) || issue.title,
 		)}`,
-		`dateFormatted: ${yamlString(meta.date || formatDate(issue.created_at))}`,
 		`tags: [${tags.map(yamlString).join(", ")}]`,
 		`issue: ${issue.number}`,
 		"---",
 	].join("\n");
 
 	const slug = slugify(meta.slug || issue.title) || `issue-${issue.number}`;
-	const file = `${fileDate(
-		meta.date ? new Date(meta.date).toISOString() : issue.created_at,
-	)}-${slug}.md`;
+	// 用同一份 dateText 的前 10 位做文件名前缀，保证与 frontmatter 一致
+	const file = `${dateText.slice(0, 10)}-${slug}.md`;
 
 	return { file, text: `${frontmatter}\n\n${content}\n` };
 }

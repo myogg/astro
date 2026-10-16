@@ -67,28 +67,36 @@ Astro 4 纯静态站点（个人博客「北方的博客」），无 SSR/hybrid 
 
 ```yaml
 ---
-title: "标题"                  # 必填
-description: "SEO 与列表摘要"    # 必填
-dateFormatted: "Apr 10, 2026"  # 必填，格式固定 "Mon DD, YYYY"
-tags: [tag1, tag2]             # 可选，默认 []
-issue: 12                      # 可选，来自 GitHub Issue 的文章才有
+title: "标题"                   # 必填
+date: 2026-04-10 08:08          # 必填，也接受 2026-04-10 或 Hugo 风格的 pubDate
+description: "SEO 与列表摘要"    # 可选
+author: "作者"                  # 可选
+tags: [tag1, tag2]              # 可选，默认 []，支持多行数组写法
+categories: []                  # 可选，默认 []
+issue: 12                       # 可选，来自 GitHub Issue 的文章才有
+draft: false                    # 可选，true 则不参与构建与列表
 ---
 ```
 
 硬性规则：
 - **不要加 `layout` 字段** —— 布局由 `post/[slug].astro` 施加，加了会导致标题渲染两次。
 - **不要在正文里写 `# 标题`** —— `post.astro` 已把 `frontmatter.title` 渲染成 h1。
-- **不要用 `date` 字段**，schema 只认 `dateFormatted`。
-- 文件名 `YYYY-MM-DD-slug.md`（Jekyll 惯例），文件名里的日期与 `dateFormatted` 相互独立。
+- 文件名 `YYYY-MM-DD-slug.md`（Jekyll 惯例），文件名里的日期与 `date` 字段相互独立。
 - 文件名避开冒号、引号等特殊字符，会破坏 YAML 解析。
 
-### 日期解析没有集中化（重要坑）
+> 注意：**旧的 `dateFormatted: "Apr 10, 2026"` 写法已废弃**（2026-10 从 astro-t9tio 统一过来）。
+> 展示用的 `"Apr 10, 2026"` 字符串改由 `src/utils/date.ts` 的 `formatDisplayDate()` 在渲染时生成，
+> frontmatter 里只存机器可排序的 `date`。
 
-把 `dateFormatted` 按空格拆成「月 日 年」的逻辑在 **7 个文件**里各写了一遍：
+### 日期已集中化
 
-`src/pages/post/[slug].astro`、`src/pages/posts/index.astro`、`src/pages/posts/[page].astro`、`src/pages/tags/[tag].astro`、`src/pages/search.astro`、`src/pages/rss.xml.ts`、`src/components/posts-loop.astro`
+日期工具在 `src/utils/date.ts`：
 
-没有共享日期工具。**一旦改日期格式，这 7 处都要同步改。**
+- `formatDisplayDate(date)` → `"Apr 10, 2026"`（列表、文章页、搜索页展示）
+- `formatISODate(date)` → `"2026-04-10"`
+- `byDateDesc(a, b)` → 所有列表/归档/RSS 共用的倒序比较器
+
+原先「按空格拆 `dateFormatted`」的重复逻辑已从 7 个文件里全部删除，改格式只需动这一个文件。
 
 ### 路由
 

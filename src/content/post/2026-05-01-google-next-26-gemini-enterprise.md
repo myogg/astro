@@ -1,7 +1,7 @@
 ---
 title: "Google Next '26 發表 Gemini Enterprise 平台，推動代理式企業轉型"
+date: 2026-05-01 08:01
 description: "Google Cloud 於 Next '26 大會推出全新統一 AI 技術堆疊、第八代 TPU，以及專為代理式時代設計的 Gemini Enterprise 平台，協助企業轉型為代理式企業。"
-dateFormatted: "May 1, 2026"
 tags: ["Google Cloud", "AI代理"]
 ---
 

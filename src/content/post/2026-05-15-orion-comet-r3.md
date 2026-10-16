@@ -1,7 +1,7 @@
 ---
 title: "R3 PanSTARRS：猎户座中的彗星"
+date: 2026-05-15 08:00
 description: "猎户座彗星C/2025 R3掠过猎户座星空，拍摄于新西兰山脉，画面包含猎户座星云与巴纳德环。"
-dateFormatted: "May 15, 2026"
 tags: ["天文", "星空"]
 ---
 

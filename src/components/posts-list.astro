@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { formatDisplayDate } from "../utils/date";
 
 const { posts, showMoreTag = true } = Astro.props as { posts: CollectionEntry<"post">[]; showMoreTag?: boolean };
 ---
@@ -27,7 +28,7 @@ const { posts, showMoreTag = true } = Astro.props as { posts: CollectionEntry<"p
           </p>
           <div class="flex items-center justify-between mt-2.5">
             <div class="text-xs font-medium text-neutral-800 dark:text-neutral-300">
-              {post.data.dateFormatted}
+              {formatDisplayDate(post.data.date)}
             </div>
             {postTags.length > 0 && (
               <div class="flex gap-1.5 flex-wrap">

@@ -1,5 +1,6 @@
 ---
 import Layout from "./main.astro";
+import { formatDisplayDate } from "../utils/date";
 const { frontmatter } = Astro.props;
 ---
 
@@ -27,7 +28,7 @@ const { frontmatter } = Astro.props;
         <time
           class="block text-sm text-neutral-500 dark:text-neutral-400 mb-5"
         >
-          {frontmatter.dateFormatted}
+          {formatDisplayDate(frontmatter.date)}
         </time>
         <div
           id="tts-player"

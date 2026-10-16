@@ -1,12 +1,9 @@
 ---
 title: "水泡千万别挑破！让它自己待着好得快"
+date: 2026-04-11 08:01
 description: "手痒想挑水泡？忍住！那层皮是你自带的创可贴。"
-date: 2026-04-11T10:30:00+08:00
-dateFormatted: "Apr 11, 2026"
 tags: ["科普", "健康", "急救常识"]
 ---
-
-<video src="https://i.829259.xyz/api/cfile/BAACAgUAAx0ER6IxDQACTsFp2jcaKQlS-TDGx3xvEXVs3OOCbAACER8AAifl0VbALmGqYERp4jsE" controls style="max-width: 100%; height: auto;"></video>
 
 看到水泡是不是手痒想挑破？**千万忍住！**
 

@@ -1,7 +1,7 @@
 ---
 title: "XChat 来了：不用手机号、内置 Grok，𝕏 的免费加密通讯工具开放预约"
+date: 2026-04-13 08:01
 description: "𝕏 旗下 XChat 将于 4 月 17 日上线，无需手机号注册、端对端加密、内置 Grok AI，中国大陆区 App Store 同样可预约。"
-dateFormatted: "Apr 13, 2026"
 tags: ["社交", "加密通讯"]
 ---
 

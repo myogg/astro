@@ -37,11 +37,11 @@ Notes:
 
 Posts are Astro content collection entries loaded with `getCollection("post")`. Frontmatter is validated by `src/content/config.js` and currently requires:
 - `title`
-- `description`
-- `dateFormatted`
-- `tags` (defaults to `[]`)
+- `date` (also accepts `pubDate` for Hugo-style frontmatter, or a bare `YYYY-MM-DD`)
 
-Date parsing is **not centralized** — the `month day year` split logic is duplicated in at least 4 files: `src/pages/post/[slug].astro`, `src/components/posts-loop.astro`, `src/pages/search.astro`, and `src/pages/rss.xml.ts`. If you change the date format, you must update all of them. There is no shared date utility.
+Optional fields: `description`, `author`, `tags` (defaults to `[]`), `categories` (defaults to `[]`), `issue`, `draft` (defaults to `false`).
+
+Dates are centralized in **`src/utils/date.ts`**: `formatDisplayDate()` renders the `"Apr 10, 2026"` display string, and `byDateDesc()` is the shared sort comparator used by every listing, archive, tag and RSS page. If you change the date format, this is the only file to touch.
 
 ### Layout and shared UI
 
@@ -143,7 +143,7 @@ The homepage `src/pages/index.astro` also uses data-driven sections:
 
 ### Content post naming convention
 
-All posts in `src/content/post/` follow the naming pattern `YYYY-MM-DD-slug.md`. The date in the filename is separate from the `dateFormatted` frontmatter field.
+All posts in `src/content/post/` follow the naming pattern `YYYY-MM-DD-slug.md`. The date in the filename is separate from the `date` frontmatter field. Two legacy posts (`hello-world.md`, `using-this-theme.md`) predate this convention and have no date prefix, so their URLs are `/post/hello-world` and `/post/using-this-theme`.
 
 ### Chinese typography and font loading
 

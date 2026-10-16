@@ -1,6 +1,6 @@
 ---
 title: "A One‑Day Trip to Mount Taibai"
-dateFormatted: "Jul 21, 2026"
+date: 2026-07-21 08:00
 description: "Climbing Taibai under clear skies, sea of clouds merging with the sky; wind and snow strike all of a sudden, experiencing four seasons within a single day."
 tags: ["Travelogue", "Mount Taibai", "Qinling Mountains"]
 image: "/images/taibai-snow.jpg"

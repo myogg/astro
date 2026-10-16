@@ -1,7 +1,7 @@
 ---
 title: "Apple 于今日发布折叠 iPhone"
+date: 2026-09-10 08:00
 description: "iPhone Duo 采用纳米纹理表层减少炫光，最高支持 3000 尼特亮度，A20 Pro 芯片 2nm 工艺，售价 15999 元起。"
-dateFormatted: "Sep 10, 2026"
 tags: ["Apple", "iPhone", "折叠屏", "ESIM"]
 ---
 

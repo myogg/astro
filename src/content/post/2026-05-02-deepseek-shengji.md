@@ -1,7 +1,7 @@
 ---
 title: "DeepSeek被删的论文：给AI一根手指，它就能走出迷宫"
+date: 2026-05-02 08:00
 description: "DeepSeek最新论文被连夜撤下，背后是一项可能改变多模态AI竞争格局的突破：让模型在推理时直接输出坐标，而非模糊的语言描述。"
-dateFormatted: "Apr 30, 2026"
 tags: ["DeepSeek", "多模态AI", "视觉推理", "技术解析"]
 ---
 

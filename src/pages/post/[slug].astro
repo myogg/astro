@@ -2,22 +2,18 @@
 import { getCollection } from "astro:content";
 import PostComments from "../../components/post-comments.astro";
 import PostLayout from "../../layouts/post.astro";
+import { byDateDesc } from "../../utils/date";
 
 export async function getStaticPaths() {
-	const postEntries = await getCollection("post");
-	const sorted = postEntries
-		.map((entry) => {
-			const [month, day, year] = entry.data.dateFormatted.split(" ");
-			return { entry, date: new Date(`${month} ${parseInt(day)}, ${year}`) };
-		})
-		.sort((a, b) => b.date.getTime() - a.date.getTime());
+	const postEntries = await getCollection("post", ({ data }) => !data.draft);
+	const sorted = postEntries.sort(byDateDesc);
 
-	return sorted.map((item, index) => ({
-		params: { slug: item.entry.slug },
+	return sorted.map((entry, index) => ({
+		params: { slug: entry.slug },
 		props: {
-			entry: item.entry,
-			prev: index > 0 ? sorted[index - 1].entry : null,
-			next: index < sorted.length - 1 ? sorted[index + 1].entry : null,
+			entry,
+			prev: index > 0 ? sorted[index - 1] : null,
+			next: index < sorted.length - 1 ? sorted[index + 1] : null,
 		},
 	}));
 }

@@ -1,18 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import PostsList from "./posts-list.astro";
+import { byDateDesc } from "../utils/date";
 
-const allPosts = await getCollection("post");
+const allPosts = await getCollection("post", ({ data }) => !data.draft);
 const { count } = Astro.props;
 
-function parseDate(dateStr: string) {
-  const [month, day, year] = dateStr.split(" ");
-  return new Date(`${month} ${parseInt(day)}, ${year}`);
-}
-
-const posts = allPosts
-  .sort((a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime())
-  .slice(0, count);
+const posts = allPosts.sort(byDateDesc).slice(0, count);
 ---
 
 <PostsList posts={posts} showMoreTag={false} />

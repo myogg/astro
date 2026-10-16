@@ -1,7 +1,7 @@
 ---
 title: "Netflix放弃对华纳公司的竞标"
+date: 2026-04-10 08:10
 description: "Netflix放弃对华纳公司的竞标，认为匹配派拉蒙报价在财务上不再具有吸引力，为派拉蒙接手铺平道路。"
-dateFormatted: "Apr 10, 2026"
 ---
 
 Netflix放弃对华纳公司的竞标，为派拉蒙接手铺平了道路

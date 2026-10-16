@@ -1,7 +1,7 @@
 ---
 title: "基因组学先驱 Craig Venter 去世，享年 79 岁"
+date: 2026-05-01 08:00
 description: "基因组学先驱 Craig Venter 去世，享年 79 岁。他曾与人类基因组计划竞争建立付费数据库，最终双方同意所有基因组数据为人类共同财富。"
-dateFormatted: "Apr 30, 2026"
 tags: ["基因组学", "Craig Venter", "科学", "人类基因组计划"]
 ---
 

@@ -1,17 +1,10 @@
 import rss from "@astrojs/rss";
 import { getCollection } from "astro:content";
+import { byDateDesc } from "../utils/date";
 
 export async function GET(context: any) {
-	const allPosts = await getCollection("post");
-
-	function parseDate(dateStr: string) {
-		const [month, day, year] = dateStr.split(" ");
-		return new Date(`${month} ${parseInt(day)}, ${year}`);
-	}
-
-	const sortedPosts = allPosts.sort(
-		(a, b) => parseDate(b.data.dateFormatted).getTime() - parseDate(a.data.dateFormatted).getTime()
-	);
+	const allPosts = await getCollection("post", ({ data }) => !data.draft);
+	const sortedPosts = allPosts.sort(byDateDesc);
 
 	return rss({
 		title: "姜小小",
@@ -19,8 +12,8 @@ export async function GET(context: any) {
 		site: context.site,
 		items: sortedPosts.map((post) => ({
 			title: post.data.title,
-			pubDate: parseDate(post.data.dateFormatted),
-			description: post.data.description,
+			pubDate: post.data.date,
+			description: post.data.description || post.data.title,
 			link: `/post/${post.slug}`,
 		})),
 		customData: `<language>zh-CN</language>`,

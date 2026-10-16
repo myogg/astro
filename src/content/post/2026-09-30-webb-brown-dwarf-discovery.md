@@ -1,7 +1,7 @@
 ---
 title: "No One Knows How Far the Universe Can Go in Making Stars"
 description: "The James Webb Space Telescope has found an object only twice the mass of Jupiter — too small to be a star — yet it may host a disk capable of forming new planets."
-dateFormatted: "Sep 30, 2026"
+date: 2026-09-30 08:00
 tags: ["James Webb", "Astronomy", "Brown Dwarfs"]
 ---
 

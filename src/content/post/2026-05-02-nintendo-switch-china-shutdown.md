@@ -1,7 +1,7 @@
 ---
 title: "国行 Switch 最后 15 天：断网前必须做好的几件事"
+date: 2026-05-02 08:02
 description: "国行 Nintendo Switch 网络服务将于 2026 年 5 月 15 日 22:00 正式停止，届时游戏删了就再也下不回来。"
-dateFormatted: "May 2, 2026"
 tags: ["Nintendo Switch", "国行", "游戏", "关停公告"]
 ---
 
