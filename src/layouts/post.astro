@@ -39,7 +39,7 @@ const { frontmatter } = Astro.props;
               id="tts-toggle"
               type="button"
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700"
-              aria-label="听全文"
+              aria-label="聆听文章"
             >
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
                 <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
@@ -50,7 +50,7 @@ const { frontmatter } = Astro.props;
               data-tts-idle
               class="shrink-0 text-base font-medium text-neutral-900 dark:text-neutral-100 sm:text-lg"
             >
-              听全文
+              聆听文章
             </span>
             <span
               data-tts-idle
@@ -220,7 +220,7 @@ const { frontmatter } = Astro.props;
         statusEl.hidden = !text;
       };
 
-      // 未开播时显示"听全文 | 估算总时长"，开播后换成进度和快进控件
+      // 未开播时显示"聆听文章 | 估算总时长"，开播后换成进度和快进控件
       const idleEls = player.querySelectorAll('[data-tts-idle]');
       const extras = player.querySelectorAll('[data-tts-extra]');
       const updateUI = () => {
@@ -229,7 +229,7 @@ const { frontmatter } = Astro.props;
         for (const el of extras) el.classList.toggle('hidden', idle);
         renderTime();
         toggleBtn.innerHTML = loading ? spinnerIcon : playing ? pauseIcon : playIcon;
-        const label = loading ? '加载中' : playing ? '暂停' : started ? '继续播放' : '听全文';
+        const label = loading ? '加载中' : playing ? '暂停' : started ? '继续播放' : '聆听文章';
         toggleBtn.setAttribute('aria-label', label);
         toggleBtn.setAttribute('aria-pressed', String(playing));
       };
