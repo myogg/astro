@@ -19,7 +19,7 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
 	const text = url.searchParams.get("text");
 	const voiceName = url.searchParams.get("voiceName") || "zh-CN-XiaoxiaoNeural";
 	const pitch = url.searchParams.get("pitch") || "-10%";
-	const rate = url.searchParams.get("rate") || "-2%";
+	const rate = url.searchParams.get("rate") || "-15%";
 	const format =
 		url.searchParams.get("format") || "audio-24khz-48kbitrate-mono-mp3";
 
