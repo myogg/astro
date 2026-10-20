@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import PostComments from "../../components/post-comments.astro";
+import WalineComments from "../../components/waline-comments.astro";
 import PostLayout from "../../layouts/post.astro";
 import { byDateDesc } from "../../utils/date";
 
@@ -37,7 +37,7 @@ const tags = entry.data.tags || [];
       ))}
     </div>
   )}
-  {entry.data.issue && <PostComments issue={entry.data.issue} />}
+  <WalineComments />
   <nav slot="nav" class="flex items-center justify-between gap-4 pt-8 border-t border-neutral-200 dark:border-neutral-800">
     {prev ? (
       <a
