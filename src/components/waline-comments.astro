@@ -13,6 +13,18 @@
     if (!container || container.dataset.walineInitialized === "true") return;
 
     container.dataset.walineInitialized = "true";
+    const placeholder = "👏 欢迎来踩";
+    const applyPlaceholder = () => {
+      const editor = container.querySelector("textarea");
+      if (editor && editor.placeholder !== placeholder) {
+        editor.placeholder = placeholder;
+      }
+    };
+
+    // Keep the custom text even if Waline renders or replaces the editor asynchronously.
+    const observer = new MutationObserver(applyPlaceholder);
+    observer.observe(container, { childList: true, subtree: true });
+
     init({
       el: container,
       serverURL: "https://commsin-134688.vercel.app",
@@ -25,8 +37,10 @@
       imageUploader: false,
       noCopyright: true,
       noRss: true,
-      placeholder: "👏 欢迎来踩",
+      placeholder,
     });
+
+    applyPlaceholder();
   };
 
   if (document.readyState === "loading") {
