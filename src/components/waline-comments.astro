@@ -1,0 +1,34 @@
+---
+---
+
+<div id="waline" class="not-prose mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800"></div>
+
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+
+<script is:inline type="module">
+  import { init } from "https://unpkg.com/@waline/client@v3/dist/waline.js";
+
+  const mountWaline = () => {
+    const container = document.querySelector("#waline");
+    if (!container || container.dataset.walineInitialized === "true") return;
+
+    container.dataset.walineInitialized = "true";
+    init({
+      el: container,
+      serverURL: "https://commsin-134688.vercel.app",
+      path: window.location.pathname,
+      lang: "zh-CN",
+      login: "disable",
+      meta: ["nick"],
+      requiredMeta: ["nick"],
+      dark: "html.dark",
+      imageUploader: false,
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mountWaline, { once: true });
+  } else {
+    mountWaline();
+  }
+</script>
