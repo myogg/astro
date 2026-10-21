@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/main.astro";
+import PageHeading from "../components/page-heading.astro";
+import { byDateDesc } from "../utils/date";
+
+const allPosts = await getCollection("post", ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(byDateDesc);
+
+// 按年-月分组，保持日期倒序
+type MonthGroup = { key: string; label: string; posts: typeof sortedPosts };
+const groups: MonthGroup[] = [];
+for (const post of sortedPosts) {
+  const date = post.data.date;
+  const key = `${date.getFullYear()}-${date.getMonth()}`;
+  const last = groups[groups.length - 1];
+  if (last && last.key === key) {
+    last.posts.push(post);
+  } else {
+    groups.push({
+      key,
+      label: `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, "0")}月`,
+      posts: [post],
+    });
+  }
+}
+
+const totalPosts = sortedPosts.length;
+---
+
+<Layout title="归档" description={`共包含 ${totalPosts} 篇文章`}>
+  <section class="relative z-20 max-w-2xl mx-auto my-12 px-7 lg:px-0">
+    <div class="pb-6 border-b border-dashed border-neutral-300 dark:border-neutral-700">
+      <PageHeading title="archive" description={`共包含 ${totalPosts} 篇文章`} />
+    </div>
+
+    {
+      totalPosts === 0 ? (
+        <p class="mt-10 text-sm text-neutral-500 dark:text-neutral-400">还没有文章。</p>
+      ) : (
+        <div class="relative mt-10">
+          {/* 贯穿全年的时间线 */}
+          <div class="absolute left-[3.75rem] top-2 bottom-2 w-px bg-neutral-200 dark:bg-neutral-800" />
+
+          {groups.map((group) => (
+            <section class="relative mb-6 last:mb-0">
+              <h2 class="relative z-10 mb-3 flex">
+                <span class="inline-flex items-center rounded-md border border-neutral-300 bg-white px-2.5 py-1 text-sm font-bold tracking-tight text-neutral-900 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-100">
+                  {group.label}
+                </span>
+              </h2>
+
+              <ul class="relative">
+                {group.posts.map((post) => {
+                  const date = post.data.date;
+                  return (
+                    <li class="group flex items-start py-2.5">
+                      <time
+                        datetime={`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+                          date.getDate(),
+                        ).padStart(2, "0")}`}
+                        class="w-14 shrink-0 pr-2 text-right text-sm tabular-nums text-neutral-500 dark:text-neutral-400"
+                      >
+                        {String(date.getDate()).padStart(2, "0")}日
+                      </time>
+                      <span class="relative z-10 mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-neutral-400 ring-4 ring-white duration-200 group-hover:bg-neutral-900 dark:bg-neutral-500 dark:ring-neutral-950 dark:group-hover:bg-neutral-100" />
+                      <a
+                        href={`/post/${post.slug}`}
+                        class="ml-5 text-sm leading-6 text-neutral-700 duration-200 ease-out group-hover:text-neutral-900 dark:text-neutral-300 dark:group-hover:text-white sm:text-base"
+                      >
+                        {post.data.title}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Layout>

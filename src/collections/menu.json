@@ -4,6 +4,10 @@
 		"url": "/posts"
 	},
 	{
+		"name": "归档",
+		"url": "/archive"
+	},
+	{
 		"name": "搜索",
 		"url": "/search"
 	},
