@@ -1,18 +1,18 @@
 [
 	{
 		"name": "博客",
-		"url": "/posts"
+		"url": "/posts/"
 	},
 	{
 		"name": "归档",
-		"url": "/archive"
+		"url": "/archive/"
 	},
 	{
 		"name": "搜索",
-		"url": "/search"
+		"url": "/search/"
 	},
 	{
 		"name": "关于",
-		"url": "/about"
+		"url": "/about/"
 	}
 ]
