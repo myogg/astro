@@ -21,9 +21,13 @@ export async function getStaticPaths() {
 const { entry, prev, next } = Astro.props;
 const { Content } = await entry.render();
 const tags = entry.data.tags || [];
+// 分享封面优先级：Frontmatter image > 正文第一张图片 > 全站默认封面
+const markdownImage = entry.body.match(/!\[[^\]]*\]\((?:<)?([^) >]+)(?:>)?(?:\s+[^)]*)?\)/)?.[1];
+const htmlImage = entry.body.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
+const shareImage = entry.data.image || markdownImage || htmlImage;
 ---
 
-<PostLayout frontmatter={entry.data}>
+<PostLayout frontmatter={entry.data} shareImage={shareImage}>
   <Content />
   {tags.length > 0 && (
     <div class="not-prose flex flex-wrap gap-2 mt-6 mb-4">
