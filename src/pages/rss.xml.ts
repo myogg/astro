@@ -7,8 +7,8 @@ export async function GET(context: any) {
 	const sortedPosts = allPosts.sort(byDateDesc);
 
 	return rss({
-		title: "Jreely - 一个有意思的人",
-		description: "Jreely - 一个有意思的人",
+		title: "灰太狼 - 做一个有意思的人",
+		description: "灰太狼 - 做一个有意思的人",
 		site: context.site,
 		items: sortedPosts.map((post) => ({
 			title: post.data.title,
