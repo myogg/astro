@@ -100,10 +100,10 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       }
 
     </style>
-    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.png" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <!-- 中文字体 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-mono-webfont@1.7.0/style.css" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/lxgw-wenkai-mono-webfont@1.7.0/style.css" />
     <script src="../assets/css/main.css"></script>
     <Fragment set:html={import.meta.env.HEADER_INJECT} />
   </head>
