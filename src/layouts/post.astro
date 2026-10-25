@@ -1,13 +1,13 @@
 ---
 import Layout from "./main.astro";
 import { formatDisplayDate } from "../utils/date";
-const { frontmatter } = Astro.props;
+const { frontmatter, shareImage } = Astro.props;
 ---
 
 <Layout
   title={frontmatter.title}
   description={frontmatter.description}
-  image={frontmatter.image}
+  image={shareImage || frontmatter.image}
 >
   <main
     class="relative z-30 max-w-4xl pb-1 mx-auto mt-10 bg-white dark:bg-neutral-950 md:rounded-t-md text-neutral-900"
