@@ -20,6 +20,7 @@ const postCollection = defineCollection({
 		.object({
 			title: z.string(),
 			description: z.string().optional(),
+			image: z.string().optional(),
 			date: z.coerce.date().optional(),
 			// 兼容 Hugo 主题常见的 pubDate 写法，最终归一化到 date
 			pubDate: z.coerce.date().optional(),
