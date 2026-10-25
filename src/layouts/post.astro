@@ -175,11 +175,16 @@ const { frontmatter } = Astro.props;
           <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
         </svg>`;
 
-      // 正文之外的块（标签、评论区）都带 not-prose，不该被朗读
+      // 正文之外的块（标签、评论区）都带 not-prose，不该被朗读；
+      // 顺带剔除 script/style/link，避免把 Waline 等第三方脚本代码读出来
       const readableText = () =>
         Array.from(articleContent.children)
           .filter((el) => !el.classList.contains('not-prose'))
-          .map((el) => el.innerText || el.textContent || '')
+          .map((el) => {
+            const clone = el.cloneNode(true);
+            clone.querySelectorAll('script, style, link').forEach((n) => n.remove());
+            return clone.innerText || clone.textContent || '';
+          })
           .join('\n')
           .replace(/\s+/g, ' ')
           .trim();
