@@ -53,7 +53,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
       /* 中文字体 + 衬线正文 */
       .prose {
-        font-family: "LXGW WenKai", "Noto Serif SC", "Source Han Serif SC", "STSong", Georgia, "Times New Roman", serif;
+        font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", Georgia, "Times New Roman", serif;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
       }
@@ -64,7 +64,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h4,
       .prose h5,
       .prose h6 {
-        font-family: "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", Georgia, serif;
       }
 
       .prose h1 { line-height: 1.15; }
@@ -101,9 +101,10 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
     </style>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
-    <!-- 中文字体 CDN -->
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/lxgw-wenkai-mono-webfont@1.7.0/style.css" />
+    <!-- 中文字体 CDN：思源宋体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" />
     <script src="../assets/css/main.css"></script>
     <Fragment set:html={import.meta.env.HEADER_INJECT} />
   </head>
