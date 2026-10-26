@@ -70,6 +70,8 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         font-family: "LXGW WenKai", "KaiTi", "STKaiti", "Noto Sans SC", "Microsoft YaHei", serif;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
+        color: #1f2328; /* 正文更深更清晰 */
+        font-weight: 400;
       }
 
       .prose h1,
@@ -103,8 +105,8 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
       /* 中文段落间距优化 */
       .prose p {
-        margin-bottom: 1.5em;
-        line-height: 1.85;
+        margin-bottom: 2em;
+        line-height: 2.15;
       }
 
       /* 引用块样式 */
