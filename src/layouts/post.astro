@@ -135,6 +135,10 @@ const { frontmatter, shareImage } = Astro.props;
       <slot />
     </article>
 
+    <div class="w-full max-w-2xl mx-auto px-5 lg:px-0">
+      <slot name="comments" />
+    </div>
+
     <div class="w-full max-w-2xl mx-auto px-5 lg:px-0 mb-16">
       <slot name="nav" />
     </div>
@@ -183,7 +187,12 @@ const { frontmatter, shareImage } = Astro.props;
       // 顺带剔除 script/style/link，避免把 Waline 等第三方脚本代码读出来
       const readableText = () =>
         Array.from(articleContent.children)
-          .filter((el) => !el.classList.contains('not-prose'))
+          .filter(
+            (el) =>
+              !el.classList.contains('not-prose') &&
+              !el.querySelector('#waline') &&
+              el.id !== 'waline',
+          )
           .map((el) => {
             const clone = el.cloneNode(true);
             clone.querySelectorAll('script, style, link').forEach((n) => n.remove());
