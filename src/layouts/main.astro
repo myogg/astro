@@ -51,9 +51,9 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         border-radius: 20px;
       }
 
-      /* 中文字体 + 衬线正文 */
+      /* 中文字体：微软雅黑（系统字体，无需 CDN 加载） */
       .prose {
-        font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", Georgia, "Times New Roman", serif;
+        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
       }
@@ -64,7 +64,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h4,
       .prose h5,
       .prose h6 {
-        font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", Georgia, serif;
+        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
       }
 
       .prose h1 { line-height: 1.15; }
@@ -79,7 +79,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         padding-right: 0.08em;
         margin-top: 0.02em;
         font-weight: 700;
-        font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
         color: inherit;
       }
 
@@ -101,10 +101,6 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
     </style>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
-    <!-- 中文字体 CDN：思源宋体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" />
     <script src="../assets/css/main.css"></script>
     <Fragment set:html={import.meta.env.HEADER_INJECT} />
   </head>
