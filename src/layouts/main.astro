@@ -46,14 +46,22 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       }
     </script>
 
+    <!-- 思源黑体 Noto Sans SC，中文优先 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       .prose img {
         border-radius: 20px;
       }
 
-      /* 中文字体：微软雅黑（系统字体，无需 CDN 加载） */
+      /* 中文字体：思源黑体 Noto Sans SC（Google Fonts 加载，display=swap 防白屏） */
       .prose {
-        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+        font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
       }
@@ -64,7 +72,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h4,
       .prose h5,
       .prose h6 {
-        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+        font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
       }
 
       .prose h1 { line-height: 1.15; }
@@ -79,7 +87,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         padding-right: 0.08em;
         margin-top: 0.02em;
         font-weight: 700;
-        font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+        font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
         color: inherit;
       }
 
