@@ -5,8 +5,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['"Noto Serif SC"', 'system-ui', '-apple-system', 'sans-serif'],
-				serif: ['"Noto Serif SC"', 'Georgia', 'serif'],
+				sans: ['"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
+				serif: ['"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
 			},
 		},
 	},
