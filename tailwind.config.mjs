@@ -5,8 +5,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
-				serif: ['"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
+				sans: ['"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
+				serif: ['"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', '"Hiragino Sans GB"', '"Source Han Sans SC"', '"Noto Sans CJK SC"', 'system-ui', 'sans-serif'],
 			},
 		},
 	},
