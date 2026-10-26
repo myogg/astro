@@ -58,7 +58,37 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
     <style>
       .prose img {
-        border-radius: 20px;
+        border-radius: 12px;
+      }
+
+      /* 借鉴 phpBB 的克制配色：清晰链接、轻分隔，不改变现有布局 */
+      .prose a {
+        color: #2563a6;
+        text-decoration-color: #b8c9dc;
+        text-underline-offset: 0.18em;
+        transition: color 160ms ease;
+      }
+
+      .prose a:hover {
+        color: #174675;
+        text-decoration-color: currentColor;
+      }
+
+      .dark .prose a {
+        color: #8ab4e0;
+        text-decoration-color: #42566b;
+      }
+
+      .dark .prose a:hover {
+        color: #b6d5f4;
+      }
+
+      .prose hr {
+        border-color: #e5e7eb;
+      }
+
+      .dark .prose hr {
+        border-color: #30343a;
       }
 
       /* 全站统一 MiSans：正文 Regular 400，标题 Medium 500 */
