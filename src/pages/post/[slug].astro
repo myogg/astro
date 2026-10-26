@@ -41,7 +41,7 @@ const shareImage = entry.data.image || markdownImage || htmlImage;
       ))}
     </div>
   )}
-  <WalineComments />
+  <WalineComments slot="comments" />
   <nav slot="nav" class="flex items-center justify-between gap-4 pt-8 border-t border-neutral-200 dark:border-neutral-800">
     {prev ? (
       <a
