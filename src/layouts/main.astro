@@ -54,14 +54,20 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       rel="stylesheet"
     />
 
+    <!-- 正文用霞鹜文楷 LXGW WenKai（jsDelivr 加载） -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css"
+    />
+
     <style>
       .prose img {
         border-radius: 20px;
       }
 
-      /* 中文字体：思源黑体 Noto Sans SC（Google Fonts 加载，display=swap 防白屏） */
+      /* 正文中文：霞鹜文楷 LXGW WenKai；标题/界面：思源黑体 Noto Sans SC */
       .prose {
-        font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+        font-family: "LXGW WenKai", "KaiTi", "STKaiti", "Noto Sans SC", "Microsoft YaHei", serif;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
       }
@@ -87,7 +93,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         padding-right: 0.08em;
         margin-top: 0.02em;
         font-weight: 700;
-        font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+        font-family: "LXGW WenKai", "KaiTi", "STKaiti", "Noto Sans SC", "Microsoft YaHei", serif;
         color: inherit;
       }
 
