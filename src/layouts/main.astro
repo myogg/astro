@@ -19,6 +19,13 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- MiSans 网络字体：中文 MiSans + 拉丁 MiSansLatin（jsDelivr CDN） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSans-Regular.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSans-Medium.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Latin/MiSansLatin-Regular.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Latin/MiSansLatin-Medium.min.css" />
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
@@ -51,9 +58,9 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         border-radius: 20px;
       }
 
-      /* 全站字体：Tailwind 默认系统字体栈（与 aria / miantiao.me 一致，无自定义字体） */
+      /* 全站字体：MiSans（中文）+ MiSansLatin（拉丁），CDN 加载，失败回退系统字体栈 */
       .prose.prose {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+        font-family: "MiSans", "MiSansLatin", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
         font-weight: 400;
         font-size: 18px;
         line-height: 1.9;
@@ -68,7 +75,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h4,
       .prose h5,
       .prose h6 {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+        font-family: "MiSans", "MiSansLatin", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
         font-weight: 500;
       }
 
@@ -90,7 +97,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         padding-right: 0.06em;
         margin-top: 0.04em;
         font-weight: 500;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
+        font-family: "MiSans", "MiSansLatin", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
         color: #333333;
       }
 
