@@ -5,8 +5,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['"MiSans"', '"MiSansLatin"', '"PingFang SC"', '"Microsoft YaHei"', 'system-ui', 'sans-serif'],
-				serif: ['"MiSans"', '"MiSansLatin"', '"PingFang SC"', '"Microsoft YaHei"', 'system-ui', 'sans-serif'],
+				sans: ['"Microsoft YaHei"', '"PingFang SC"', 'system-ui', 'sans-serif'],
+				serif: ['"Microsoft YaHei"', '"PingFang SC"', 'system-ui', 'sans-serif'],
 			},
 		},
 	},
