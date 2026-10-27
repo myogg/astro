@@ -110,6 +110,14 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         font-style: normal;
       }
 
+      /* 手机端：正文加大一号（18px → 19px），提升阅读舒适度 */
+      @media (max-width: 640px) {
+        .prose.prose {
+          font-size: 19px;
+          line-height: 1.9;
+        }
+      }
+
     </style>
     <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
     <script src="../assets/css/main.css"></script>
