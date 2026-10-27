@@ -46,34 +46,14 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       }
     </script>
 
-    <!-- 全站统一小米 MiSans（WOFF2 子集，jsDelivr 加载，免费可商用） -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSans-Regular.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSans-Medium.min.css"
-    />
-
-    <!-- 英文/数字用 MiSansLatin（完整拉丁字形，原版 MiSans 西文） -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Latin/MiSansLatin-Regular.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Latin/MiSansLatin-Medium.min.css"
-    />
-
     <style>
       .prose img {
         border-radius: 20px;
       }
 
-      /* 全站统一 MiSans：正文 Regular 400，标题 Medium 500 */
+      /* 全站中文+英文统一微软雅黑（系统字体，无需 CDN 加载） */
       .prose.prose {
-        font-family: "MiSans", "MiSansLatin", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
         font-weight: 400;
         font-size: 18px;
         line-height: 1.9;
@@ -88,7 +68,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h4,
       .prose h5,
       .prose h6 {
-        font-family: "MiSans", "MiSansLatin", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
         font-weight: 500;
       }
 
@@ -110,7 +90,7 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         padding-right: 0.06em;
         margin-top: 0.04em;
         font-weight: 500;
-        font-family: "MiSans", "MiSansLatin", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
         color: #333333;
       }
 
