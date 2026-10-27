@@ -82,22 +82,6 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
       .prose h6 { font-size: 21px; line-height: 1.5; }
       .prose h3 { margin-top: 1.6em; }
 
-      /* 首字下沉 — 首字母用衬线体，中文首字也生效 */
-      .prose > p:first-of-type::first-letter {
-        float: left;
-        font-size: 3.2em;
-        line-height: 0.9;
-        padding-right: 0.06em;
-        margin-top: 0.04em;
-        font-weight: 500;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif;
-        color: #333333;
-      }
-
-      .prose > p:first-of-type {
-        clear: both;
-      }
-
       /* 中文段落间距优化 */
       .prose p {
         margin-bottom: 2em;
@@ -110,10 +94,10 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         font-style: normal;
       }
 
-      /* 手机端：正文加大（18px → 20px），提升阅读舒适度 */
+      /* 手机端：正文 19px（比 20px 小一号） */
       @media (max-width: 640px) {
         .prose.prose {
-          font-size: 20px;
+          font-size: 19px;
           line-height: 1.9;
         }
       }
