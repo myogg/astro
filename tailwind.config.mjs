@@ -5,8 +5,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['"Microsoft YaHei"', '"PingFang SC"', 'system-ui', 'sans-serif'],
-				serif: ['"Microsoft YaHei"', '"PingFang SC"', 'system-ui', 'sans-serif'],
+				sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', '"Noto Sans"', 'Arial', 'sans-serif'],
+				serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
 			},
 		},
 	},
