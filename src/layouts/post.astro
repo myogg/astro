@@ -135,6 +135,33 @@ const { frontmatter, shareImage } = Astro.props;
       <slot />
     </article>
 
+    <div class="w-full max-w-2xl mx-auto px-5 lg:px-0 mb-10 not-prose">
+      <div
+        class="flex items-start gap-2.5 rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm leading-relaxed text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          class="mt-0.5 h-4 w-4 shrink-0 text-neutral-400 dark:text-neutral-500"
+        >
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"></circle>
+          <circle cx="8.5" cy="12" r="3.3" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+          <circle cx="15.5" cy="12" r="3.3" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+        </svg>
+        <p class="m-0">
+          本作品采用
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-medium text-neutral-900 underline underline-offset-2 transition hover:text-neutral-600 dark:text-neutral-100 dark:hover:text-neutral-300"
+            >知识共享署名 4.0 国际许可协议（CC BY 4.0）</a
+          >
+          进行许可。自由转载、摘编，但必须保留作者署名与原文链接。
+        </p>
+      </div>
+    </div>
+
     <div class="w-full max-w-2xl mx-auto px-5 lg:px-0">
       <slot name="comments" />
     </div>
