@@ -2,19 +2,19 @@
 	{
 		"name": "TimeAPK",
 		"description": "工时管理小工具",
-		"image": "https://opengraph.githubassets.com/myogg/timeapk",
+		"image": "https://github.html.zone/myogg/timeapk",
 		"url": "https://github.com/myogg/timeapk"
 	},
 	{
 		"name": "Astro T9Tio",
 		"description": "另一套 Astro 博客主题",
-		"image": "https://opengraph.githubassets.com/myogg/astro-t9tio",
+		"image": "https://github.html.zone/myogg/astro-t9tio",
 		"url": "https://github.com/myogg/astro-t9tio"
 	},
 	{
 		"name": "Rss-tg",
 		"description": "把 RSS 推送到 Telegram 的机器人",
-		"image": "https://opengraph.githubassets.com/meektion/Rss-tg",
+		"image": "https://github.html.zone/meektion/Rss-tg",
 		"url": "https://github.com/meektion/Rss-tg"
 	}
 ]
