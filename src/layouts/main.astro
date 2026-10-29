@@ -2,6 +2,7 @@
 import Footer from "../components/footer.astro";
 import Header from "../components/header.astro";
 import SquareLines from "../components/square-lines.astro";
+import "../assets/css/main.css";
 const SITE_NAME = "姜小小的博客 - 做一个有意思的人";
 const {
   title,
@@ -9,9 +10,12 @@ const {
   noindex = false,
   fullTitle,
   image = "/images/og-default.jpg",
+  ogType = "website",
+  publishedTime,
 } = Astro.props;
 const pageTitle = fullTitle ?? `${title} | ${SITE_NAME}`;
 const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
+const canonical = Astro.url.href;
 ---
 
 <!doctype html>
@@ -21,14 +25,16 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:title" content={pageTitle} />
@@ -60,6 +66,10 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
         color: #333333;
         hanging-punctuation: first allow-end last;
         max-width: 65ch;
+      }
+
+      html.dark .prose.prose {
+        color: #d4d4d4;
       }
 
       .prose h1,
@@ -104,7 +114,6 @@ const ogImageUrl = new URL(image, Astro.site ?? "https://134688.xyz").href;
 
     </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <script src="../assets/css/main.css"></script>
     <Fragment set:html={import.meta.env.HEADER_INJECT} />
   </head>
   <body class="antialiased font-sans bg-white dark:bg-neutral-950">
