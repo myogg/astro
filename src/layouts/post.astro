@@ -8,6 +8,8 @@ const { frontmatter, shareImage } = Astro.props;
   title={frontmatter.title}
   description={frontmatter.description}
   image={shareImage || frontmatter.image}
+  ogType="article"
+  publishedTime={frontmatter.date.toISOString()}
 >
   <main
     class="relative z-30 max-w-4xl pb-1 mx-auto mt-10 bg-white dark:bg-neutral-950 md:rounded-t-md text-neutral-900"
