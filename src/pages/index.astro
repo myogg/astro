@@ -53,12 +53,20 @@ import Layout from "../layouts/main.astro";
             </span>
           </div>
           <div class="relative z-30 px-10">
-            <iframe
-              src="https://m.134688.xyz"
-              title="我的世界 · 我的家"
-              loading="lazy"
-              class="w-full h-[480px] rounded-2xl border-0 shadow-sm"
-            ></iframe>
+            <button
+              id="hero-avatar"
+              type="button"
+              aria-label="播放 姜小小的博客 标志动画"
+              class="group relative z-30 block w-full cursor-pointer rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600"
+            >
+              <img
+                id="hero-avatar-img"
+                src="/assets/images/photo.webp"
+                loading="eager"
+                decoding="auto"
+                class="relative z-30 w-full md:max-w-md mx-auto dark:invert dark:-translate-y-0.5 transition duration-300 group-hover:scale-[1.03]"
+              />
+            </button>
           </div>
           <video
             id="hero-logo-video"
