@@ -34,10 +34,10 @@ jobs:
       - name: Install dependencies and pre-generate speech for changed articles
         continue-on-error: true
         env:
-          TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
+          TTS_PROVIDER: ${{ vars.TTS_PROVIDER }}\n          TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
           TTS_API_URL: ${{ vars.TTS_API_URL }}
         run: |
-          if [ -z "$TTS_ADMIN_TOKEN" ]; then
+          if [ "$TTS_PROVIDER" = "microsoft" ]; then\n            echo "当前使用微软 TTS，跳过 MiMo/R2 预生成"\n            exit 0\n          fi\n          if [ -z "$TTS_ADMIN_TOKEN" ]; then
             echo "TTS_ADMIN_TOKEN 未配置，跳过语音生成"
             exit 0
           fi
