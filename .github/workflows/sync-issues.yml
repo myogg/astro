@@ -32,6 +32,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Install dependencies and pre-generate speech for changed articles
+        continue-on-error: true
         env:
           TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
           TTS_API_URL: ${{ vars.TTS_API_URL }}
