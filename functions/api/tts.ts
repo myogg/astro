@@ -95,7 +95,8 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
   const html = await articleResponse.text();
   const parts = splitText(extractReadableText(html));
   const chunkIndex = Number(match[2]);
-  if (!parts[chunkIndex] || parts[chunkIndex] !== text.trim()) {
+  const normalize = (value: string) => value.replace(/\\s+/g, "");
+  if (!parts[chunkIndex] || normalize(parts[chunkIndex]) !== normalize(text.trim())) {
     return json({ error: "Text does not match the published article" }, 400);
   }
 
