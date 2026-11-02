@@ -183,8 +183,6 @@ const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
 
     // token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
     const TTS_ENDPOINT = '/api/tts';
-    const TTS_STYLE = '像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。';
-    const TTS_VOICE = '白桦';
     const AUDIO_ID = player?.dataset.ttsId || '';
     const AUDIO_SLUG = player?.dataset.ttsSlug || '';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
