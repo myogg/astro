@@ -1,7 +1,7 @@
 ---
 import Layout from "./main.astro";
 import { formatDisplayDate } from "../utils/date";
-const { frontmatter, shareImage } = Astro.props;
+const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
 ---
 
 <Layout
@@ -38,6 +38,8 @@ const { frontmatter, shareImage } = Astro.props;
         </time>
         <div
           id="tts-player"
+          data-tts-id={audioId}
+          data-tts-slug={audioSlug}
           class="mb-12 md:mb-16 border-t border-neutral-200 dark:border-neutral-800 pt-4"
         >
           <div class="flex items-center gap-2.5 sm:gap-4">
@@ -181,10 +183,8 @@ const { frontmatter, shareImage } = Astro.props;
 
     // token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
     const TTS_ENDPOINT = '/api/tts';
-    const VOICE = 'zh-CN-YunyangNeural';
-    const PITCH = '-5%';
-    const TTS_RATE = '-20%';
-    const TTS_FORMAT = 'audio-24khz-96kbitrate-mono-mp3';
+    const AUDIO_ID = player?.dataset.ttsId || '';
+    const AUDIO_SLUG = player?.dataset.ttsSlug || '';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
     const SKIP = 15;
     // 合成前拿不到真实音频长度，按中文语速估算总时长
@@ -298,17 +298,25 @@ const { frontmatter, shareImage } = Astro.props;
       async function getBlob(i) {
         if (blobs.has(i)) return blobs.get(i);
         const params = new URLSearchParams({
+          id: `${AUDIO_ID}-${i}`,
+          slug: AUDIO_SLUG,
           text: chunks[i],
-          voiceName: VOICE,
-          pitch: PITCH,
-          rate: TTS_RATE,
-          format: TTS_FORMAT,
         });
         const res = await fetch(`${TTS_ENDPOINT}?${params}`, {
           signal: abortController.signal,
         });
         if (!res.ok) throw new Error('TTS API error');
-        const blob = await res.blob();
+        let blob;
+        if ((res.headers.get('content-type') || '').includes('application/json')) {
+          const result = await res.json();
+          if (!result.audio_url) throw new Error('TTS API returned no audio URL');
+          const audioRes = await fetch(result.audio_url, { signal: abortController.signal });
+          if (!audioRes.ok) throw new Error('R2 audio download failed');
+          blob = await audioRes.blob();
+        } else {
+          // 微软模式直接返回 MP3；MiMo 模式返回 R2 音频地址。
+          blob = await res.blob();
+        }
         blobs.set(i, blob);
         return blob;
       }

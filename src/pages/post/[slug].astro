@@ -25,9 +25,12 @@ const tags = entry.data.tags || [];
 const markdownImage = entry.body.match(/!\[[^\]]*\]\((?:<)?([^) >]+)(?:>)?(?:\s+[^)]*)?\)/)?.[1];
 const htmlImage = entry.body.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
 const shareImage = entry.data.image || markdownImage || htmlImage;
+const audioDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(entry.slug));
+const audioHash = [...new Uint8Array(audioDigest)].map((byte) => byte.toString(16).padStart(2, "0")).join("").slice(0, 24);
+const audioId = `post-${audioHash}`;
 ---
 
-<PostLayout frontmatter={entry.data} shareImage={shareImage}>
+<PostLayout frontmatter={entry.data} shareImage={shareImage} audioId={audioId} audioSlug={entry.slug}>
   <Content />
   {tags.length > 0 && (
     <div class="not-prose flex flex-wrap gap-2 mt-6 mb-4">
