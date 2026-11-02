@@ -126,3 +126,4 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
   if (!upstream.ok) return json({ error: "TTS generation failed", status: upstream.status }, upstream.status >= 500 ? 502 : upstream.status);
   if (!body || typeof body.audio_url !== "string") return json({ error: "Invalid TTS response" }, 502);
   return json({ audio_url: body.audio_url, cached: Boolean(body.cached) });
+}
