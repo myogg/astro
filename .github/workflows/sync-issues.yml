@@ -31,31 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
 
-      - name: Install dependencies and pre-generate speech for changed articles
-        continue-on-error: true
-        env:
-          TTS_PROVIDER: ${{ vars.TTS_PROVIDER }}
-          TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
-          TTS_API_URL: ${{ vars.TTS_API_URL }}
-        run: |
-          if [ "$TTS_PROVIDER" = "microsoft" ]; then
-            echo "当前使用微软 TTS，跳过 MiMo/R2 预生成"
-            exit 0
-          fi
-          if [ -z "$TTS_ADMIN_TOKEN" ]; then
-            echo "TTS_ADMIN_TOKEN 未配置，跳过语音生成"
-            exit 0
-          fi
-          if [ -z "$(git diff --name-only -- src/content/post | grep '\.md$' || true)" ]; then
-            echo "没有变更文章，跳过语音生成"
-            exit 0
-          fi
-          corepack enable
-          corepack prepare pnpm@9.12.2 --activate
-          pnpm install --frozen-lockfile
-          pnpm build
-          node scripts/generate-tts.mjs
-
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
