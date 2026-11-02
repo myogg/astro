@@ -9,8 +9,8 @@ if (process.env.TTS_PROVIDER === "microsoft") {
 }
 
 // 只允许在 Cloudflare Pages 构建期间运行，避免本地构建或其他 CI 意外批量生成。
-if (process.env.CF_PAGES !== "1") {
-  console.log("当前不是 Cloudflare Pages 构建，跳过语音预生成。");
+if (process.env.CF_PAGES !== "1" || process.env.CF_PAGES_BRANCH !== "main") {
+  console.log("仅在 Cloudflare Pages 的 main 正式构建中预生成语音，当前构建跳过。");
   process.exit(0);
 }
 
