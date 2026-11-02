@@ -306,11 +306,17 @@ const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
           signal: abortController.signal,
         });
         if (!res.ok) throw new Error('TTS API error');
-        const result = await res.json();
-        if (!result.audio_url) throw new Error('TTS API returned no audio URL');
-        const audioRes = await fetch(result.audio_url, { signal: abortController.signal });
-        if (!audioRes.ok) throw new Error('R2 audio download failed');
-        const blob = await audioRes.blob();
+        let blob;
+        if ((res.headers.get('content-type') || '').includes('application/json')) {
+          const result = await res.json();
+          if (!result.audio_url) throw new Error('TTS API returned no audio URL');
+          const audioRes = await fetch(result.audio_url, { signal: abortController.signal });
+          if (!audioRes.ok) throw new Error('R2 audio download failed');
+          blob = await audioRes.blob();
+        } else {
+          // 微软模式直接返回 MP3；MiMo 模式返回 R2 音频地址。
+          blob = await res.blob();
+        }
         blobs.set(i, blob);
         return blob;
       }
