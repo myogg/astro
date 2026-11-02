@@ -15,7 +15,7 @@ if (process.env.CF_PAGES !== "1" || process.env.CF_PAGES_BRANCH !== "main") {
 }
 
 const token = process.env.TTS_ADMIN_TOKEN;
-const api = (process.env.TTS_API_URL || "https://xiaomi-tts.xxjss-c4.workers.dev").replace(/\/+$/, "");
+const api = (process.env.TTS_API_URL || "https://xiaomi-tts.xxjss-c4e.workers.dev").replace(/\/+$/, "");
 const style = "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。";
 
 if (!token) {
