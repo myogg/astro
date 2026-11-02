@@ -40,7 +40,7 @@ jobs:
             echo "TTS_ADMIN_TOKEN 未配置，跳过语音生成"
             exit 0
           fi
-          if [ -z "$(git diff --name-only -- src/content/post | grep '\\.md$' || true)" ]; then
+          if [ -z "$(git diff --name-only -- src/content/post | grep '\.md$' || true)" ]; then
             echo "没有变更文章，跳过语音生成"
             exit 0
           fi
