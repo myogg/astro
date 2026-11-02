@@ -37,13 +37,19 @@ try {
   process.exit(0);
 }
 
-const changed = execFileSync(
-  "git",
-  ["diff", "--name-only", "--diff-filter=AMR", parent, commit, "--", "src/content/post"],
-  { encoding: "utf8" },
-)
-  .split("\n")
-  .filter((path) => path.endsWith(".md"));
+let changed;
+try {
+  changed = execFileSync(
+    "git",
+    ["diff", "--name-only", "--diff-filter=AMR", parent, commit, "--", "src/content/post"],
+    { encoding: "utf8" },
+  )
+    .split("\n")
+    .filter((path) => path.endsWith(".md"));
+} catch {
+  console.log("无法读取本次提交的文章变更，安全跳过语音预生成。");
+  process.exit(0);
+}
 
 if (!changed.length) {
   console.log("本次部署没有新增或修改文章，跳过语音预生成。");
@@ -123,6 +129,10 @@ for (const file of changed) {
   const chunks = splitText(text);
   console.log(`文章 ${slug}：${chunks.length} 段`);
   for (let i = 0; i < chunks.length; i++) {
-    await generate(`post-${slugHash}-${i}`, chunks[i]);
+    try {
+      await generate(`post-${slugHash}-${i}`, chunks[i]);
+    } catch (error) {
+      console.error(`音频预生成失败，网站构建继续（${slug} 第 ${i + 1} 段）：`, error.message);
+    }
   }
 }
