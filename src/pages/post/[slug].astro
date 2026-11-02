@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import WalineComments from "../../components/waline-comments.astro";
 import PostLayout from "../../layouts/post.astro";
 import { byDateDesc } from "../../utils/date";
-import { createHash } from "node:crypto";
 
 export async function getStaticPaths() {
 	const postEntries = await getCollection("post", ({ data }) => !data.draft);
@@ -26,7 +25,9 @@ const tags = entry.data.tags || [];
 const markdownImage = entry.body.match(/!\[[^\]]*\]\((?:<)?([^) >]+)(?:>)?(?:\s+[^)]*)?\)/)?.[1];
 const htmlImage = entry.body.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1];
 const shareImage = entry.data.image || markdownImage || htmlImage;
-const audioId = `post-${createHash("sha256").update(entry.slug).digest("hex").slice(0, 24)}`;
+const audioDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(entry.slug));
+const audioHash = [...new Uint8Array(audioDigest)].map((byte) => byte.toString(16).padStart(2, "0")).join("").slice(0, 24);
+const audioId = `post-${audioHash}`;
 ---
 
 <PostLayout frontmatter={entry.data} shareImage={shareImage} audioId={audioId} audioSlug={entry.slug}>
