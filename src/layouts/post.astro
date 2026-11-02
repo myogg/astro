@@ -1,7 +1,7 @@
 ---
 import Layout from "./main.astro";
 import { formatDisplayDate } from "../utils/date";
-const { frontmatter, shareImage, audioId } = Astro.props;
+const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
 ---
 
 <Layout
@@ -39,6 +39,7 @@ const { frontmatter, shareImage, audioId } = Astro.props;
         <div
           id="tts-player"
           data-tts-id={audioId}
+          data-tts-slug={audioSlug}
           class="mb-12 md:mb-16 border-t border-neutral-200 dark:border-neutral-800 pt-4"
         >
           <div class="flex items-center gap-2.5 sm:gap-4">
@@ -185,6 +186,7 @@ const { frontmatter, shareImage, audioId } = Astro.props;
     const TTS_STYLE = '像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。';
     const TTS_VOICE = '白桦';
     const AUDIO_ID = player?.dataset.ttsId || '';
+    const AUDIO_SLUG = player?.dataset.ttsSlug || '';
     const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
     const SKIP = 15;
     // 合成前拿不到真实音频长度，按中文语速估算总时长
@@ -299,6 +301,7 @@ const { frontmatter, shareImage, audioId } = Astro.props;
         if (blobs.has(i)) return blobs.get(i);
         const params = new URLSearchParams({
           id: `${AUDIO_ID}-${i}`,
+          slug: AUDIO_SLUG,
           text: chunks[i],
         });
         const res = await fetch(`${TTS_ENDPOINT}?${params}`, {
