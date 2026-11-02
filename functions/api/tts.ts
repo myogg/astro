@@ -3,6 +3,7 @@ interface TtsEnv {
   TTS_ADMIN_TOKEN?: string;
   TTS_PROVIDER?: string;
   TTS_API_TOKEN?: string;
+  MICROSOFT_TTS_API_URL?: string;
 }
 
 interface PagesContext {
@@ -103,14 +104,15 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
     return json({ error: "Text does not match the published article" }, 400);
   }
 
-  const api = (env.TTS_API_URL || (env.TTS_PROVIDER === "microsoft" ? "https://tts.134688.xyz" : DEFAULT_TTS_API)).replace(/\/+$/, "");
+  const api = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
 
   // 切回微软时沿用原来的 Edge TTS 接口；密钥只在 Pages 服务端读取。
   if (env.TTS_PROVIDER === "microsoft") {
     const params = new URLSearchParams({ text: text.trim(), voiceName: "zh-CN-YunyangNeural", pitch: "-5%", rate: "-20%", format: "audio-24khz-96kbitrate-mono-mp3" });
     if (env.TTS_API_TOKEN) params.set("token", env.TTS_API_TOKEN);
     let microsoft: Response;
-    try { microsoft = await fetch(api + "/api/synthesis?" + params); }
+    const microsoftApi = (env.MICROSOFT_TTS_API_URL || "https://tts.134688.xyz").replace(/\/+$/, "");
+    try { microsoft = await fetch(microsoftApi + "/api/synthesis?" + params); }
     catch { return json({ error: "Microsoft TTS service unavailable" }, 502); }
     if (!microsoft.ok) return json({ error: "Microsoft TTS synthesis failed", status: microsoft.status }, microsoft.status >= 500 ? 502 : microsoft.status);
     return new Response(microsoft.body, { headers: { "Content-Type": microsoft.headers.get("Content-Type") || "audio/mpeg", "Cache-Control": "no-store" } });
