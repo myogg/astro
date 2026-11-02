@@ -119,7 +119,16 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
   }
 
   const token = env.TTS_ADMIN_TOKEN;
-  if (!token) return json({ error: "TTS service is not configured" }, 503);
+  if (!token) {
+    return json({
+      error: "TTS service is not configured",
+      diagnostic: {
+        hasAdminToken: Boolean(env.TTS_ADMIN_TOKEN),
+        hasApiUrl: Boolean(env.TTS_API_URL),
+        provider: env.TTS_PROVIDER || "default",
+      },
+    }, 503);
+  }
   let upstream: Response;
   try {
     upstream = await fetch(api + "/generate", { method: "POST", headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ id, text: text.trim(), style: "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。", voice: "白桦" }) });
