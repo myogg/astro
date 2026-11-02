@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
-const token = process.env.TTS_ADMIN_TOKEN;
+if (process.env.TTS_PROVIDER === "microsoft") {\n  console.log("当前使用微软 TTS，跳过 MiMo/R2 预生成。");\n  process.exit(0);\n}\n\nconst token = process.env.TTS_ADMIN_TOKEN;
 const api = (process.env.TTS_API_URL || "https://xiaomi-tts.xxjss-c4e.workers.dev").replace(/\/+$/, "");
 const style = "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。";
 
