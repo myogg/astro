@@ -3,7 +3,12 @@ import { readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { execFileSync } from "node:child_process";
 
-if (process.env.TTS_PROVIDER === "microsoft") {\n  console.log("当前使用微软 TTS，跳过 MiMo/R2 预生成。");\n  process.exit(0);\n}\n\nconst token = process.env.TTS_ADMIN_TOKEN;
+if (process.env.TTS_PROVIDER === "microsoft") {
+  console.log("当前使用微软 TTS，跳过 MiMo/R2 预生成。");
+  process.exit(0);
+}
+
+const token = process.env.TTS_ADMIN_TOKEN;
 const api = (process.env.TTS_API_URL || "https://xiaomi-tts.xxjss-c4e.workers.dev").replace(/\/+$/, "");
 const style = "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。";
 
@@ -29,8 +34,10 @@ function extractReadableText(html) {
     match[1]
       .replace(/<(script|style|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
       .replace(/<([a-z0-9]+)\b[^>]*class=["'][^"']*\bnot-prose\b[^"']*["'][^>]*>[\s\S]*?<\/\1>/gi, " ")
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/(p|div|li|h[1-6]|blockquote|pre|section|ul|ol|table|tr)>/gi, "\n")
+      .replace(/<br\s*\/?>/gi, "
+")
+      .replace(/<\/(p|div|li|h[1-6]|blockquote|pre|section|ul|ol|table|tr)>/gi, "
+")
       .replace(/<[^>]+>/g, " "),
   ).replace(/\s+/g, " ").trim();
 }
@@ -41,7 +48,8 @@ function splitText(text, maxLen = 300) {
   while (rest.length > maxLen) {
     let cut = maxLen;
     const chunk = rest.slice(0, maxLen);
-    const stop = Math.max(chunk.lastIndexOf("。"), chunk.lastIndexOf("！"), chunk.lastIndexOf("？"), chunk.lastIndexOf("\n"));
+    const stop = Math.max(chunk.lastIndexOf("。"), chunk.lastIndexOf("！"), chunk.lastIndexOf("？"), chunk.lastIndexOf("
+"));
     if (stop > maxLen * 0.4) cut = stop + 1;
     parts.push(rest.slice(0, cut).trim());
     rest = rest.slice(cut).trim();
@@ -67,7 +75,8 @@ async function generate(id, text) {
 }
 
 const changed = execFileSync("git", ["diff", "--name-only", "--", "src/content/post"], { encoding: "utf8" })
-  .split("\n")
+  .split("
+")
   .filter((path) => path.endsWith(".md"));
 
 if (!changed.length) {
