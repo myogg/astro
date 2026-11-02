@@ -28,15 +28,18 @@ jobs:
       - name: Sync issues into src/content/post
         run: node scripts/sync-issues.mjs
         env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: \${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Install dependencies and pre-generate speech for changed articles
-        if: \${{ env.TTS_ADMIN_TOKEN != '' }}
         env:
-          TTS_ADMIN_TOKEN: \${{ secrets.TTS_ADMIN_TOKEN }}
-          TTS_API_URL: \${{ vars.TTS_API_URL }}
+          TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
+          TTS_API_URL: ${{ vars.TTS_API_URL }}
         run: |
+          if [ -z "$TTS_ADMIN_TOKEN" ]; then
+            echo "TTS_ADMIN_TOKEN 未配置，跳过语音生成"
+            exit 0
+          fi
           if [ -z "$(git diff --name-only -- src/content/post | grep '\\.md$' || true)" ]; then
             echo "没有变更文章，跳过语音生成"
             exit 0
