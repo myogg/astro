@@ -11,7 +11,7 @@ interface PagesContext {
   env: TtsEnv;
 }
 
-const DEFAULT_TTS_API = "https://xiaomi-tts.xxjss-c4e.workers.dev";
+const DEFAULT_TTS_API = "https://xiaomi-tts.xxjss-c4.workers.dev";
 const ALLOWED_ORIGINS = new Set(["https://134688.xyz", "https://www.134688.xyz"]);
 
 function json(data: unknown, status = 200): Response {
