@@ -125,7 +125,16 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
     upstream = await fetch(api + "/generate", { method: "POST", headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ id, text: text.trim(), style: "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。", voice: "白桦" }) });
   } catch { return json({ error: "TTS service unavailable" }, 502); }
   const body = await upstream.json().catch(() => null);
-  if (!upstream.ok) return json({ error: "TTS generation failed", status: upstream.status }, upstream.status >= 500 ? 502 : upstream.status);
+  if (!upstream.ok) {
+    const upstreamError = body && typeof body === "object" ? body as Record<string, unknown> : {};
+    return json({
+      error: "TTS generation failed",
+      status: upstream.status,
+      upstream_error: typeof upstreamError.error === "string" ? upstreamError.error : "Unknown upstream error",
+      details: typeof upstreamError.details === "string" ? upstreamError.details : undefined,
+      upstream_status: typeof upstreamError.upstream_status === "number" ? upstreamError.upstream_status : undefined,
+    }, upstream.status >= 500 ? 502 : upstream.status);
+  }
   if (!body || typeof body.audio_url !== "string") return json({ error: "Invalid TTS response" }, 502);
   return json({ audio_url: body.audio_url, cached: Boolean(body.cached) });
 }
