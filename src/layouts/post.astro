@@ -313,6 +313,10 @@ const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
             message = parts.filter((part) => typeof part === 'string' && part.trim()).join('：') || message;
             if (result.upstream_status) message += `（上游状态码：${result.upstream_status}）`;
             else if (result.status) message += `（状态码：${result.status}）`;
+            if (result.diagnostic && typeof result.diagnostic === 'object') {
+              const d = result.diagnostic;
+              message += `（诊断：hasAdminToken=${Boolean(d.hasAdminToken)}，hasApiUrl=${Boolean(d.hasApiUrl)}，provider=${String(d.provider || 'default')}）`;
+            }
           } catch {
             /* 非 JSON 错误响应只显示状态码 */
           }
