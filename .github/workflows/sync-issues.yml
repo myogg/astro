@@ -31,6 +31,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
 
+      - name: Install dependencies and pre-generate speech for changed articles
+        if: ${{ secrets.TTS_ADMIN_TOKEN != '' }}
+        run: |
+          if [ -z "$(git diff --name-only -- src/content/post | grep '\\.md        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A src/content/post scripts/issues-manifest.json
+          if git diff --staged --quiet; then
+            echo "没有内容变化，跳过提交"
+          else
+            git commit -m "chore(sync): 同步 GitHub Issues 到文章"
+            git pull --rebase origin main
+            git push origin main
+          fi
+ || true)" ]; then
+            echo "没有变更文章，跳过语音生成"
+            exit 0
+          fi
+          corepack enable
+          corepack prepare pnpm@9.12.2 --activate
+          pnpm install --frozen-lockfile
+          pnpm build
+          node scripts/generate-tts.mjs
+        env:
+          TTS_ADMIN_TOKEN: ${{ secrets.TTS_ADMIN_TOKEN }}
+          TTS_API_URL: ${{ vars.TTS_API_URL }}
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
