@@ -169,323 +169,257 @@ const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
     </div>
   </main>
 
-  <script is:inline>
-    const player = document.getElementById('tts-player');
-    const toggleBtn = document.getElementById('tts-toggle');
-    const timeEl = document.getElementById('tts-time');
-    const backBtn = document.getElementById('tts-back');
-    const forwardBtn = document.getElementById('tts-forward');
-    const speedBtn = document.getElementById('tts-speed');
-    const shareBtn = document.getElementById('tts-share');
-    const shareLabel = document.getElementById('tts-share-label');
-    const statusEl = document.getElementById('tts-status');
-    const articleContent = document.getElementById('article-content');
+  <script is:inline>	const player = document.getElementById('tts-player');
+	const toggleBtn = document.getElementById('tts-toggle');
+	const timeEl = document.getElementById('tts-time');
+	const backBtn = document.getElementById('tts-back');
+	const forwardBtn = document.getElementById('tts-forward');
+	const speedBtn = document.getElementById('tts-speed');
+	const shareBtn = document.getElementById('tts-share');
+	const shareLabel = document.getElementById('tts-share-label');
+	const statusEl = document.getElementById('tts-status');
+	const articleContent = document.getElementById('article-content');
 
-    // token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
-    const TTS_ENDPOINT = '/api/tts';
-    const AUDIO_ID = player?.dataset.ttsId || '';
-    const AUDIO_SLUG = player?.dataset.ttsSlug || '';
-    const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
-    const SKIP = 15;
-    // 合成前拿不到真实音频长度，按中文语速估算总时长
-    const CHARS_PER_SEC = 4.3;
+	// token 只在 Pages 环境变量里，浏览器打同源代理，页面源码看不到它
+	const TTS_ENDPOINT = '/api/tts';
+	const AUDIO_SLUG = player?.dataset.ttsSlug || '';
+	const AUDIO_ID = player?.dataset.ttsId || '';
+	const SPEEDS = [1, 1.25, 1.5, 1.75, 2];
+	const SKIP = 15;
+	// 合成前拿不到真实音频长度，按中文语速估算总时长
+	const CHARS_PER_SEC = 4.3;
 
-    if (player && toggleBtn && articleContent) {
-      const playIcon = `
+	if (player && toggleBtn && articleContent) {
+		const playIcon = `
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
           <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18a1 1 0 0 0 0-1.68L9.54 5.98A1 1 0 0 0 8 6.82Z"></path>
         </svg>`;
-      const pauseIcon = `
+		const pauseIcon = `
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
           <rect x="7" y="5" width="3.6" height="14" rx="1.2"></rect>
           <rect x="13.4" y="5" width="3.6" height="14" rx="1.2"></rect>
         </svg>`;
-      const spinnerIcon = `
+		const spinnerIcon = `
         <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="h-5 w-5 animate-spin">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
           <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
         </svg>`;
 
-      // 正文之外的块（标签、评论区）都带 not-prose，不该被朗读；
-      // 顺带剔除 script/style/link，避免把 Waline 等第三方脚本代码读出来
-      const readableText = () =>
-        Array.from(articleContent.children)
-          .filter(
-            (el) =>
-              !el.classList.contains('not-prose') &&
-              !el.querySelector('#waline') &&
-              el.id !== 'waline',
-          )
-          .map((el) => {
-            const clone = el.cloneNode(true);
-            clone.querySelectorAll('script, style, link').forEach((n) => n.remove());
-            return clone.innerText || clone.textContent || '';
-          })
-          .join('\n')
-          .replace(/\s+/g, ' ')
-          .trim();
+		// 正文之外的块（标签、评论区）都带 not-prose，不该被朗读；
+		// 顺带剔除 script/style/link，避免把 Waline 等第三方脚本代码读出来
+		const readableText = () =>
+			Array.from(articleContent.children)
+				.filter(
+					(el) =>
+						!el.classList.contains('not-prose') &&
+						!el.querySelector('#waline') &&
+						el.id !== 'waline',
+				)
+				.map((el) => {
+					const clone = el.cloneNode(true);
+					clone.querySelectorAll('script, style, link').forEach((n) => n.remove());
+					return clone.innerText || clone.textContent || '';
+				})
+				.join('\n')
+				.replace(/\s+/g, ' ')
+				.trim();
 
-      let chunks = [];
-      const blobs = new Map();
-      const durations = [];
-      let index = 0;
-      let audio = null;
-      let playing = false;
-      let loading = false;
-      let started = false;
-      let abortController = null;
-      let speedIndex = 0;
-      let estimated = 0;
+		let audio = null;
+		let playing = false;
+		let loading = false;
+		let started = false;
+		let abortController = null;
+		let speedIndex = 0;
+		let estimated = 0;
 
-      const formatTime = (seconds) => {
-        const total = Math.max(0, Math.floor(seconds || 0));
-        return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
-      };
+		const formatTime = (seconds) => {
+			const total = Math.max(0, Math.floor(seconds || 0));
+			return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+		};
 
-      const offsetOf = (i) => {
-        let sum = 0;
-        for (let k = 0; k < i; k++) sum += durations[k] || 0;
-        return sum;
-      };
+		const renderTime = () => {
+			timeEl.textContent =
+				started || loading
+					? formatTime(audio ? audio.currentTime : 0)
+					: formatTime(estimated);
+		};
 
-      const renderTime = () => {
-        timeEl.textContent =
-          started || loading
-            ? formatTime(offsetOf(index) + (audio ? audio.currentTime : 0))
-            : formatTime(estimated);
-      };
+		const setStatus = (text) => {
+			if (!statusEl) return;
+			statusEl.textContent = text || '';
+			statusEl.hidden = !text;
+		};
 
-      const setStatus = (text) => {
-        if (!statusEl) return;
-        statusEl.textContent = text || '';
-        statusEl.hidden = !text;
-      };
+		// 未开播时显示"聆听文章 | 估算总时长"，开播后换成进度和快进控件
+		const idleEls = player.querySelectorAll('[data-tts-idle]');
+		const extras = player.querySelectorAll('[data-tts-extra]');
+		const updateUI = () => {
+			const idle = !loading && !started;
+			for (const el of idleEls) el.classList.toggle('hidden', !idle);
+			for (const el of extras) el.classList.toggle('hidden', idle);
+			renderTime();
+			toggleBtn.innerHTML = loading ? spinnerIcon : playing ? pauseIcon : playIcon;
+			const label = loading ? '加载中' : playing ? '暂停' : started ? '继续播放' : '聆听文章';
+			toggleBtn.setAttribute('aria-label', label);
+			toggleBtn.setAttribute('aria-pressed', String(playing));
+		};
 
-      // 未开播时显示"聆听文章 | 估算总时长"，开播后换成进度和快进控件
-      const idleEls = player.querySelectorAll('[data-tts-idle]');
-      const extras = player.querySelectorAll('[data-tts-extra]');
-      const updateUI = () => {
-        const idle = !loading && !started;
-        for (const el of idleEls) el.classList.toggle('hidden', !idle);
-        for (const el of extras) el.classList.toggle('hidden', idle);
-        renderTime();
-        toggleBtn.innerHTML = loading ? spinnerIcon : playing ? pauseIcon : playIcon;
-        const label = loading ? '加载中' : playing ? '暂停' : started ? '继续播放' : '聆听文章';
-        toggleBtn.setAttribute('aria-label', label);
-        toggleBtn.setAttribute('aria-pressed', String(playing));
-      };
+		const detachAudio = () => {
+			if (!audio) return;
+			audio.pause();
+			if (audio.dataset.url) URL.revokeObjectURL(audio.dataset.url);
+			audio = null;
+		};
 
-      function splitText(text, maxLen) {
-        const parts = [];
-        let rest = text;
-        while (rest.length > maxLen) {
-          let cut = maxLen;
-          const chunk = rest.slice(0, maxLen);
-          const stop = Math.max(
-            chunk.lastIndexOf('。'),
-            chunk.lastIndexOf('！'),
-            chunk.lastIndexOf('？'),
-            chunk.lastIndexOf('\n'),
-          );
-          if (stop > maxLen * 0.4) cut = stop + 1;
-          parts.push(rest.slice(0, cut).trim());
-          rest = rest.slice(cut).trim();
-        }
-        if (rest.trim()) parts.push(rest.trim());
-        return parts;
-      }
+		// 把一段完整音频（presigned 链接或 blob）挂到 <audio> 上播放
+		const playUrl = (audioUrl) => {
+			detachAudio();
+			loading = false;
+			setStatus('');
+			const el = new Audio(audioUrl);
+			el.dataset.url = audioUrl;
+			el.playbackRate = SPEEDS[speedIndex];
+			audio = el;
+			el.addEventListener('loadedmetadata', renderTime);
+			el.addEventListener('timeupdate', renderTime);
+			el.addEventListener('ended', () => {
+				playing = false;
+				started = false;
+				updateUI();
+			});
+			el.addEventListener('error', () => {
+				if (!started) {
+					loading = false;
+					setStatus('语音加载失败，请稍后重试');
+				}
+				updateUI();
+			});
+			el.play()
+				.then(() => {
+					playing = true;
+					started = true;
+				})
+				.catch(() => {
+					playing = false;
+				});
+			updateUI();
+		};
 
-      async function getBlob(i) {
-        if (blobs.has(i)) return blobs.get(i);
-        const params = new URLSearchParams({
-          id: `${AUDIO_ID}-${i}`,
-          slug: AUDIO_SLUG,
-          text: chunks[i],
-        });
-        const res = await fetch(`${TTS_ENDPOINT}?${params}`, {
-          signal: abortController.signal,
-        });
-        if (!res.ok) throw new Error('TTS API error');
-        const blob = await res.blob();
-        blobs.set(i, blob);
-        return blob;
-      }
+		const start = () => {
+			const text = readableText();
+			if (!text) return;
+			abortController = new AbortController();
+			loading = true;
+			started = false;
+			playing = false;
+			updateUI();
+			setStatus('正在合成语音…');
+			fetch(TTS_ENDPOINT, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ slug: AUDIO_SLUG, id: AUDIO_ID, text }),
+				signal: abortController.signal,
+			})
+				.then(async (res) => {
+					if (!res.ok) throw new Error('TTS request failed');
+					// 命中缓存时返回 JSON { audio_url }；兜底时直接返回 MP3 流
+					if ((res.headers.get('content-type') || '').includes('audio')) {
+						playUrl(URL.createObjectURL(await res.blob()));
+					} else {
+						const j = await res.json();
+						if (!j.audio_url) throw new Error('No audio_url');
+						playUrl(j.audio_url);
+					}
+				})
+				.catch(() => {
+					if (abortController && abortController.signal.aborted) return;
+					loading = false;
+					playing = false;
+					started = false;
+					updateUI();
+					setStatus('语音合成失败，请稍后重试');
+				});
+		};
 
-      const prefetch = (i) => {
-        if (i < 0 || i >= chunks.length || blobs.has(i)) return;
-        getBlob(i).catch(() => {});
-      };
+		const handleToggle = () => {
+			if (loading) return;
+			if (!started) {
+				start();
+				return;
+			}
+			if (!audio) return;
+			if (playing) {
+				audio.pause();
+				playing = false;
+			} else {
+				audio.play();
+				playing = true;
+			}
+			updateUI();
+		};
 
-      const detachAudio = () => {
-        if (!audio) return;
-        audio.pause();
-        if (audio.dataset.url) URL.revokeObjectURL(audio.dataset.url);
-        audio = null;
-      };
+		const skip = (delta) => {
+			if (!started || !audio || loading) return;
+			let next = audio.currentTime + delta;
+			if (Number.isFinite(audio.duration)) next = Math.min(Math.max(0, next), audio.duration);
+			audio.currentTime = next;
+			renderTime();
+		};
 
-      async function playFrom(i, seek = 0) {
-        if (i >= chunks.length) {
-          detachAudio();
-          playing = false;
-          started = false;
-          index = 0;
-          renderTime();
-          updateUI();
-          return;
-        }
+		const cycleSpeed = () => {
+			speedIndex = (speedIndex + 1) % SPEEDS.length;
+			const rate = SPEEDS[speedIndex];
+			if (audio) audio.playbackRate = rate;
+			speedBtn.textContent = `${rate}x`;
+		};
 
-        const target = Math.max(0, i);
-        detachAudio();
-        index = target;
-        loading = true;
-        updateUI();
-        setStatus(`正在合成第 ${target + 1}/${chunks.length} 段`);
+		let shareTimer;
+		const flashShare = (text) => {
+			if (!shareLabel) return;
+			shareLabel.textContent = text;
+			clearTimeout(shareTimer);
+			shareTimer = setTimeout(() => {
+				shareLabel.textContent = '分享';
+			}, 2000);
+		};
 
-        let blob;
-        try {
-          blob = await getBlob(target);
-        } catch {
-          if (abortController && abortController.signal.aborted) return;
-          loading = false;
-          playing = false;
-          updateUI();
-          setStatus('语音合成失败，请稍后重试');
-          return;
-        }
+		const handleShare = async () => {
+			const url = location.href;
+			if (navigator.share) {
+				try {
+					await navigator.share({ title: document.title, url });
+				} catch {
+					/* 用户取消分享 */
+				}
+				return;
+			}
+			try {
+				await navigator.clipboard.writeText(url);
+				flashShare('已复制链接');
+			} catch {
+				flashShare('复制失败');
+			}
+		};
 
-        loading = false;
-        setStatus('');
+		const stopAll = () => {
+			if (abortController) abortController.abort();
+			detachAudio();
+			playing = false;
+		};
 
-        const url = URL.createObjectURL(blob);
-        const el = new Audio(url);
-        el.dataset.url = url;
-        el.playbackRate = SPEEDS[speedIndex];
-        audio = el;
+		toggleBtn.addEventListener('click', handleToggle);
+		backBtn?.addEventListener('click', () => skip(-SKIP));
+		forwardBtn?.addEventListener('click', () => skip(SKIP));
+		speedBtn?.addEventListener('click', cycleSpeed);
+		shareBtn?.addEventListener('click', handleShare);
+		window.addEventListener('beforeunload', stopAll);
 
-        el.addEventListener('loadedmetadata', () => {
-          if (Number.isFinite(el.duration)) durations[target] = el.duration;
-          if (seek > 0) el.currentTime = Math.min(seek, el.duration || seek);
-          renderTime();
-        });
-        el.addEventListener('timeupdate', renderTime);
-        el.addEventListener('ended', () => playFrom(target + 1));
-        el.addEventListener('error', () => playFrom(target + 1));
-
-        try {
-          await el.play();
-          playing = true;
-          started = true;
-        } catch {
-          playing = false;
-        }
-        updateUI();
-        prefetch(target + 1);
-      }
-
-      const start = () => {
-        chunks = splitText(readableText(), 300);
-        if (!chunks.length) return;
-        abortController = new AbortController();
-        durations.length = 0;
-        playFrom(0);
-      };
-
-      const handleToggle = () => {
-        if (loading) return;
-        if (!started) {
-          start();
-          return;
-        }
-        if (!audio) return;
-        if (playing) {
-          audio.pause();
-          playing = false;
-        } else {
-          audio.play();
-          playing = true;
-        }
-        updateUI();
-      };
-
-      const skip = (delta) => {
-        if (!started || !audio || loading) return;
-        const next = audio.currentTime + delta;
-        if (next < 0) {
-          if (index === 0) {
-            audio.currentTime = 0;
-            renderTime();
-          } else {
-            playFrom(index - 1, Math.max(0, (durations[index - 1] || 0) + next));
-          }
-          return;
-        }
-        const duration = Number.isFinite(audio.duration) ? audio.duration : null;
-        if (duration !== null && next > duration) {
-          if (index + 1 < chunks.length) playFrom(index + 1, next - duration);
-          else {
-            audio.currentTime = duration;
-            renderTime();
-          }
-          return;
-        }
-        audio.currentTime = next;
-        renderTime();
-      };
-
-      const cycleSpeed = () => {
-        speedIndex = (speedIndex + 1) % SPEEDS.length;
-        const rate = SPEEDS[speedIndex];
-        if (audio) audio.playbackRate = rate;
-        speedBtn.textContent = `${rate}x`;
-      };
-
-      let shareTimer;
-      const flashShare = (text) => {
-        if (!shareLabel) return;
-        shareLabel.textContent = text;
-        clearTimeout(shareTimer);
-        shareTimer = setTimeout(() => {
-          shareLabel.textContent = '分享';
-        }, 2000);
-      };
-
-      const handleShare = async () => {
-        const url = location.href;
-        if (navigator.share) {
-          try {
-            await navigator.share({ title: document.title, url });
-          } catch {
-            /* 用户取消分享 */
-          }
-          return;
-        }
-        try {
-          await navigator.clipboard.writeText(url);
-          flashShare('已复制链接');
-        } catch {
-          flashShare('复制失败');
-        }
-      };
-
-      const stopAll = () => {
-        if (abortController) abortController.abort();
-        detachAudio();
-        playing = false;
-      };
-
-      toggleBtn.addEventListener('click', handleToggle);
-      backBtn?.addEventListener('click', () => skip(-SKIP));
-      forwardBtn?.addEventListener('click', () => skip(SKIP));
-      speedBtn?.addEventListener('click', cycleSpeed);
-      shareBtn?.addEventListener('click', handleShare);
-      window.addEventListener('beforeunload', stopAll);
-
-      const initialText = readableText();
-      if (initialText) estimated = initialText.length / CHARS_PER_SEC;
-      else player.hidden = true;
-      updateUI();
-    } else if (player) {
-      player.hidden = true;
-    }
-  </script>
+		const initialText = readableText();
+		if (initialText) estimated = initialText.length / CHARS_PER_SEC;
+		else player.hidden = true;
+		updateUI();
+	} else if (player) {
+		player.hidden = true;
+	}
+</script>
 </Layout>
