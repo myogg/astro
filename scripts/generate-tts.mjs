@@ -5,7 +5,6 @@
 
 import crypto from "node:crypto";
 import { readFileSync, existsSync } from "node:fs";
-import { execSync } from "node:child_process";
 
 const POST_DIR = "src/content/post";
 const PREFIX = "audio";
@@ -24,16 +23,37 @@ function log(...a) {
 	console.log("[generate-tts]", ...a);
 }
 
-function changedPosts() {
+// 通过 GitHub API 精确查本次部署 commit 改动的文章。
+// 注意：Cloudflare Pages 是浅克隆，git show HEAD 会把整个仓库当成一次提交、列出全部文章，
+// 导致全量预生成（曾把 300 篇旧文全部实时合成一遍）。因此改用 CF_PAGES_COMMIT_SHA + API，
+// 且检测失败时一律安全跳过（绝不回退到全量），旧文章交由运行时按需合成。
+const MAX_POSTS = 10; // 单次部署最多预生成篇数，兜底防止意外全量
+async function changedPosts() {
+	const sha = env.CF_PAGES_COMMIT_SHA;
+	if (!sha) {
+		log("无 CF_PAGES_COMMIT_SHA，跳过预生成（文章走按需合成）。");
+		return [];
+	}
 	try {
-		// 本次提交改动的文件（浅克隆也能用），筛出 post 目录里的 .md
-		const out = execSync("git show --name-only --pretty=format: HEAD", { encoding: "utf-8" });
-		return out
-			.split("\n")
-			.map((x) => x.trim())
-			.filter((x) => x.startsWith(POST_DIR + "/") && x.endsWith(".md"));
+		const res = await fetch(`https://api.github.com/repos/myogg/astro/commits/${sha}`, {
+			headers: { Accept: "application/vnd.github+json", "User-Agent": "astro-tts-build" },
+		});
+		if (!res.ok) {
+			log(`GitHub API 返回 ${res.status}，跳过预生成（文章走按需合成）。`);
+			return [];
+		}
+		const data = await res.json();
+		const files = (data.files || [])
+			.filter((f) => f.status === "added" || f.status === "modified")
+			.map((f) => f.filename)
+			.filter((f) => f.startsWith(POST_DIR + "/") && f.endsWith(".md"));
+		if (files.length > MAX_POSTS) {
+			log(`改动文章 ${files.length} 篇超过上限 ${MAX_POSTS}，跳过预生成（文章走按需合成）。`);
+			return [];
+		}
+		return files;
 	} catch (e) {
-		log("无法检测改动文件，跳过预生成：", e.message);
+		log("改动检测异常，跳过预生成：", e.message);
 		return [];
 	}
 }
@@ -127,7 +147,8 @@ async function putR2(key, body) {
 	const bucket = env.R2_BUCKET;
 	const host = `${account}.r2.cloudflarestorage.com`;
 	const now = new Date();
-	const amz = now.toISOString().replace(/[:-]|\.\d{3}/g, "").replace("T", "");
+	// AWS SigV4 要求 YYYYMMDDTHHMMSSZ，中间的 T 必须保留，删掉会 403 RequestTimeTooSkewed
+	const amz = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
 	const dat = amz.slice(0, 8);
 	const ph = hex(crypto.createHash("sha256").update(body).digest());
 	// content-length 不进签名集合（运行时自动补），与已验证实现一致
@@ -171,7 +192,7 @@ async function main() {
 		log("未找到", POST_DIR, "，跳过。");
 		return;
 	}
-	const files = changedPosts();
+	const files = await changedPosts();
 	if (!files.length) {
 		log("本次提交无文章改动，跳过。");
 		return;
