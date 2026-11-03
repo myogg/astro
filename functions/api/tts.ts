@@ -273,7 +273,7 @@ export async function onRequestPost(context: PagesContext): Promise<Response> {
 	let slug = "";
 	let text = "";
 	try {
-		const body = await request.json<{ slug?: string; id?: string; text?: string }>();
+		const body = (await request.json()) as { slug?: string; id?: string; text?: string };
 		slug = body.slug || "";
 		text = body.text || "";
 	} catch {
