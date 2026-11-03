@@ -104,32 +104,34 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
     return json({ error: "Text does not match the published article" }, 400);
   }
 
-  const api = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
+  // 直接使用原来的微软 Edge TTS API，不再经过小米 TTS 或 R2。
+  const params = new URLSearchParams({
+    text: text.trim(),
+    voiceName: "zh-CN-XiaoxiaoNeural",
+    pitch: "-20%",
+    rate: "5%",
+    format: "audio-24khz-48kbitrate-mono-mp3",
+  });
+  if (env.TTS_API_TOKEN) params.set("token", env.TTS_API_TOKEN);
 
-  // 切回微软时沿用原来的 Edge TTS 接口；密钥只在 Pages 服务端读取。
-  if (env.TTS_PROVIDER === "microsoft") {
-    const params = new URLSearchParams({ text: text.trim(), voiceName: "zh-CN-YunyangNeural", pitch: "-5%", rate: "-20%", format: "audio-24khz-96kbitrate-mono-mp3" });
-    if (env.TTS_API_TOKEN) params.set("token", env.TTS_API_TOKEN);
-    let microsoft: Response;
-    const microsoftApi = (env.MICROSOFT_TTS_API_URL || "https://tts.134688.xyz").replace(/\/+$/, "");
-    try { microsoft = await fetch(microsoftApi + "/api/synthesis?" + params); }
-    catch { return json({ error: "Microsoft TTS service unavailable" }, 502); }
-    if (!microsoft.ok) return json({ error: "Microsoft TTS synthesis failed", status: microsoft.status }, microsoft.status >= 500 ? 502 : microsoft.status);
-    return new Response(microsoft.body, { headers: { "Content-Type": microsoft.headers.get("Content-Type") || "audio/mpeg", "Cache-Control": "no-store" } });
-  }
-
-  const token = env.TTS_ADMIN_TOKEN;
-  if (!token) return json({ error: "TTS service is not configured" }, 503);
-  let upstream: Response;
+  const microsoftApi = (env.MICROSOFT_TTS_API_URL || "https://tts.134688.xyz").replace(/\\/+$/, "");
+  let microsoft: Response;
   try {
-    upstream = await fetch(api + "/generate", { method: "POST", headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ id, text: text.trim(), style: "像朋友面对面聊天一样自然地说普通话，生活化、放松、不端着，不要播音腔，不要刻意煽情；语速适中，停顿自然，吐字清楚。", voice: "茉莉" }) });
-  } catch { return json({ error: "TTS service unavailable" }, 502); }
-  const body = await upstream.json().catch(() => null);
-  if (!upstream.ok) {
-    const detail = typeof body?.details === "string" ? body.details : typeof body?.error === "string" ? body.error : undefined;
-    console.error("TTS upstream failed", api, upstream.status, detail);
-    return json({ error: "TTS generation failed", status: upstream.status, detail }, upstream.status >= 500 ? 502 : upstream.status);
+    microsoft = await fetch(microsoftApi + "/api/synthesis?" + params);
+  } catch {
+    return json({ error: "Microsoft TTS service unavailable" }, 502);
   }
-  if (!body || typeof body.audio_url !== "string") return json({ error: "Invalid TTS response" }, 502);
-  return json({ audio_url: body.audio_url, cached: Boolean(body.cached) });
+  if (!microsoft.ok) {
+    return json(
+      { error: "Microsoft TTS synthesis failed", status: microsoft.status },
+      microsoft.status >= 500 ? 502 : microsoft.status,
+    );
+  }
+
+  return new Response(microsoft.body, {
+    headers: {
+      "Content-Type": microsoft.headers.get("Content-Type") || "audio/mpeg",
+      "Cache-Control": "no-store",
+    },
+  });
 }
