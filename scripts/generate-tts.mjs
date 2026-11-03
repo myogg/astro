@@ -4,7 +4,7 @@
 // 旧文章（300 篇）不在这里处理，读者首次点击时由 functions/api/tts.ts 按需合成并缓存。
 
 import crypto from "node:crypto";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 
 const POST_DIR = "src/content/post";
@@ -116,7 +116,6 @@ async function synthesize(text) {
 }
 
 // ---------- S3 SigV4（PUT 到账号 B 的私有桶） ----------
-const enc = new TextEncoder();
 function hmac(key, msg) {
 	return crypto.createHmac("sha256", key).update(msg).digest();
 }
