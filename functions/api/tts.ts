@@ -260,6 +260,7 @@ async function handleSlug(env: TtsEnv, slug: string, text: string): Promise<Resp
 }
 
 // 临时诊断：GET /api/tts?debug=1 返回各环境变量配置状态 + R2 连通性实测（不泄露完整密钥）
+// v3 deploy trigger
 async function debugReport(env: TtsEnv): Promise<Response> {
 	const secretInfo = (v?: string) => (v ? `set (len=${v.length}, ${v.slice(0, 4)}...)` : "MISSING");
 	const report: Record<string, unknown> = {
