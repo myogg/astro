@@ -101,7 +101,7 @@ async function generate(id, text) {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ id, text, style, voice: "白桦" }),
+    body: JSON.stringify({ id, text, style, voice: "茉莉" }),
   });
   const body = await response.json().catch(() => null);
   if (!response.ok || !body?.audio_url) {
