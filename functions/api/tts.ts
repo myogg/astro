@@ -99,10 +99,17 @@ async function authHeader(
 	};
 }
 
-// 给浏览器播放用的 presigned GET 链接（host = 公开域名或 S3 端点）
+// 给浏览器播放用的链接
 async function presignGet(env: TtsEnv, key: string): Promise<string> {
+	// 若配了自定义域名（已绑定到该 R2 桶，域名根即桶根，且通常已设为公开可读），
+	// 直接返回干净直链，不带桶名前缀、无需签名：CDN 可缓存、不过期、URL 简洁。
+	// 注意：写入始终走私有 S3 端点 + 密钥鉴权，与此处的只读公开播放互不冲突。
+	if (env.R2_PUBLIC_HOST) {
+		return `https://${env.R2_PUBLIC_HOST}/${key}`;
+	}
+	// 未配自定义域名：走私有 S3 端点 + presigned GET（SigV4 签名鉴权，1 小时有效）
 	const { amz, dat } = amzNow();
-	const host = env.R2_PUBLIC_HOST || s3Host(env.R2_ACCOUNT_ID!);
+	const host = s3Host(env.R2_ACCOUNT_ID!);
 	const cred = `${env.R2_ACCESS_KEY_ID}/${dat}/${REGION}/${SERVICE}/aws4_request`;
 	const params: Record<string, string> = {
 		"X-Amz-Algorithm": "AWS4-HMAC-SHA256",
@@ -260,41 +267,10 @@ async function handleSlug(env: TtsEnv, slug: string, text: string): Promise<Resp
 	}
 }
 
-// 临时诊断：GET /api/tts?debug=1 返回各环境变量配置状态 + R2 连通性实测（不泄露完整密钥）
-// v3 deploy trigger
-async function debugReport(env: TtsEnv): Promise<Response> {
-	const secretInfo = (v?: string) => (v ? `set (len=${v.length}, ${v.slice(0, 4)}...)` : "MISSING");
-	const report: Record<string, unknown> = {
-		TTS_API_URL: env.TTS_API_URL ?? `(default) ${DEFAULT_TTS_API}`,
-		TTS_API_TOKEN: secretInfo(env.TTS_API_TOKEN),
-		R2_ACCOUNT_ID: env.R2_ACCOUNT_ID ?? "MISSING",
-		R2_BUCKET: env.R2_BUCKET ?? "MISSING",
-		R2_ACCESS_KEY_ID: secretInfo(env.R2_ACCESS_KEY_ID),
-		R2_SECRET_ACCESS_KEY: secretInfo(env.R2_SECRET_ACCESS_KEY),
-		R2_PUBLIC_HOST: env.R2_PUBLIC_HOST ?? "(unset，回退 S3 端点)",
-	};
-	if (env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY && env.R2_ACCOUNT_ID && env.R2_BUCKET) {
-		try {
-			const headers = await authHeader(env, "HEAD", "__diag__.mp3", "UNSIGNED-PAYLOAD");
-			const res = await fetch(
-				`https://${s3Host(env.R2_ACCOUNT_ID)}/${env.R2_BUCKET}/__diag__.mp3`,
-				{ method: "HEAD", headers },
-			);
-			report.r2_head_test = `${res.status}（404=凭据正常仅对象不存在；200=对象存在；403=签名或权限错误）`;
-		} catch (e) {
-			report.r2_head_test = `exception: ${String(e).slice(0, 300)}`;
-		}
-	} else {
-		report.r2_head_test = "skipped：R2 变量不全";
-	}
-	return json(report);
-}
-
 // 单段流式（无 slug）：直接把上游 MP3 流返回（保留旧接口 / 兜底）
 export async function onRequestGet(context: PagesContext): Promise<Response> {
 	const { request, env } = context;
 	const url = new URL(request.url);
-	if (url.searchParams.get("debug") === "1") return debugReport(env);
 	const text = url.searchParams.get("text");
 	return streamSegment(env, text || "");
 }
