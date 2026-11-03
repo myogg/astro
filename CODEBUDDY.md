@@ -6,7 +6,7 @@ This file provides guidance to CodeBuddy Code when working with code in this rep
 
 ```bash
 pnpm dev          # 开发服务器（= pnpm start）
-pnpm build        # astro check → astro build
+pnpm build        # astro check → astro build → node scripts/generate-tts.mjs（若有 R2 凭据则预生成朗读音频）
 pnpm preview      # 预览 dist/
 pnpm sync         # 本地跑一次 Issues → Markdown 同步
 pnpm check        # biome check --apply-unsafe .（见下方警告）
@@ -139,8 +139,10 @@ draft: false                    # 可选，true 则不参与构建与列表
 
 - 两个状态：未开播 `▶ 听全文 │ 估算总时长 ⋯ 🔗 分享`；播放中 `⏸ 已播时长 │ ↺15 ↻15 1x ⋯ 🔗 分享`。分隔线做了两个各自切换，因为两种布局里它位置不同。
 - 显示/隐藏用 Tailwind 的 `hidden` **类**而非 HTML `hidden` 属性 —— 带 `flex` 的元素会盖掉 `[hidden]` 的 `display:none`。产物 CSS 里 `.hidden` 排在 `.flex` 之后，所以类的写法压得住。
-- 正文按 300 字切段（在 `。！？\n` 处断），调同源 `GET /api/tts`（微软 Edge TTS，`zh-CN-XiaoxiaoNeural` 音色），blob 缓存 + 预取下一段，支持跨分段 ±15 秒 seek 和 1x~2x 五档倍速。**token 不在前端**：`functions/api/tts.ts`（Cloudflare Pages Function）在服务端拼上 `env.TTS_API_TOKEN` 再打上游 `env.TTS_API_URL`（缺省 `https://tts.134688.xyz` 的 `/api/synthesis`），所以页面源码和仓库里都没有密钥。改上游地址或换 token 只动 Pages 环境变量，不用改代码、不用重新部署前端。
-- 总时长是**估算值**（`CHARS_PER_SEC = 4.8`），因为音频要点播放才逐段合成，事前拿不到真实长度。
+- **整篇一次性合成 + 存 R2 + 单文件播放**：点击「聆听文章」时，前端把 `slug` + 全文 `text` 发给同源 `GET /api/tts`（`functions/api/tts.ts`，Cloudflare Pages Function）。该 Function 先查私有 R2 桶里 `audio/<slug>.mp3` 是否已有成品：有则直接返回 presigned 播放链接（`cached:true`）；没有则把正文按 300 字切段、逐段调微软 Edge TTS（`zh-CN-XiaoxiaoNeural` 音色）、**同参数 MP3 字节直接拼接合并**（无需 ffmpeg），再 `PUT` 进 R2，返回 presigned 链接（`cached:false`）。前端拿到 `audio_url` 后用**单个 `<audio>`** 播放，支持 ±15 秒 seek 和 1x~2x 五档倍速。**token 不在前端**：Function 在服务端拼 `env.TTS_API_TOKEN` 再打上游 `env.TTS_API_URL`（缺省 `https://tts.134688.xyz` 的 `/api/synthesis`）。
+- **跨账号私有桶**：R2 桶 `astro-tts` 在另一个 Cloudflare 账号，Pages Function 无法用绑定直连，改为用该桶的 S3 兼容 API 令牌（SigV4 签名）读写。密钥全部在 Pages 环境变量里（`R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` / `R2_ACCOUNT_ID` / `R2_BUCKET` / `R2_PUBLIC_HOST`），仓库代码里不出现。桶保持私有，播放用 presigned URL（默认 1 小时有效），`R2_PUBLIC_HOST` 设为自定义域名（如 `tel.xx.kg`）即可换成更干净的播放地址。
+- **新文章预生成**：`scripts/generate-tts.mjs` 仅在 Cloudflare Pages 构建（`CF_PAGES`）时运行。它通过 `git show` 找出本次提交改动过的 `src/content/post/*.md`，提取正文→分段合成→合并→同样 `PUT` 进 `astro-tts`，读者打开即播、零等待。旧文章（约 300 篇）不预生成，首次点击时由 Function 按需合成并缓存。缺 R2 凭据时脚本安全跳过，文章回退为「点击即流合成」，不影响构建。
+- 总时长是**估算值**（`CHARS_PER_SEC = 4.3`），因为音频合成本质是异步的，事前拿不到真实长度；播到 `loadedmetadata` 后切换为真实进度。
 - `readableText()` 只取 `#article-content` 直接子元素中**不含 `not-prose` class** 的部分。标签块和评论区都带 `not-prose`，靠这个避免被朗读。**新增文章底部区块时记得加 `not-prose`**，否则会被念出来。
 - 找不到 `#article-content` 时整个播放器隐藏。
 
