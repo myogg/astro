@@ -61,7 +61,8 @@ async function deriveSigningKey(
 	return k;
 }
 function amzNow(d = new Date()): { amz: string; dat: string } {
-	const amz = d.toISOString().replace(/[:-]|\.\d{3}/g, "").replace("T", "");
+	// AWS SigV4 要求 YYYYMMDDTHHMMSSZ，中间的 T 必须保留，删掉会 403 RequestTimeTooSkewed
+	const amz = d.toISOString().replace(/[:-]|\.\d{3}/g, "");
 	return { amz, dat: amz.slice(0, 8) };
 }
 function s3Host(account: string): string {
