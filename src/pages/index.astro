@@ -59,13 +59,38 @@ import Layout from "../layouts/main.astro";
               aria-label="播放 姜小小的博客 标志动画"
               class="group relative z-30 block w-full cursor-pointer rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600"
             >
-              <img
+              <svg
                 id="hero-avatar-img"
-                src="/assets/images/photo.webp"
-                loading="eager"
-                decoding="auto"
-                class="relative z-30 w-full md:max-w-md mx-auto dark:invert dark:-translate-y-0.5 transition duration-300 group-hover:scale-[1.03]"
-              />
+                viewBox="0 0 200 210"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="relative z-30 w-full max-w-[280px] md:max-w-md mx-auto text-neutral-900 dark:text-neutral-100 transition duration-300 group-hover:scale-[1.03] animate-spin"
+                style="animation-duration:5s"
+                aria-label="旋转的机器人"
+              >
+                <!-- 天线 -->
+                <line x1="100" y1="28" x2="100" y2="48" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+                <circle cx="100" cy="20" r="9" fill="currentColor" />
+                <!-- 头 -->
+                <rect x="50" y="48" width="100" height="74" rx="22" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="6" />
+                <!-- 眼睛 -->
+                <circle cx="80" cy="84" r="10" fill="currentColor" />
+                <circle cx="120" cy="84" r="10" fill="currentColor" />
+                <!-- 嘴 -->
+                <rect x="80" y="104" width="40" height="7" rx="3.5" fill="currentColor" />
+                <!-- 脖子 -->
+                <rect x="92" y="122" width="16" height="10" fill="currentColor" />
+                <!-- 身体 -->
+                <rect x="62" y="132" width="76" height="54" rx="18" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="6" />
+                <!-- 身体装饰灯 -->
+                <circle cx="100" cy="159" r="7" fill="currentColor" />
+                <!-- 手臂 -->
+                <rect x="38" y="140" width="20" height="40" rx="10" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="6" />
+                <rect x="142" y="140" width="20" height="40" rx="10" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="6" />
+                <!-- 轮子 -->
+                <circle cx="82" cy="196" r="13" fill="currentColor" />
+                <circle cx="118" cy="196" r="13" fill="currentColor" />
+              </svg>
             </button>
           </div>
           <video
