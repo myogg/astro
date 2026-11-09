@@ -8,11 +8,18 @@ import { readFileSync, existsSync } from "node:fs";
 
 const POST_DIR = "src/content/post";
 const PREFIX = "audio";
+
+// 合成优先级：小米（主力）→ 微软（兜底），整篇为单位降级。
+// 小米不传音色，用 Worker 默认；微软保留原有音色与参数（降级后音色不同属正常）。
+// 令牌只放构建环境变量，服务端使用，绝不进前端。
+const DEFAULT_XIAOMI_API = "https://ccb.xx.kg"; // 小米 TTS（主力）
+const DEFAULT_TTS_API = "https://tts.134688.xyz"; // 微软 TTS（兜底，原有配置不动）
 const VOICE = "zh-CN-XiaoxiaoNeural";
 const PITCH = "-10%";
 const RATE = "-15%";
 const FORMAT = "audio-24khz-48kbitrate-mono-mp3";
-const CHUNK = 300;
+// 早期无 R2、点击实时合成才按 300 字切；现在发文即预生成、读者零等待，放宽到 2000。
+const CHUNK = 2000;
 const REGION = "auto";
 const SERVICE = "s3";
 const CONCURRENCY = 5;
@@ -105,23 +112,43 @@ function stripId3(buf) {
 	return buf;
 }
 
-async function synthChunk(text) {
-	const api = (env.TTS_API_URL || "https://tts.134688.xyz").replace(/\/+$/, "");
-	const p = new URLSearchParams({ text, voiceName: VOICE, pitch: PITCH, rate: RATE, format: FORMAT });
-	if (env.TTS_API_TOKEN) p.set("token", env.TTS_API_TOKEN);
-	const res = await fetch(`${api}/api/synthesis?${p}`);
-	if (!res.ok) throw new Error(`TTS ${res.status}`);
+// 小米（主力）：POST /tts，只带 text/format，不指定音色（Worker 默认白桦）
+async function synthXiaomi(text) {
+	const api = (env.XIAOMI_API_URL || DEFAULT_XIAOMI_API).replace(/\/+$/, "");
+	const headers = { "Content-Type": "application/json" };
+	if (env.XIAOMI_API_TOKEN) headers["Authorization"] = `Bearer ${env.XIAOMI_API_TOKEN}`;
+	const res = await fetch(`${api}/tts?format=mp3`, {
+		method: "POST",
+		headers,
+		body: JSON.stringify({ text, format: "mp3" }),
+	});
+	if (!res.ok) throw new Error(`Xiaomi TTS ${res.status}`);
 	return stripId3(new Uint8Array(await res.arrayBuffer()));
 }
 
-async function synthesize(text) {
+// 微软（兜底）：完全沿用原有 GET /api/synthesis 与音色参数，一字未改
+async function synthMicrosoft(text) {
+	const api = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
+	const p = new URLSearchParams({ text, voiceName: VOICE, pitch: PITCH, rate: RATE, format: FORMAT });
+	if (env.TTS_API_TOKEN) p.set("token", env.TTS_API_TOKEN);
+	const res = await fetch(`${api}/api/synthesis?${p}`);
+	if (!res.ok) throw new Error(`Microsoft TTS ${res.status}`);
+	return stripId3(new Uint8Array(await res.arrayBuffer()));
+}
+
+function synthChunk(provider, text) {
+	return provider === "xiaomi" ? synthXiaomi(text) : synthMicrosoft(text);
+}
+
+// 单个 provider 合成整篇：分段并发 → 同参数 MP3 字节拼接（无需 ffmpeg）
+async function synthesizeWith(provider, text) {
 	const chunks = splitText(text, CHUNK);
 	const parts = new Array(chunks.length);
 	let i = 0;
 	async function worker() {
 		while (i < chunks.length) {
 			const idx = i++;
-			parts[idx] = await synthChunk(chunks[idx]);
+			parts[idx] = await synthChunk(provider, chunks[idx]);
 		}
 	}
 	await Promise.all(Array.from({ length: Math.min(CONCURRENCY, chunks.length) }, worker));
@@ -133,6 +160,17 @@ async function synthesize(text) {
 		o += b.length;
 	}
 	return out;
+}
+
+// 降级链（以整篇为单位）：小米任一段失败（非 2xx / 网络异常）→ 整篇丢弃，全部改用微软重合成。
+// 前提是两个 TTS 至少有一个可用；两者皆失败时本篇不写 R2，留给读者点击时再试。
+async function synthesize(text) {
+	try {
+		return await synthesizeWith("xiaomi", text);
+	} catch (e) {
+		log("小米合成失败，整篇降级微软:", e.message);
+		return await synthesizeWith("microsoft", text);
+	}
 }
 
 // ---------- S3 SigV4（PUT 到账号 B 的私有桶） ----------
