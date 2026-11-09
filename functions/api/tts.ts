@@ -1,4 +1,8 @@
 interface TtsEnv {
+	// 小米 TTS（主力）：地址默认 ccb.xx.kg，token 为 Worker 的 ACCESS_TOKEN
+	XIAOMI_API_URL?: string;
+	XIAOMI_API_TOKEN?: string;
+	// 微软 TTS（兜底）：沿用原有配置，一行不改
 	TTS_API_URL?: string;
 	TTS_API_TOKEN?: string;
 	// 跨账号私有 R2 桶（账号 B），通过 S3 兼容 API + SigV4 签名读写
@@ -16,13 +20,22 @@ interface PagesContext {
 }
 
 // 站点是纯静态的，token 不能跟着页面发到浏览器，所以朗读改走这个同源代理。
-// 上游地址与 token 放在 Cloudflare Pages 的环境变量里（TTS_API_URL / TTS_API_TOKEN）。
+// 两套上游都在服务端读环境变量，令牌绝不下发前端。
+//
+// 合成优先级：小米（主力）→ 微软（兜底）。任一整篇失败才降级，保证一个 MP3 内音色连贯。
+// 小米不传 voice，用 Worker 默认音色；微软保留原有音色与参数（降级后音色不同属正常）。
+
+// 小米 TTS（主力，ccb.xx.kg 指向的 Worker）
+const DEFAULT_XIAOMI_API = "https://ccb.xx.kg";
+// 微软 TTS（兜底，原有配置完全不动）
 const DEFAULT_TTS_API = "https://tts.134688.xyz";
 const VOICE = "zh-CN-XiaoxiaoNeural";
 const PITCH = "-10%";
 const RATE = "-15%";
 const FORMAT = "audio-24khz-48kbitrate-mono-mp3";
-const CHUNK = 300; // 单段合成字数上限
+// 早期无 R2、点击实时合成，怕读者久等才按 300 字切；现在发文即预生成、读者零等待，
+// 分段只影响上游单次请求长度，故放宽到 2000（小米 Worker 上限 8000）。
+const CHUNK = 2000;
 const PREFIX = "audio"; // R2 键前缀
 const REGION = "auto";
 const SERVICE = "s3";
@@ -161,13 +174,35 @@ function stripId3(buf: Uint8Array): Uint8Array {
 	return buf;
 }
 
-async function synthChunk(env: TtsEnv, text: string): Promise<Uint8Array> {
+type Provider = "xiaomi" | "microsoft";
+
+// 小米（主力）：POST /tts，JSON body 只带 text/format，不指定音色（Worker 默认白桦）。
+// 令牌只在这里的服务端请求头里出现，绝不下发浏览器。
+async function synthXiaomi(env: TtsEnv, text: string): Promise<Uint8Array> {
+	const api = (env.XIAOMI_API_URL || DEFAULT_XIAOMI_API).replace(/\/+$/, "");
+	const headers: Record<string, string> = { "Content-Type": "application/json" };
+	if (env.XIAOMI_API_TOKEN) headers["Authorization"] = `Bearer ${env.XIAOMI_API_TOKEN}`;
+	const res = await fetch(`${api}/tts?format=mp3`, {
+		method: "POST",
+		headers,
+		body: JSON.stringify({ text, format: "mp3" }),
+	});
+	if (!res.ok) throw new Error(`Xiaomi TTS ${res.status}`);
+	return stripId3(new Uint8Array(await res.arrayBuffer()));
+}
+
+// 微软（兜底）：完全沿用原有 GET /api/synthesis 与音色参数，一字未改。
+async function synthMicrosoft(env: TtsEnv, text: string): Promise<Uint8Array> {
 	const api = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
 	const p = new URLSearchParams({ text, voiceName: VOICE, pitch: PITCH, rate: RATE, format: FORMAT });
 	if (env.TTS_API_TOKEN) p.set("token", env.TTS_API_TOKEN);
 	const res = await fetch(`${api}/api/synthesis?${p}`);
-	if (!res.ok) throw new Error(`TTS ${res.status}`);
+	if (!res.ok) throw new Error(`Microsoft TTS ${res.status}`);
 	return stripId3(new Uint8Array(await res.arrayBuffer()));
+}
+
+function synthChunk(env: TtsEnv, provider: Provider, text: string): Promise<Uint8Array> {
+	return provider === "xiaomi" ? synthXiaomi(env, text) : synthMicrosoft(env, text);
 }
 
 // 并发受限的 map
@@ -184,10 +219,10 @@ async function mapPool<T, R>(items: T[], limit: number, fn: (t: T) => Promise<R>
 	return out;
 }
 
-// 分段合成 → 同参数 MP3 字节拼接（无需 ffmpeg）
-async function synthesize(env: TtsEnv, text: string): Promise<Uint8Array> {
+// 单个 provider 合成整篇：分段并发 → 同参数 MP3 字节拼接（无需 ffmpeg）
+async function synthesizeWith(env: TtsEnv, provider: Provider, text: string): Promise<Uint8Array> {
 	const chunks = splitText(text, CHUNK);
-	const parts = await mapPool(chunks, CONCURRENCY, (c) => synthChunk(env, c));
+	const parts = await mapPool(chunks, CONCURRENCY, (c) => synthChunk(env, provider, c));
 	const total = parts.reduce((n, b) => n + b.length, 0);
 	const out = new Uint8Array(total);
 	let o = 0;
@@ -196,6 +231,16 @@ async function synthesize(env: TtsEnv, text: string): Promise<Uint8Array> {
 		o += b.length;
 	}
 	return out;
+}
+
+// 降级链（以整篇为单位）：小米任一段失败（非 2xx / 网络异常）→ 整篇丢弃，全部改用微软重合成。
+// 这样同一篇文章里不会一半男声一半女声；跨文章音色不同属正常，不追求统一。
+async function synthesize(env: TtsEnv, text: string): Promise<Uint8Array> {
+	try {
+		return await synthesizeWith(env, "xiaomi", text);
+	} catch {
+		return await synthesizeWith(env, "microsoft", text);
+	}
 }
 
 async function r2Exists(env: TtsEnv, key: string): Promise<boolean> {
@@ -219,17 +264,37 @@ async function r2Put(env: TtsEnv, key: string, body: Uint8Array): Promise<void> 
 }
 
 // ---------- 响应 ----------
-// 单段流式模式（无 slug）：直接把上游 MP3 流返回给浏览器
+// 单段流式模式（无 slug / R2 异常兜底）：同样走小米优先 → 微软降级，直接把 MP3 流返回浏览器
 async function streamSegment(env: TtsEnv, text: string): Promise<Response> {
 	if (!text) return new Response("Missing text parameter", { status: 400 });
-	const api = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
+
+	// 先试小米
+	const xApi = (env.XIAOMI_API_URL || DEFAULT_XIAOMI_API).replace(/\/+$/, "");
+	const xHeaders: Record<string, string> = { "Content-Type": "application/json" };
+	if (env.XIAOMI_API_TOKEN) xHeaders["Authorization"] = `Bearer ${env.XIAOMI_API_TOKEN}`;
+	const xRes = await fetch(`${xApi}/tts?format=mp3`, {
+		method: "POST",
+		headers: xHeaders,
+		body: JSON.stringify({ text, format: "mp3" }),
+	}).catch(() => null);
+	if (xRes && xRes.ok) {
+		return new Response(xRes.body, {
+			headers: {
+				"Content-Type": xRes.headers.get("Content-Type") || "audio/mpeg",
+				"Cache-Control": "public, max-age=31536000, immutable",
+			},
+		});
+	}
+
+	// 小米失败：降级微软（沿用原有 GET 接口与音色参数）
+	const mApi = (env.TTS_API_URL || DEFAULT_TTS_API).replace(/\/+$/, "");
 	const p = new URLSearchParams({ text, voiceName: VOICE, pitch: PITCH, rate: RATE, format: FORMAT });
 	if (env.TTS_API_TOKEN) p.set("token", env.TTS_API_TOKEN);
-	const res = await fetch(`${api}/api/synthesis?${p}`);
-	if (!res.ok) return new Response("TTS synthesis failed", { status: res.status });
-	return new Response(res.body, {
+	const mRes = await fetch(`${mApi}/api/synthesis?${p}`);
+	if (!mRes.ok) return new Response("TTS synthesis failed", { status: mRes.status });
+	return new Response(mRes.body, {
 		headers: {
-			"Content-Type": res.headers.get("Content-Type") || "audio/mpeg",
+			"Content-Type": mRes.headers.get("Content-Type") || "audio/mpeg",
 			"Cache-Control": "public, max-age=31536000, immutable",
 		},
 	});
