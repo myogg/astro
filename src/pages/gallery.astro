@@ -3,23 +3,11 @@ import Layout from "../layouts/main.astro";
 import PageHeading from "../components/page-heading.astro";
 import galleryData from "../data/gallery.json";
 
-type Photo = { url: string; caption?: string; date?: string };
+type Photo = { url: string; thumb?: string; caption?: string; date?: string };
 type Group = { name: string; date?: string; photos: Photo[] };
 type GalleryData = { title: string; description: string; groups: Group[] };
 
 const data = galleryData as GalleryData;
-const site = Astro.site?.toString() ?? "https://134688.xyz";
-
-function thumb(url: string): string {
-  try {
-    const u = new URL(url, site);
-    if (!u.searchParams.has("width")) u.searchParams.set("width", "600");
-    if (!u.searchParams.has("fallback")) u.searchParams.set("fallback", "original");
-    return u.toString();
-  } catch {
-    return url;
-  }
-}
 
 let counter = 0;
 const groups = (data.groups || []).map((g) => ({
@@ -27,7 +15,7 @@ const groups = (data.groups || []).map((g) => ({
   date: g.date || "",
   items: (g.photos || []).map((p) => ({
     full: p.url,
-    thumb: thumb(p.url),
+    thumb: p.thumb || p.url, // 没传缩略图就退回原图，保证不裂图
     caption: p.caption || "",
     idx: counter++,
   })),
