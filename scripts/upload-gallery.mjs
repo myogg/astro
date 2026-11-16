@@ -1,13 +1,13 @@
-// 画廊图片上传脚本
+// 画廊图片上传脚本（双图模式：缩略图 + 原图，不依赖图床缩放功能）
 // 用法：
 //   CFBED_API_TOKEN=xxx node scripts/upload-gallery.mjs <图片路径...> --group "2026 秋天"
 //
-// 做三件事：压缩成 WebP → 传到 i.134688.xyz → 把返回的链接写进 src/data/gallery.json
+// 每张图本地生成两份 WebP：thumb（长边 600）+ full（长边 1600），
+// 分别传到 i.134688.xyz，把两个链接都写进 src/data/gallery.json。
 // 需要 sharp：pnpm add -D sharp
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 const args = process.argv.slice(2);
 const groupIdx = args.indexOf("--group");
@@ -23,7 +23,7 @@ if (!TOKEN) {
   process.exit(1);
 }
 if (args.length === 0) {
-  console.error("用法：CFBED_API_TOKEN=xxx node scripts/upload-gallery.mjs 图片1.jpg 图片2.png --group \"分组名\"");
+  console.error('用法：CFBED_API_TOKEN=xxx node scripts/upload-gallery.mjs 图片1.jpg 图片2.png --group "分组名"');
   process.exit(1);
 }
 
@@ -33,6 +33,22 @@ try {
 } catch {
   console.error("缺少依赖 sharp，请先运行：pnpm add -D sharp");
   process.exit(1);
+}
+
+async function upload(buf, name) {
+  const form = new FormData();
+  form.append("file", new Blob([buf], { type: "image/webp" }), name);
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { Authorization: "Bearer " + TOKEN },
+    body: form,
+  });
+  const result = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${JSON.stringify(result)}`);
+  const item = Array.isArray(result) ? result[0] : result?.result || result;
+  const url = item?.publicUrl || item?.src || item?.url;
+  if (typeof url !== "string" || !url) throw new Error("图床未返回可用地址：" + JSON.stringify(result));
+  return url;
 }
 
 const raw = await fs.readFile(DATA_FILE, "utf-8");
@@ -47,30 +63,23 @@ target.photos = Array.isArray(target.photos) ? target.photos : [];
 
 for (const file of args) {
   const abs = path.resolve(file);
-  const buf = await fs.readFile(abs);
-  const webp = await sharp(buf).rotate().resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 86 }).toBuffer();
-  const name = path.basename(abs, path.extname(abs)) + ".webp";
-
-  const form = new FormData();
-  form.append("file", new Blob([webp], { type: "image/webp" }), name);
-  const res = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + TOKEN },
-    body: form,
-  });
-  const result = await res.json().catch(() => null);
-  if (!res.ok) {
-    console.error(`✗ ${file} 上传失败（HTTP ${res.status}）：`, JSON.stringify(result));
-    continue;
+  const base = path.basename(abs, path.extname(abs));
+  try {
+    const source = await fs.readFile(abs);
+    const pipeline = sharp(source).rotate();
+    const [full, thumb] = await Promise.all([
+      pipeline.clone().resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 86 }).toBuffer(),
+      pipeline.clone().resize({ width: 600, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer(),
+    ]);
+    const fullUrl = await upload(full, base + "-full.webp");
+    const thumbUrl = await upload(thumb, base + "-thumb.webp");
+    target.photos.push({ url: fullUrl, thumb: thumbUrl, caption: base });
+    console.log(`✓ ${file}`);
+    console.log(`    full : ${fullUrl}`);
+    console.log(`    thumb: ${thumbUrl}`);
+  } catch (e) {
+    console.error(`✗ ${file} 失败：${e.message}`);
   }
-  const item = Array.isArray(result) ? result[0] : result?.result || result;
-  const url = item?.publicUrl || item?.src || item?.url;
-  if (typeof url !== "string" || !url) {
-    console.error(`✗ ${file} 图床未返回可用地址：`, JSON.stringify(result));
-    continue;
-  }
-  target.photos.push({ url, caption: path.basename(abs, path.extname(abs)) });
-  console.log(`✓ ${file} -> ${url}`);
 }
 
 await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2) + "\n", "utf-8");
