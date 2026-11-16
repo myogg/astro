@@ -1,5 +1,17 @@
 {
   "title": "画廊",
   "description": "一些随手拍下的瞬间。照片存在图床，这里只做展示。",
-  "groups": []
+  "groups": [
+    {
+      "name": "2026 秋天",
+      "date": "2026-11",
+      "photos": [
+        {
+          "url": "https://i.134688.xyz/file/1794815870788_2026-11-07-li-dong-full.webp",
+          "thumb": "https://i.134688.xyz/file/1794815864802_2026-11-07-li-dong-thumb.webp",
+          "caption": "立冬"
+        }
+      ]
+    }
+  ]
 }
