@@ -8,6 +8,10 @@
 		"url": "/archive/"
 	},
 	{
+		"name": "画廊",
+		"url": "/gallery/"
+	},
+	{
 		"name": "搜索",
 		"url": "/search/"
 	},
