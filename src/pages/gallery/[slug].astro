@@ -54,8 +54,14 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" /></svg>
 		</button>
 		<div class="viewer-menu" id="viewer-menu" role="menu" hidden>
-			<button class="viewer-menu-item" id="menu-save" role="menuitem" type="button">保存</button>
-			<button class="viewer-menu-item" id="menu-share" role="menuitem" type="button">分享</button>
+			<button class="viewer-menu-item" id="menu-save" role="menuitem" type="button">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3" /></svg>
+				<span>保存</span>
+			</button>
+			<button class="viewer-menu-item" id="menu-share" role="menuitem" type="button">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="M8.2 10.8 15.8 6.2M8.2 13.2l7.6 4.6" /></svg>
+				<span>分享</span>
+			</button>
 		</div>
 	</dialog>
 
@@ -383,12 +389,13 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		:global(.face-caption) { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
 		:global(.face-caption h2) { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
 		:global(.face-edge) { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
-		.viewer-more { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
-		.viewer-more:hover { background: rgb(255 255 255 / 16%); }
-		.viewer-more svg { width: 1.2rem; height: 1.2rem; fill: currentColor; }
-		.viewer-menu { position: absolute; z-index: 21; top: max(3.5rem, calc(env(safe-area-inset-top) + 2.6rem)); right: 0.85rem; min-width: 8.5rem; padding: 0.35rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: 12px; background: rgb(28 28 30 / 94%); box-shadow: 0 8px 30px rgb(0 0 0 / 45%); backdrop-filter: blur(12px); }
+		.viewer-more { position: absolute; z-index: 20; top: calc(4dvh + 2rem); right: 0.85rem; width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border: 0; border-radius: 0; background: transparent; color: white; cursor: pointer; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 70%)); }
+		.viewer-more:hover { opacity: 0.72; }
+		.viewer-more svg { width: 1.3rem; height: 1.3rem; fill: currentColor; }
+		.viewer-menu { position: absolute; z-index: 21; top: calc(4dvh + 4.4rem); right: 0.85rem; min-width: 9rem; padding: 0.4rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: 12px; background: rgb(28 28 30 / 94%); box-shadow: 0 8px 30px rgb(0 0 0 / 45%); backdrop-filter: blur(12px); }
 		.viewer-menu[hidden] { display: none; }
-		.viewer-menu-item { display: block; width: 100%; padding: 0.62rem 0.8rem; border: 0; border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 0.88rem; text-align: left; cursor: pointer; }
+		.viewer-menu-item { display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.6rem 0.75rem; border: 0; border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 0.9rem; text-align: left; cursor: pointer; }
+		.viewer-menu-item svg { width: 1.15rem; height: 1.15rem; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; opacity: 0.92; }
 		.viewer-menu-item:hover, .viewer-menu-item:focus-visible { background: rgb(255 255 255 / 12%); }
 
 		@media (max-width: 767px) {
