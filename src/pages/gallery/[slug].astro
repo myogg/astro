@@ -54,9 +54,8 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" /></svg>
 		</button>
 		<div class="viewer-menu" id="viewer-menu" role="menu" hidden>
-			<button class="viewer-menu-item" id="menu-save" role="menuitem" type="button">保存图片</button>
+			<button class="viewer-menu-item" id="menu-save" role="menuitem" type="button">保存</button>
 			<button class="viewer-menu-item" id="menu-share" role="menuitem" type="button">分享</button>
-			<button class="viewer-menu-item" id="menu-close" role="menuitem" type="button">关闭</button>
 		</div>
 	</dialog>
 
@@ -250,11 +249,6 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			} catch {
 				// 用户取消分享时无需提示。
 			}
-		});
-		document.getElementById("menu-close")?.addEventListener("click", (event) => {
-			event.stopPropagation();
-			setMenu(false);
-			closeToThumbnail();
 		});
 		dialog?.addEventListener("click", (event) => {
 			if (!moreMenu) return;
