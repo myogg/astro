@@ -47,242 +47,215 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 	</main>
 
 	<dialog class="photo-viewer" id="photo-viewer" aria-label="照片查看器" data-album-title={title} data-location={location} data-date={dateText}>
-		<div class="viewer-wrap">
-			<article class="viewer-card" id="viewer-card">
-				<img class="viewer-blur" id="viewer-blur" src="" alt="" aria-hidden="true" />
-				<div class="viewer-scrim" aria-hidden="true"></div>
-				<header class="viewer-header">
-					<div class="viewer-context">
-						<p class="viewer-album-title">{title}</p>
-						<p class="viewer-meta" id="viewer-meta"></p>
-					</div>
-					<div class="viewer-toolbar">
-						<p class="viewer-counter" id="viewer-counter" aria-live="polite"></p>
-						<button class="viewer-icon-button" id="viewer-close" type="button" aria-label="关闭照片" title="关闭">
-							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
-						</button>
-					</div>
-				</header>
-				<div class="viewer-stage" id="viewer-stage">
-					<button class="viewer-arrow viewer-prev" id="viewer-prev" type="button" aria-label="上一张照片">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
-					</button>
-					<img id="viewer-image" class="viewer-image" src="" alt="" />
-					<button class="viewer-arrow viewer-next" id="viewer-next" type="button" aria-label="下一张照片">
-						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
-					</button>
-				</div>
-				<footer class="viewer-caption">
-					<h2 id="viewer-title"></h2>
-				</footer>
-			</article>
-			<div class="viewer-actions">
-				<button class="viewer-icon-button" id="viewer-share" type="button" aria-label="分享照片" title="分享照片">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
-				</button>
-				<p class="viewer-hint">左右滑动切换 · 下滑返回图集</p>
-			</div>
+		<div class="viewer-stage" id="viewer-stage">
+			<div class="cube-scene" id="cube-scene"></div>
+		</div>
+		<button class="viewer-close" id="viewer-close" type="button" aria-label="关闭照片" title="关闭">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+		</button>
+		<div class="viewer-actions">
+			<button class="viewer-icon-button" id="viewer-share" type="button" aria-label="分享照片" title="分享照片">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
+			</button>
+			<p class="viewer-hint">左右滑动翻页 · 下滑关闭</p>
 		</div>
 	</dialog>
 
 	<script>
 		const cards = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-photo-card]"));
 		const dialog = document.getElementById("photo-viewer") as HTMLDialogElement | null;
+		const stage = document.getElementById("viewer-stage");
+		const scene = document.getElementById("cube-scene");
 		const albumTitle = dialog?.dataset.albumTitle || "照片图集";
 		const albumLocation = dialog?.dataset.location || "";
 		const albumDate = dialog?.dataset.date || "";
-		const viewerWrap = document.querySelector(".viewer-wrap");
-		const viewerCard = document.getElementById("viewer-card");
-		const viewerBlur = document.getElementById("viewer-blur") as HTMLImageElement | null;
-		const viewerImage = document.getElementById("viewer-image") as HTMLImageElement | null;
-		const viewerTitle = document.getElementById("viewer-title");
-		const viewerMeta = document.getElementById("viewer-meta");
-		const viewerCounter = document.getElementById("viewer-counter");
-		const stage = document.getElementById("viewer-stage");
-		let activePosition = 0;
-		let activeCard: HTMLButtonElement | null = null;
-		let touchStartX = 0;
-		let touchStartY = 0;
-		let pinchStartDistance = 0;
-		let shouldCloseByPinch = false;
-		let isClosing = false;
-		let isTurning = false;
+		const photos = cards.map((card) => {
+			const img = card.querySelector("img") as HTMLImageElement;
+			return {
+				src: img.currentSrc || img.src,
+				alt: img.alt || "",
+				caption: card.dataset.caption || img.alt || "照片",
+			};
+		});
+		const pad = (n: number) => String(n).padStart(2, "0");
 
-		function getTouchDistance(touches: TouchList) {
-			if (touches.length < 2) return 0;
-			const first = touches.item(0);
-			const second = touches.item(1);
-			if (!first || !second) return 0;
-			return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+		let current = 0;
+		let dir = 0; // 1 下一张(左滑), -1 上一张(右滑)
+		let theta = 0; // cube 当前 Y 轴角度
+		let radius = 180; // 立方体半径 = 面宽的一半
+		let dragging = false;
+		let decided = false;
+		let mode: "turn" | "close" | "" = "";
+		let startX = 0;
+		let startY = 0;
+		let deltaX = 0;
+		let deltaY = 0;
+		let animating = false;
+
+		function makeFace(photo: { src: string; alt: string; caption: string }, index: number) {
+			const face = document.createElement("div");
+			face.className = "cube-face";
+			face.innerHTML = `
+				<img class="face-blur" src="${photo.src}" alt="" aria-hidden="true" />
+				<div class="face-scrim" aria-hidden="true"></div>
+				<div class="face-head">
+					<div>
+						<p class="face-album">${albumTitle}</p>
+						<p class="face-meta">${albumLocation} · ${albumDate}</p>
+					</div>
+					<p class="face-counter">${pad(index + 1)} / ${pad(photos.length)}</p>
+				</div>
+				<img class="face-img" src="${photo.src}" alt="${photo.alt}" />
+				<div class="face-caption"><h2>${photo.caption}</h2></div>
+				<span class="face-edge" aria-hidden="true"></span>
+			`;
+			const img = face.querySelector(".face-img") as HTMLImageElement;
+			const detect = () => face.classList.toggle("is-portrait", img.naturalHeight > img.naturalWidth);
+			if (img.complete && img.naturalWidth) detect();
+			else img.addEventListener("load", detect, { once: true });
+			return face;
 		}
 
-		function animateBetween(from: DOMRect, to: DOMRect) {
-			if (!viewerCard || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return null;
-			const scaleX = Math.max(0.01, from.width / to.width);
-			const scaleY = Math.max(0.01, from.height / to.height);
-			return viewerCard.animate([
-				{ transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${scaleX}, ${scaleY})`, borderRadius: "4px" },
-				{ transform: "translate(0, 0) scale(1, 1)", borderRadius: "15px" },
-			], { duration: 300, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
+		function renderSingle(index: number) {
+			if (!scene) return;
+			radius = (stage?.clientWidth || 360) / 2;
+			scene.innerHTML = "";
+			const face = makeFace(photos[index], index);
+			face.style.transform = `rotateY(0deg) translateZ(${radius}px)`;
+			scene.appendChild(face);
+			scene.style.transform = `translateZ(${-radius}px) rotateY(0deg)`;
+			theta = 0;
+			dir = 0;
 		}
 
-		function clearCubeTransition() {
-			viewerCard?.getAnimations().forEach((animation) => animation.cancel());
-			viewerWrap?.querySelectorAll(".viewer-face-outgoing").forEach((face) => face.remove());
-			viewerCard?.classList.remove("is-cube-incoming", "cube-next", "cube-previous");
-			isTurning = false;
+		function buildTurn(d: number) {
+			if (!scene) return;
+			radius = (stage?.clientWidth || 360) / 2;
+			dir = d;
+			const target = (current + d + photos.length) % photos.length;
+			scene.innerHTML = "";
+			const from = makeFace(photos[current], current);
+			from.style.transform = `rotateY(0deg) translateZ(${radius}px)`;
+			const to = makeFace(photos[target], target);
+			// 下一张放在立方体右面(+90°),上一张放在左面(-90°)
+			const faceAngle = d > 0 ? 90 : -90;
+			to.style.transform = `rotateY(${faceAngle}deg) translateZ(${radius}px)`;
+			scene.appendChild(from);
+			scene.appendChild(to);
 		}
 
-		function animateCubeTransition(outgoing: HTMLElement, direction: number) {
-			if (!viewerWrap || !viewerCard || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-				outgoing.remove();
-				return;
-			}
-			clearCubeTransition();
-			const directionClass = direction > 0 ? "cube-next" : "cube-previous";
-			const next = direction > 0;
-			outgoing.classList.add("viewer-face-outgoing", directionClass);
-			viewerCard.classList.add("is-cube-incoming", directionClass);
-			viewerWrap.appendChild(outgoing);
-			isTurning = true;
-			const duration = 560;
-			const outgoingAnimation = outgoing.animate([
-				{ transform: "rotateY(0deg)", transformOrigin: next ? "left center" : "right center", filter: "brightness(1)" },
-				{ transform: `rotateY(${next ? "-90deg" : "90deg"})`, transformOrigin: next ? "left center" : "right center", filter: "brightness(0.55)" },
-			], { duration, easing: "cubic-bezier(0.45, 0, 0.2, 1)" });
-			const incomingAnimation = viewerCard.animate([
-				{ transform: `rotateY(${next ? "90deg" : "-90deg"})`, transformOrigin: next ? "right center" : "left center", filter: "brightness(0.45)" },
-				{ transform: "rotateY(0deg)", transformOrigin: next ? "right center" : "left center", filter: "brightness(1)" },
-			], { duration, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
-			Promise.allSettled([outgoingAnimation.finished, incomingAnimation.finished]).then(() => {
-				outgoing.remove();
-				viewerCard.classList.remove("is-cube-incoming", "cube-next", "cube-previous");
-				isTurning = false;
-			});
+		function applyTheta() {
+			if (scene) scene.style.transform = `translateZ(${-radius}px) rotateY(${theta}deg)`;
+		}
+
+		function animateTo(endTheta: number, done: () => void) {
+			if (!scene || window.matchMedia("(prefers-reduced-motion: reduce)").matches) { done(); return; }
+			animating = true;
+			const anim = scene.animate([
+				{ transform: `translateZ(${-radius}px) rotateY(${theta}deg)` },
+				{ transform: `translateZ(${-radius}px) rotateY(${endTheta}deg)` },
+			], { duration: 340, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" });
+			anim.onfinish = () => { anim.cancel(); animating = false; done(); };
+		}
+
+		function openFromThumbnail(index: number) {
+			if (!dialog) return;
+			current = index;
+			decided = false;
+			dragging = false;
+			mode = "";
+			dialog.showModal();
+			requestAnimationFrame(() => renderSingle(current));
 		}
 
 		function closeToThumbnail() {
-			if (!dialog?.open || isClosing) return;
-			clearCubeTransition();
-			if (!activeCard || !viewerCard) {
-				dialog.close();
-				return;
-			}
-			isClosing = true;
-			const from = viewerCard.getBoundingClientRect();
-			const to = activeCard.getBoundingClientRect();
-			const animation = animateBetween(from, to);
-			if (!animation) {
-				isClosing = false;
-				dialog.close();
-				return;
-			}
-			animation.onfinish = () => {
-				isClosing = false;
-				dialog.close();
-			};
+			if (!dialog || !scene) return;
+			scene.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease" }).onfinish = () => dialog.close();
 		}
 
-		function updatePhoto(direction = 0) {
-			const card = cards[activePosition];
-			const source = card?.querySelector("img");
-			if (!card || !source || !viewerImage || !viewerBlur || !viewerTitle || !viewerMeta || !viewerCounter) return;
-			const outgoing = direction && viewerCard ? viewerCard.cloneNode(true) as HTMLElement : null;
-			if (outgoing) {
-				outgoing.removeAttribute("id");
-				outgoing.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
-				outgoing.setAttribute("aria-hidden", "true");
-			}
-			viewerImage.src = source.currentSrc || source.src;
-			viewerBlur.src = source.currentSrc || source.src;
-			viewerImage.alt = source.alt;
-			viewerTitle.textContent = card.dataset.caption || source.alt || "照片";
-			viewerMeta.textContent = `${albumLocation} · ${albumDate}`;
-			viewerCounter.textContent = `${String(activePosition + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-			if (outgoing && direction) animateCubeTransition(outgoing, direction);
-		}
-
-		function movePhoto(direction: number) {
-			if (!cards.length || isTurning || isClosing) return;
-			activePosition = (activePosition + direction + cards.length) % cards.length;
-			activeCard = cards[activePosition];
-			updatePhoto(direction);
-		}
-
-		function openFromThumbnail(card: HTMLButtonElement, index: number) {
-			if (!dialog || !viewerCard) return;
-			clearCubeTransition();
-			activeCard = card;
-			activePosition = index;
-			isClosing = false;
-			updatePhoto();
-			dialog.showModal();
-			requestAnimationFrame(() => {
-				const from = card.getBoundingClientRect();
-				const to = viewerCard.getBoundingClientRect();
-				animateBetween(from, to);
-			});
-		}
-
-		cards.forEach((card, index) => {
-			card.addEventListener("click", () => openFromThumbnail(card, index));
-		});
+		cards.forEach((card, index) => card.addEventListener("click", () => openFromThumbnail(index)));
 
 		document.getElementById("viewer-close")?.addEventListener("click", closeToThumbnail);
-		document.getElementById("viewer-prev")?.addEventListener("click", () => movePhoto(-1));
-		document.getElementById("viewer-next")?.addEventListener("click", () => movePhoto(1));
-		dialog?.addEventListener("click", (event) => {
-			if (event.target === dialog) closeToThumbnail();
-		});
+		dialog?.addEventListener("click", (event) => { if (event.target === dialog) closeToThumbnail(); });
 		dialog?.addEventListener("close", () => {
-			const returnFocus = activeCard;
+			const returnFocus = cards[current];
 			requestAnimationFrame(() => returnFocus?.focus({ preventScroll: true }));
 		});
-		dialog?.addEventListener("cancel", (event) => {
-			event.preventDefault();
-			closeToThumbnail();
+		dialog?.addEventListener("cancel", (event) => { event.preventDefault(); closeToThumbnail(); });
+
+		document.addEventListener("keydown", (event) => {
+			if (!dialog?.open || animating) return;
+			if (event.key === "Escape") { closeToThumbnail(); return; }
+			if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+				const d = event.key === "ArrowRight" ? 1 : -1;
+				buildTurn(d);
+				animateTo(d > 0 ? -90 : 90, () => {
+					current = (current + d + photos.length) % photos.length;
+					renderSingle(current);
+				});
+			}
 		});
-		dialog?.addEventListener("keydown", (event) => {
-			if (event.key === "ArrowLeft") movePhoto(-1);
-			if (event.key === "ArrowRight") movePhoto(1);
+
+		stage?.addEventListener("pointerdown", (event) => {
+			if (!dialog?.open || animating) return;
+			dragging = true;
+			decided = false;
+			mode = "";
+			deltaX = 0;
+			deltaY = 0;
+			startX = event.clientX;
+			startY = event.clientY;
 		});
-		stage?.addEventListener("touchstart", (event) => {
-			touchStartX = event.changedTouches[0]?.clientX || 0;
-			touchStartY = event.changedTouches[0]?.clientY || 0;
-			pinchStartDistance = getTouchDistance(event.touches);
-			shouldCloseByPinch = false;
-		}, { passive: true });
-		stage?.addEventListener("touchmove", (event) => {
-			const currentDistance = getTouchDistance(event.touches);
-			if (pinchStartDistance > 0 && currentDistance > 0 && currentDistance < pinchStartDistance * 0.68) {
-				shouldCloseByPinch = true;
+		window.addEventListener("pointermove", (event) => {
+			if (!dragging) return;
+			deltaX = event.clientX - startX;
+			deltaY = event.clientY - startY;
+			if (!decided) {
+				if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 34) {
+					mode = "close";
+					decided = true;
+				} else if (Math.abs(deltaX) > 8) {
+					mode = "turn";
+					decided = true;
+					buildTurn(deltaX < 0 ? 1 : -1);
+				}
 			}
-		}, { passive: true });
-		stage?.addEventListener("touchend", (event) => {
-			if (shouldCloseByPinch) {
-				shouldCloseByPinch = false;
-				pinchStartDistance = 0;
-				closeToThumbnail();
-				return;
+			if (mode === "turn") {
+				theta = (deltaX / (stage.clientWidth || 360)) * 90;
+				applyTheta();
+			} else if (mode === "close") {
+				if (scene) scene.style.opacity = String(Math.max(0.15, 1 - Math.max(0, deltaY) / 400));
 			}
-			const touch = event.changedTouches[0];
-			const distanceX = (touch?.clientX || 0) - touchStartX;
-			const distanceY = (touch?.clientY || 0) - touchStartY;
-			if (distanceY > 76 && Math.abs(distanceY) > Math.abs(distanceX) * 1.2) {
-				closeToThumbnail();
-				return;
+		});
+		function endPointer() {
+			if (!dragging) return;
+			dragging = false;
+			if (mode === "turn") {
+				const committed = Math.abs(theta) > 18;
+				if (committed) {
+					const endTheta = dir > 0 ? -90 : 90;
+					animateTo(endTheta, () => {
+						current = (current + dir + photos.length) % photos.length;
+						renderSingle(current);
+					});
+				} else {
+					animateTo(0, () => renderSingle(current));
+				}
+			} else if (mode === "close") {
+				if (deltaY > 90) closeToThumbnail();
+				else if (scene) { scene.style.opacity = "1"; renderSingle(current); }
 			}
-			if (Math.abs(distanceX) > 48 && Math.abs(distanceX) > Math.abs(distanceY)) movePhoto(distanceX > 0 ? -1 : 1);
-		}, { passive: true });
+			mode = "";
+		}
+		window.addEventListener("pointerup", endPointer);
+		window.addEventListener("pointercancel", endPointer);
+
 		document.getElementById("viewer-share")?.addEventListener("click", async () => {
-			const source = cards[activePosition]?.querySelector("img");
-			if (!source) return;
-			const shareData = { title: cards[activePosition]?.dataset.caption || albumTitle, text: `${albumTitle} · ${albumLocation}`, url: source.src };
 			try {
-				if (navigator.share) await navigator.share(shareData);
-				else if (navigator.clipboard) await navigator.clipboard.writeText(shareData.url);
+				if (navigator.share) await navigator.share({ title: albumTitle, text: `${albumTitle} · ${albumLocation}`, url: location.href });
+				else if (navigator.clipboard) await navigator.clipboard.writeText(location.href);
 			} catch {
-				// 用户取消分享时无需额外提示。
+				// 用户取消分享时无需提示。
 			}
 		});
 	</script>
@@ -307,39 +280,31 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		:global(html.dark) .back-link:hover { color: white; }
 		:global(html.dark) .photo-card { border-color: rgb(255 255 255 / 7%); }
 
-		.photo-viewer { width: 100vw; max-width: none; max-height: none; height: 100dvh; margin: 0; border: 0; padding: 1rem; overflow: hidden; background: transparent; color: white; }
-		.photo-viewer[open] { display: flex; align-items: center; justify-content: center; }
-		.photo-viewer::backdrop { background: rgb(0 0 0 / 94%); }
-		.viewer-wrap { position: relative; display: flex; width: 100%; height: 100%; max-width: 680px; flex-direction: column; align-items: center; justify-content: center; gap: 0.55rem; margin: 0 auto; perspective: 1100px; perspective-origin: center center; }
-		.viewer-card { position: relative; width: 100%; height: min(82dvh, 900px); min-height: 0; flex: 1 1 auto; overflow: hidden; border-radius: 18px; background: #353638; box-shadow: 0 24px 80px rgb(0 0 0 / 35%); backface-visibility: hidden; transform-origin: top left; transform-style: preserve-3d; }
-		.viewer-card.is-cube-incoming { z-index: 4; overflow: visible; }
-		.viewer-card.is-cube-incoming::after, .viewer-face-outgoing::after { position: absolute; z-index: 5; top: 0; bottom: 0; width: 28px; background: linear-gradient(90deg, #141414, #777 48%, #202020); box-shadow: inset 0 0 16px rgb(0 0 0 / 45%); content: ""; pointer-events: none; backface-visibility: hidden; }
-		.viewer-face-outgoing { position: absolute; z-index: 6; inset: 0 0 3.35rem; width: auto; height: auto; flex: none; overflow: visible; border-radius: 18px; box-shadow: none; pointer-events: none; }
-		.viewer-face-outgoing.cube-next::after { right: -28px; transform: rotateY(90deg); transform-origin: left center; }
-		.viewer-card.is-cube-incoming.cube-next::after { left: -28px; transform: rotateY(-90deg); transform-origin: right center; }
-		.viewer-face-outgoing.cube-previous::after { left: -28px; transform: rotateY(-90deg); transform-origin: right center; }
-		.viewer-card.is-cube-incoming.cube-previous::after { right: -28px; transform: rotateY(90deg); transform-origin: left center; }
-		.viewer-blur { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.58); transform: scale(1.06); }
-		.viewer-scrim { position: absolute; z-index: 1; inset: 0; background: linear-gradient(rgb(0 0 0 / 30%), transparent 32%, transparent 58%, rgb(0 0 0 / 65%)); }
-		.viewer-header { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 28%), transparent); }
-		.viewer-context { min-width: 0; }
-		.viewer-album-title { overflow: hidden; margin: 0; color: white; font-size: 0.92rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-		.viewer-meta { margin: 0.25rem 0 0; color: rgb(255 255 255 / 78%); font-size: 0.76rem; }
-		.viewer-toolbar { display: flex; flex: 0 0 auto; align-items: center; gap: 0.75rem; }
-		.viewer-counter { margin: 0; color: white; font-size: 0.8rem; letter-spacing: 0.08em; }
-		.viewer-actions { display: flex; width: 100%; min-height: 2.8rem; flex: 0 0 2.8rem; align-items: center; justify-content: center; gap: 0.75rem; }
-		.viewer-hint { margin: 0; color: #999; font-size: 0.72rem; }
-		.viewer-icon-button, .viewer-arrow { display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 24%); color: white; cursor: pointer; transition: background 160ms ease, border-color 160ms ease; }
-		.viewer-icon-button { width: 2.5rem; height: 2.5rem; }
-		.viewer-icon-button:hover, .viewer-arrow:hover { border-color: rgb(255 255 255 / 60%); background: rgb(255 255 255 / 16%); }
-		.viewer-icon-button svg, .viewer-arrow svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
-		.viewer-stage { position: absolute; z-index: 2; inset: 0; display: flex; align-items: center; justify-content: center; padding: 4.5rem 0 5rem; touch-action: none; }
-		.viewer-image { position: relative; z-index: 1; display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; }
-		.viewer-arrow { position: absolute; z-index: 2; top: 50%; width: 2.55rem; height: 2.55rem; transform: translateY(-50%); background: rgb(0 0 0 / 25%); }
-		.viewer-prev { left: 0.65rem; }
-		.viewer-next { right: 0.65rem; }
-		.viewer-caption { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4rem 1.1rem 1.2rem; background: linear-gradient(transparent, rgb(0 0 0 / 68%)); text-align: left; }
-		.viewer-caption h2 { margin: 0; color: white; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
+		/* ---------- 全屏立方体查看器 ---------- */
+		.photo-viewer { width: 100vw; max-width: none; max-height: none; height: 100dvh; margin: 0; border: 0; padding: 0; overflow: hidden; background: #000; color: white; }
+		.photo-viewer[open] { display: block; }
+		.photo-viewer::backdrop { background: #000; }
+		.viewer-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: center center; touch-action: none; overflow: hidden; }
+		.cube-scene { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
+		.cube-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #101012; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
+		.face-blur { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
+		.face-scrim { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
+		.face-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+		.cube-face.is-portrait .face-img { object-fit: cover; }
+		.face-head { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
+		.face-album { margin: 0; font-size: 0.92rem; font-weight: 600; }
+		.face-meta { margin: 0.25rem 0 0; color: rgb(255 255 255 / 78%); font-size: 0.76rem; }
+		.face-counter { margin: 0; font-size: 0.82rem; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+		.face-caption { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
+		.face-caption h2 { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
+		.face-edge { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
+		.viewer-close { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
+		.viewer-close:hover { background: rgb(255 255 255 / 16%); }
+		.viewer-close svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
+		.viewer-actions { position: absolute; z-index: 20; left: 0; right: 0; bottom: max(0.5rem, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 0.4rem; pointer-events: none; }
+		.viewer-icon-button { width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 24%); color: white; cursor: pointer; pointer-events: auto; }
+		.viewer-icon-button svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+		.viewer-hint { margin: 0; color: rgb(255 255 255 / 62%); font-size: 0.7rem; }
 
 		@media (max-width: 767px) {
 			.album-header { padding: 1.8rem 0 1.4rem; }
@@ -347,21 +312,13 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			.photo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-right: -1.5rem; margin-left: -1.5rem; }
 			.photo-card { border-radius: 0; }
 			.photo-caption { display: none; }
-			.photo-viewer { padding: max(0.5rem, env(safe-area-inset-top)) 0.5rem max(0.5rem, env(safe-area-inset-bottom)); }
-			.viewer-wrap { gap: 0.35rem; }
-			.viewer-card { height: calc(100dvh - 4.2rem); border-radius: 15px; }
-			.viewer-header { padding: max(0.9rem, env(safe-area-inset-top)) 0.85rem 1.8rem; }
-			.viewer-album-title { font-size: 0.86rem; }
-			.viewer-meta { font-size: 0.69rem; }
-			.viewer-toolbar { gap: 0.5rem; }
-			.viewer-counter { font-size: 0.72rem; }
-			.viewer-stage { padding: 4.4rem 0 5.2rem; }
-			.viewer-arrow { width: 2.2rem; height: 2.2rem; }
-			.viewer-prev { left: 0.45rem; }
-			.viewer-next { right: 0.45rem; }
-			.viewer-caption { padding: 3.5rem 0.9rem 1rem; }
-			.viewer-caption h2 { font-size: 0.98rem; }
+			.face-head { padding: max(0.9rem, env(safe-area-inset-top)) 0.85rem 1.8rem; }
+			.face-album { font-size: 0.86rem; }
+			.face-meta { font-size: 0.69rem; }
+			.face-counter { font-size: 0.74rem; }
+			.face-caption { padding: 3.5rem 0.9rem max(1.2rem, env(safe-area-inset-bottom)); }
+			.face-caption h2 { font-size: 0.98rem; }
 		}
-		@media (prefers-reduced-motion: reduce) { .photo-card img, .photo-caption, .back-link, .viewer-icon-button, .viewer-arrow { transition: none; } }
+		@media (prefers-reduced-motion: reduce) { .photo-card img, .photo-caption, .back-link { transition: none; } }
 	</style>
 </Layout>
