@@ -238,6 +238,15 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			} else if (mode === "close") {
 				if (deltaY > 90) closeToThumbnail();
 				else if (scene) { scene.style.opacity = "1"; renderSingle(current); }
+			} else if (dialog?.open && !animating) {
+				// 纯点击（未拖动、未下滑）：点左半屏翻上一张，点右半屏翻下一张
+				const rect = stage?.getBoundingClientRect();
+				const d = rect && (startX - rect.left) < rect.width / 2 ? -1 : 1;
+				buildTurn(d);
+				animateTo(d > 0 ? -90 : 90, () => {
+					current = (current + d + photos.length) % photos.length;
+					renderSingle(current);
+				});
 			}
 			mode = "";
 		}
