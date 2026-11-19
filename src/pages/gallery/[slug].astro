@@ -110,7 +110,6 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 							<p class="face-album">${albumTitle}</p>
 							<p class="face-meta">${albumLocation} · ${albumDate}</p>
 						</div>
-						<p class="face-counter">${pad(index + 1)} / ${pad(photos.length)}</p>
 					</div>
 				</div>
 				<img class="face-img" src="${photo.src}" alt="${photo.alt}" />
@@ -389,7 +388,7 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		:global(.face-caption) { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
 		:global(.face-caption h2) { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
 		:global(.face-edge) { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
-		.viewer-more { position: absolute; z-index: 20; top: calc(4dvh + 2rem); right: 0.85rem; width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border: 0; border-radius: 0; background: transparent; color: white; cursor: pointer; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 70%)); }
+		.viewer-more { position: absolute; z-index: 20; top: calc(4dvh + max(1.25rem, calc(env(safe-area-inset-top) + 0.25rem))); right: 0.85rem; width: 2.2rem; height: 2.2rem; display: grid; place-items: center; border: 0; border-radius: 0; background: transparent; color: white; cursor: pointer; filter: drop-shadow(0 1px 3px rgb(0 0 0 / 70%)); }
 		.viewer-more:hover { opacity: 0.72; }
 		.viewer-more svg { width: 1.3rem; height: 1.3rem; fill: currentColor; }
 		.viewer-menu { position: absolute; z-index: 21; top: calc(4dvh + 4.4rem); right: 0.85rem; min-width: 9rem; padding: 0.4rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: 12px; background: rgb(28 28 30 / 94%); box-shadow: 0 8px 30px rgb(0 0 0 / 45%); backdrop-filter: blur(12px); }
