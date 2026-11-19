@@ -3,6 +3,72 @@
   "description": "一些随手拍下的瞬间。照片存在图床，这里只做展示。",
   "groups": [
     {
+      "name": "北海",
+      "date": "2026-11",
+      "photos": [
+        {
+          "url": "https://i.134688.xyz/file/1795057731202_beihai-1000050352-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057736233_beihai-1000050352-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057743919_beihai-1000050353-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057740324_beihai-1000050353-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057745984_beihai-1000050354-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057745964_beihai-1000050354-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057750640_beihai-1000050355-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057754590_beihai-1000050355-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057756929_beihai-1000050356-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057758587_beihai-1000050356-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057755893_beihai-1000050357-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057765444_beihai-1000050357-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057760443_beihai-1000050358-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057764822_beihai-1000050358-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057769605_beihai-1000050359-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057777104_beihai-1000050359-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057777748_beihai-1000050360-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057777179_beihai-1000050360-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057782086_beihai-1000050361-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057785588_beihai-1000050361-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057783765_beihai-1000050362-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057783431_beihai-1000050362-thumb.webp",
+          "caption": ""
+        },
+        {
+          "url": "https://i.134688.xyz/file/1795057796901_beihai-1000050363-full.webp",
+          "thumb": "https://i.134688.xyz/file/1795057801722_beihai-1000050363-thumb.webp",
+          "caption": ""
+        }
+      ]
+    },
+    {
       "name": "2026 秋天",
       "date": "2026-11",
       "photos": [
