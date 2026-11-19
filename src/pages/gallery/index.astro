@@ -1,0 +1,165 @@
+---
+import gallery from "../../data/gallery.json";
+import MainLayout from "../../layouts/main.astro";
+
+const allTags = ["全部", ...new Set(gallery.flatMap((item) => item.tags))];
+---
+
+<MainLayout title="GALLERY | myogg">
+  <header class="page-head">
+    <p class="eyebrow">myogg / astro</p>
+    <h1>GALLERY</h1>
+    <p class="sub">风格一 · 横竖不裁切 · 黑底灯箱 · 横屏放大</p>
+  </header>
+
+  <nav class="filters" id="filters">
+    {allTags.map((tag) => (
+      <button type="button" data-filter={tag} class={tag === "全部" ? "active" : ""}>{tag}</button>
+    ))}
+  </nav>
+
+  <main class="gallery" id="gallery">
+    {gallery.map((item, i) => (
+      <figure class="item" data-tags={item.tags.join(",")} data-index={i}>
+        <div class="ph" style={"aspect-ratio: " + item.width + " / " + item.height}>
+          <img src={item.thumb || item.url} data-full={item.url} alt={item.title} loading="lazy" width={item.width} height={item.height} />
+        </div>
+        <figcaption>
+          <span>{item.title}</span>
+          <span>{item.en}</span>
+          <span>{item.date}</span>
+        </figcaption>
+      </figure>
+    ))}
+  </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" id="lbClose" type="button">× 关闭</button>
+    <button class="lb-prev" id="lbPrev" type="button">‹</button>
+    <div class="stage" id="lbStage">
+      <img id="lbImg" src="" alt="" />
+      <p id="lbCaption"></p>
+    </div>
+    <button class="lb-next" id="lbNext" type="button">›</button>
+    <p class="hint">左右箭头 / 键盘 / 滚轮切换 · 上下滑关闭 · 双击放大</p>
+  </div>
+</MainLayout>
+
+<style>
+  .page-head { border-bottom: 1px solid #e3e0d9; padding: 40px 0 24px; }
+  .page-head h1 { font-family: Georgia, serif; font-size: clamp(44px, 10vw, 88px); line-height: .9; margin: 8px 0; }
+  .eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #888; margin: 0; }
+  .sub { font-size: 13px; color: #666; margin: 0; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 0; }
+  .filters button { border: 1px solid #141412; background: transparent; padding: 7px 14px; cursor: pointer; font-size: 13px; }
+  .filters button.active { background: #141412; color: #fff; }
+  .gallery { columns: 1; column-gap: 18px; }
+  @media (min-width: 860px) { .gallery { columns: 3; } }
+  .item { break-inside: avoid; margin: 0 0 18px; cursor: zoom-in; }
+  .ph { background: #eceae6; overflow: hidden; }
+  .ph img { width: 100%; height: auto; display: block; filter: grayscale(1); transition: filter .4s ease; }
+  .item:hover img { filter: grayscale(0); }
+  figcaption { display: flex; flex-direction: column; gap: 2px; padding: 10px 0 2px; }
+  figcaption span:first-child { font-size: 15px; }
+  figcaption span:nth-child(2) { font-size: 11px; letter-spacing: .12em; color: #888; }
+  figcaption span:last-child { font-size: 11px; color: #aaa; }
+  .lightbox { position: fixed; inset: 0; background: #000; color: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+  .lightbox[hidden] { display: none; }
+  .stage { text-align: center; max-width: 92vw; }
+  .stage img { max-width: 92vw; max-height: 78vh; object-fit: contain; cursor: zoom-in; transition: opacity .2s; }
+  .stage img.zoom { max-width: 96vw; max-height: none; cursor: zoom-out; }
+  #lbCaption { font-size: 12px; color: #bbb; margin: 10px 0 0; white-space: pre-line; }
+  @media (orientation: landscape) and (max-height: 560px) {
+    .stage img { max-height: 88vh; }
+    .stage img.zoom { max-height: none; }
+  }
+  .lb-close { position: absolute; top: 16px; right: 16px; background: none; border: 0; color: #fff; font-size: 16px; cursor: pointer; }
+  .lb-prev, .lb-next { position: absolute; top: 50%; transform: translateY(-50%); background: none; border: 0; color: #fff; font-size: 48px; cursor: pointer; padding: 16px; }
+  .lb-prev { left: 10px; } .lb-next { right: 10px; }
+  .hint { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; font-size: 12px; opacity: .7; margin: 0; pointer-events: none; }
+</style>
+
+<script define:vars={{ gallery }}>
+  (function () {
+    const items = Array.from(document.querySelectorAll(".item"));
+    const lightbox = document.getElementById("lightbox");
+    const lbImg = document.getElementById("lbImg");
+    const lbCaption = document.getElementById("lbCaption");
+    let current = 0;
+    let zoomed = false;
+
+    function visibleItems() {
+      return items.filter(function (el) { return el.style.display !== "none"; });
+    }
+    function show(index) {
+      const list = visibleItems();
+      if (!list.length) return;
+      current = (index + list.length) % list.length;
+      const img = list[current].querySelector("img");
+      const cap = list[current].querySelector("figcaption");
+      const full = img.getAttribute("data-full") || img.src;
+      lbImg.style.opacity = "0.35";
+      lbImg.src = img.src;
+      const pre = new Image();
+      pre.onload = function () { lbImg.src = full; lbImg.style.opacity = "1"; };
+      pre.src = full;
+      lbImg.alt = img.alt;
+      lbCaption.textContent = cap ? cap.innerText : img.alt;
+      zoomed = false;
+      lbImg.classList.remove("zoom");
+    }
+    function open(index) {
+      lightbox.hidden = false;
+      document.body.style.overflow = "hidden";
+      show(index);
+    }
+    function close() {
+      lightbox.hidden = true;
+      document.body.style.overflow = "";
+    }
+    items.forEach(function (el, i) {
+      el.addEventListener("click", function () { open(i); });
+    });
+    document.getElementById("lbClose").addEventListener("click", close);
+    document.getElementById("lbPrev").addEventListener("click", function (e) { e.stopPropagation(); show(current - 1); });
+    document.getElementById("lbNext").addEventListener("click", function (e) { e.stopPropagation(); show(current + 1); });
+    lightbox.addEventListener("click", function (e) { if (e.target === lightbox) close(); });
+    document.addEventListener("keydown", function (e) {
+      if (lightbox.hidden) return;
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") show(current - 1);
+      if (e.key === "ArrowRight") show(current + 1);
+    });
+    lightbox.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      show(current + (e.deltaY > 0 ? 1 : -1));
+    }, { passive: false });
+    lbImg.addEventListener("dblclick", function (e) {
+      e.stopPropagation();
+      zoomed = !zoomed;
+      lbImg.classList.toggle("zoom", zoomed);
+    });
+    let sx = 0, sy = 0;
+    lightbox.addEventListener("touchstart", function (e) {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    lightbox.addEventListener("touchend", function (e) {
+      if (zoomed) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx)) close();
+      else if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) show(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    document.getElementById("filters").addEventListener("click", function (e) {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const tag = btn.dataset.filter;
+      document.querySelectorAll("#filters button").forEach(function (b) { b.classList.toggle("active", b === btn); });
+      items.forEach(function (el) {
+        const tags = (el.dataset.tags || "").split(",");
+        el.style.display = (tag === "全部" || tags.includes(tag)) ? "" : "none";
+      });
+    });
+  })();
+</script>
+</MainLayout>
