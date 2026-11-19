@@ -66,7 +66,8 @@
           "thumb": "https://i.134688.xyz/file/1795057801722_beihai-1000050363-thumb.webp",
           "caption": ""
         }
-      ]
+      ],
+      "slug": "beihai"
     },
     {
       "name": "2026 秋天",
@@ -77,7 +78,8 @@
           "thumb": "https://i.134688.xyz/file/1794815864802_2026-11-07-li-dong-thumb.webp",
           "caption": "立冬"
         }
-      ]
+      ],
+      "slug": "autumn-2026"
     }
   ]
 }
