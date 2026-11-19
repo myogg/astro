@@ -85,6 +85,7 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		let deltaX = 0;
 		let deltaY = 0;
 		let animating = false;
+		let progressAnim: Animation | null = null;
 
 		function makeFace(photo: { src: string; alt: string; caption: string }, index: number) {
 			const face = document.createElement("div");
@@ -93,11 +94,14 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 				<img class="face-blur" src="${photo.src}" alt="" aria-hidden="true" />
 				<div class="face-scrim" aria-hidden="true"></div>
 				<div class="face-head">
-					<div>
-						<p class="face-album">${albumTitle}</p>
-						<p class="face-meta">${albumLocation} · ${albumDate}</p>
+					<div class="face-progress" aria-hidden="true"><span class="face-progress-fill"></span></div>
+					<div class="face-head-main">
+						<div>
+							<p class="face-album">${albumTitle}</p>
+							<p class="face-meta">${albumLocation} · ${albumDate}</p>
+						</div>
+						<p class="face-counter">${pad(index + 1)} / ${pad(photos.length)}</p>
 					</div>
-					<p class="face-counter">${pad(index + 1)} / ${pad(photos.length)}</p>
 				</div>
 				<img class="face-img" src="${photo.src}" alt="${photo.alt}" />
 				<div class="face-caption"><h2>${photo.caption}</h2></div>
@@ -120,10 +124,12 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			scene.style.transform = `translateZ(${-radius}px) rotateY(0deg)`;
 			theta = 0;
 			dir = 0;
+			startProgress();
 		}
 
 		function buildTurn(d: number) {
 			if (!scene) return;
+			stopProgress();
 			radius = (stage?.clientWidth || 360) / 2;
 			dir = d;
 			const target = (current + d + photos.length) % photos.length;
@@ -152,6 +158,35 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			anim.onfinish = () => { anim.cancel(); animating = false; done(); };
 		}
 
+		const HOLD_MS = 7000;
+
+		function stopProgress() {
+			if (progressAnim) { progressAnim.cancel(); progressAnim = null; }
+		}
+
+		function startProgress() {
+			stopProgress();
+			if (!dialog?.open || animating) return;
+			const fill = scene?.querySelector(".face-progress-fill") as HTMLElement | null;
+			if (!fill) return;
+			const anim = fill.animate(
+				[{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+				{ duration: HOLD_MS, easing: "linear", fill: "forwards" }
+			);
+			progressAnim = anim;
+			anim.onfinish = () => {
+				if (progressAnim !== anim) return;
+				progressAnim = null;
+				if (!dialog?.open || animating) return;
+				// 进度走完自动翻下一张（与点击/键盘同款翻页）
+				buildTurn(1);
+				animateTo(-90, () => {
+					current = (current + 1 + photos.length) % photos.length;
+					renderSingle(current);
+				});
+			};
+		}
+
 		function openFromThumbnail(index: number) {
 			if (!dialog) return;
 			current = index;
@@ -164,6 +199,7 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 
 		function closeToThumbnail() {
 			if (!dialog || !scene) return;
+			stopProgress();
 			scene.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease" }).onfinish = () => dialog.close();
 		}
 
@@ -288,7 +324,10 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		/* 竖图：在缩短的面里横向铺满 */
 		:global(.cube-face.is-portrait .face-img) { object-fit: cover; }
 		:global(.cube-face.is-portrait .face-blur) { display: none; }
-		:global(.face-head) { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
+		:global(.face-head) { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; flex-direction: column; gap: 0.7rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
+		:global(.face-head-main) { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+		:global(.face-progress) { position: relative; width: 100%; height: 2px; border-radius: 999px; background: rgb(255 255 255 / 28%); overflow: hidden; }
+		:global(.face-progress-fill) { display: block; width: 0; height: 100%; border-radius: 999px; background: #fff; transform-origin: left center; }
 		:global(.face-album) { margin: 0; font-size: 0.92rem; font-weight: 600; }
 		:global(.face-meta) { margin: 0.25rem 0 0; color: rgb(255 255 255 / 78%); font-size: 0.76rem; }
 		:global(.face-counter) { margin: 0; font-size: 0.82rem; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
