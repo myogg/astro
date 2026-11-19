@@ -19,7 +19,7 @@ const dateText = (date: Date) =>
 
 <Layout
 	title="画廊"
-	description="一组组照片，收好旅行、街巷与日常的片刻。姜一一的照片图集。"
+	description="一组组照片，收好旅行、街巷与日常的片刻。姜小小的照片图集。"
 >
 	<main class="album-page mx-auto w-full max-w-5xl px-6 pb-24">
 		<header class="album-intro">
@@ -114,7 +114,7 @@ const dateText = (date: Date) =>
 		.album-grid[hidden] { display: none; }
 		.album-card { display: block; min-width: 0; color: inherit; text-decoration: none; }
 		.album-card[hidden] { display: none; }
-		.album-cover { position: relative; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid rgb(0 0 0 / 5%); border-radius: 15px; background: #e5e5e5; }
+		.album-cover { position: relative; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid rgb(0 0 0 / 5%); border-radius: 0; background: #e5e5e5; }
 		.album-cover::after { position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgb(0 0 0 / 48%)); content: ""; }
 		.album-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 		.album-card:hover .album-cover img { transform: scale(1.04); }
@@ -139,7 +139,7 @@ const dateText = (date: Date) =>
 			.album-toolbar { align-items: flex-start; flex-direction: column; gap: 0.55rem; margin-top: 1rem; }
 			.album-filter { padding: 0.38rem 0.85rem; font-size: 0.78rem; }
 			.album-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.7rem; }
-			.album-cover { aspect-ratio: 3 / 2; border-radius: 12px; }
+			.album-cover { aspect-ratio: 3 / 2; border-radius: 0; }
 			.album-card-copy { gap: 0.4rem; padding-top: 0.65rem; }
 			.album-card-copy h2 { font-size: 0.9rem; }
 			.album-card-meta { font-size: 0.67rem; }
