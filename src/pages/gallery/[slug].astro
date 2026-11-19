@@ -286,18 +286,18 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		.photo-viewer::backdrop { background: #000; }
 		.viewer-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: center center; touch-action: none; overflow: hidden; }
 		.cube-scene { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
-		.cube-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #101012; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
-		.face-blur { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
-		.face-scrim { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
-		.face-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-		.cube-face.is-portrait .face-img { object-fit: cover; }
-		.face-head { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
-		.face-album { margin: 0; font-size: 0.92rem; font-weight: 600; }
-		.face-meta { margin: 0.25rem 0 0; color: rgb(255 255 255 / 78%); font-size: 0.76rem; }
-		.face-counter { margin: 0; font-size: 0.82rem; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
-		.face-caption { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
-		.face-caption h2 { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
-		.face-edge { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
+		:global(.cube-face) { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #101012; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
+		:global(.face-blur) { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
+		:global(.face-scrim) { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
+		:global(.face-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+		:global(.cube-face.is-portrait .face-img) { object-fit: cover; }
+		:global(.face-head) { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
+		:global(.face-album) { margin: 0; font-size: 0.92rem; font-weight: 600; }
+		:global(.face-meta) { margin: 0.25rem 0 0; color: rgb(255 255 255 / 78%); font-size: 0.76rem; }
+		:global(.face-counter) { margin: 0; font-size: 0.82rem; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+		:global(.face-caption) { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
+		:global(.face-caption h2) { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
+		:global(.face-edge) { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
 		.viewer-close { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
 		.viewer-close:hover { background: rgb(255 255 255 / 16%); }
 		.viewer-close svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
@@ -312,12 +312,12 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 			.photo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; margin-right: -1.5rem; margin-left: -1.5rem; }
 			.photo-card { border-radius: 0; }
 			.photo-caption { display: none; }
-			.face-head { padding: max(0.9rem, env(safe-area-inset-top)) 0.85rem 1.8rem; }
-			.face-album { font-size: 0.86rem; }
-			.face-meta { font-size: 0.69rem; }
-			.face-counter { font-size: 0.74rem; }
-			.face-caption { padding: 3.5rem 0.9rem max(1.2rem, env(safe-area-inset-bottom)); }
-			.face-caption h2 { font-size: 0.98rem; }
+			:global(.face-head) { padding: max(0.9rem, env(safe-area-inset-top)) 0.85rem 1.8rem; }
+			:global(.face-album) { font-size: 0.86rem; }
+			:global(.face-meta) { font-size: 0.69rem; }
+			:global(.face-counter) { font-size: 0.74rem; }
+			:global(.face-caption) { padding: 3.5rem 0.9rem max(1.2rem, env(safe-area-inset-bottom)); }
+			:global(.face-caption h2) { font-size: 0.98rem; }
 		}
 		@media (prefers-reduced-motion: reduce) { .photo-card img, .photo-caption, .back-link { transition: none; } }
 	</style>
