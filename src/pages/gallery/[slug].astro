@@ -286,13 +286,13 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		.photo-viewer::backdrop { background: #000; }
 		.viewer-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: center center; touch-action: none; overflow: hidden; }
 		.cube-scene { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
-		:global(.cube-face) { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #101012; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
+		/* 转动体整体上下缩短，屏幕上下露出黑边 */
+		:global(.cube-face) { position: absolute; inset: 8% 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #000; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
 		:global(.face-blur) { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
 		:global(.face-scrim) { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
 		:global(.face-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-		/* 竖图：完整显示、上下留纯黑边（不裁切、不模糊填充） */
-		:global(.cube-face.is-portrait) { background: #000; }
-		:global(.cube-face.is-portrait .face-img) { inset: 11% 0 15% 0; width: 100%; height: 74%; object-fit: contain; }
+		/* 竖图：在缩短的面里横向铺满 */
+		:global(.cube-face.is-portrait .face-img) { object-fit: cover; }
 		:global(.cube-face.is-portrait .face-blur) { display: none; }
 		:global(.face-head) { position: absolute; z-index: 3; top: 0; right: 0; left: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: max(1rem, env(safe-area-inset-top)) 1rem 1.8rem; background: linear-gradient(rgb(0 0 0 / 30%), transparent); }
 		:global(.face-album) { margin: 0; font-size: 0.92rem; font-weight: 600; }
