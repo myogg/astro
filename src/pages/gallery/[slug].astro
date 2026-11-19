@@ -281,7 +281,7 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		.viewer-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: center center; touch-action: none; overflow: hidden; }
 		.cube-scene { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
 		/* 转动体整体上下缩短，屏幕上下露出黑边 */
-		:global(.cube-face) { position: absolute; inset: 4% 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #000; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
+		:global(.cube-face) { position: absolute; inset: 4% 0 7% 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #000; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
 		:global(.face-blur) { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
 		:global(.face-scrim) { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
 		:global(.face-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
