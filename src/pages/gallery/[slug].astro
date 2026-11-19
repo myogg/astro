@@ -53,12 +53,6 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		<button class="viewer-close" id="viewer-close" type="button" aria-label="关闭照片" title="关闭">
 			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
 		</button>
-		<div class="viewer-actions">
-			<button class="viewer-icon-button" id="viewer-share" type="button" aria-label="分享照片" title="分享照片">
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0L7.5 7.5M12 3l4.5 4.5M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>
-			</button>
-			<p class="viewer-hint">左右滑动翻页 · 下滑关闭</p>
-		</div>
 	</dialog>
 
 	<script>
@@ -249,15 +243,6 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		}
 		window.addEventListener("pointerup", endPointer);
 		window.addEventListener("pointercancel", endPointer);
-
-		document.getElementById("viewer-share")?.addEventListener("click", async () => {
-			try {
-				if (navigator.share) await navigator.share({ title: albumTitle, text: `${albumTitle} · ${albumLocation}`, url: location.href });
-				else if (navigator.clipboard) await navigator.clipboard.writeText(location.href);
-			} catch {
-				// 用户取消分享时无需提示。
-			}
-		});
 	</script>
 
 	<style>
@@ -287,7 +272,7 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		.viewer-stage { position: absolute; inset: 0; perspective: 1200px; perspective-origin: center center; touch-action: none; overflow: hidden; }
 		.cube-scene { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
 		/* 转动体整体上下缩短，屏幕上下露出黑边 */
-		:global(.cube-face) { position: absolute; inset: 8% 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #000; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
+		:global(.cube-face) { position: absolute; inset: 4% 0; overflow: hidden; backface-visibility: hidden; transform-style: preserve-3d; background: #000; box-shadow: 0 0 40px rgb(0 0 0 / 60%); }
 		:global(.face-blur) { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); object-fit: cover; filter: blur(28px) brightness(0.5); transform: scale(1.06); }
 		:global(.face-scrim) { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / 32%), transparent 28%, transparent 56%, rgb(0 0 0 / 70%)); }
 		:global(.face-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
@@ -304,10 +289,6 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		.viewer-close { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
 		.viewer-close:hover { background: rgb(255 255 255 / 16%); }
 		.viewer-close svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
-		.viewer-actions { position: absolute; z-index: 20; left: 0; right: 0; bottom: max(0.5rem, env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 0.4rem; pointer-events: none; }
-		.viewer-icon-button { width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 24%); color: white; cursor: pointer; pointer-events: auto; }
-		.viewer-icon-button svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
-		.viewer-hint { margin: 0; color: rgb(255 255 255 / 62%); font-size: 0.7rem; }
 
 		@media (max-width: 767px) {
 			.album-header { padding: 1.8rem 0 1.4rem; }
