@@ -4,25 +4,24 @@ import PageHeading from "../components/page-heading.astro";
 import galleryData from "../data/gallery.json";
 
 type Photo = { url: string; thumb?: string; caption?: string; date?: string };
-type Group = { name: string; date?: string; photos: Photo[] };
+type Group = { name: string; slug?: string; date?: string; photos: Photo[] };
 type GalleryData = { title: string; description: string; groups: Group[] };
 
 const data = galleryData as GalleryData;
-
-let counter = 0;
 const groups = (data.groups || []).map((g) => ({
   name: g.name,
+  slug: g.slug || "",
   date: g.date || "",
-  items: (g.photos || []).map((p) => ({
-    full: p.url,
-    thumb: p.thumb || p.url, // 没传缩略图就退回原图，保证不裂图
-    caption: p.caption || "",
-    idx: counter++,
-  })),
+  cover: g.photos?.[0]?.thumb || g.photos?.[0]?.url || "",
+  count: (g.photos || []).length,
 }));
-const photos = groups.flatMap((g) => g.items);
-const total = photos.length;
-const description = total > 0 ? `${data.description}（共 ${total} 张）` : data.description;
+const total = groups.reduce((n, g) => n + g.count, 0);
+const description = total > 0 ? `${data.description}（${groups.length} 组 · 共 ${total} 张）` : data.description;
+
+function groupUrl(g: (typeof groups)[number]) {
+  if (g.slug) return `/gallery/${g.slug}/`;
+  return `/gallery/?group=${encodeURIComponent(g.name)}`;
+}
 ---
 
 <Layout title="画廊" description={description}>
@@ -32,125 +31,44 @@ const description = total > 0 ? `${data.description}（共 ${total} 张）` : da
     </div>
 
     {
-      total === 0 ? (
+      groups.length === 0 ? (
         <p class="mt-10 text-sm text-neutral-500 dark:text-neutral-400">相册还在整理，很快就好。</p>
       ) : (
-        groups.map((group) => (
-          <section class="mt-10">
-            <div class="flex items-baseline justify-between mb-5">
-              <h2 class="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-                {group.name}
-              </h2>
-              {group.date && (
-                <span class="text-xs tabular-nums text-neutral-400 dark:text-neutral-500">{group.date}</span>
-              )}
-            </div>
-
-            <div class="columns-1 gap-4 sm:columns-2 lg:columns-3">
-              {
-                group.items.map((item) => (
-                  <button
-                    type="button"
-                    data-gallery-index={item.idx}
-                    aria-label={`查看大图：${item.caption || "照片"}`}
-                    class="gallery-item group relative mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900"
-                  >
-                    <img
-                      src={item.thumb}
-                      alt={item.caption || "照片"}
-                      loading="lazy"
-                      class="block w-full h-auto transition duration-300 ease-out group-hover:scale-[1.02]"
-                    />
-                    {item.caption && (
-                      <span class="block px-3 py-2 text-left text-xs leading-5 text-neutral-500 dark:text-neutral-400">
-                        {item.caption}
-                      </span>
-                    )}
-                  </button>
-                ))
-              }
-            </div>
-          </section>
-        ))
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mt-10">
+          {
+            groups.map((g) => (
+              <a
+                href={groupUrl(g)}
+                class="group relative block overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-neutral-300 dark:hover:border-neutral-600"
+              >
+                <div class="aspect-[4/3] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                  {
+                    g.cover ? (
+                      <img
+                        src={g.cover}
+                        alt={g.name}
+                        loading="lazy"
+                        class="block h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105"
+                      />
+                    ) : (
+                      <div class="flex h-full items-center justify-center text-xs text-neutral-400">暂无封面</div>
+                    )
+                  }
+                </div>
+                <div class="flex items-baseline justify-between gap-3 p-4">
+                  <h2 class="text-base font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                    {g.name}
+                  </h2>
+                  <div class="flex shrink-0 items-center gap-2 text-xs tabular-nums text-neutral-400 dark:text-neutral-500">
+                    {g.date && <span>{g.date}</span>}
+                    <span>{g.count} 张</span>
+                  </div>
+                </div>
+              </a>
+            ))
+          }
+        </div>
       )
     }
   </section>
-
-  <dialog
-    id="lightbox"
-    class="m-auto max-w-[94vw] max-h-[92vh] p-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-neutral-950"
-  >
-    <div class="relative">
-      <img id="lightbox-img" src="" alt="" class="block max-w-[92vw] max-h-[78vh] object-contain" />
-      <button
-        id="lightbox-close"
-        type="button"
-        aria-label="关闭"
-        class="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white text-xl leading-none hover:bg-black/70"
-      >×</button>
-      <button
-        id="lightbox-prev"
-        type="button"
-        aria-label="上一张"
-        class="absolute top-1/2 left-3 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white text-2xl leading-none hover:bg-black/70"
-      >‹</button>
-      <button
-        id="lightbox-next"
-        type="button"
-        aria-label="下一张"
-        class="absolute top-1/2 right-3 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white text-2xl leading-none hover:bg-black/70"
-      >›</button>
-    </div>
-    <div class="flex items-center justify-between gap-4 px-5 py-3">
-      <span id="lightbox-caption" class="text-sm text-neutral-700 dark:text-neutral-200"></span>
-      <span id="lightbox-count" class="shrink-0 text-xs tabular-nums text-neutral-400 dark:text-neutral-500"></span>
-    </div>
-  </dialog>
-
-  <style>
-    #lightbox::backdrop {
-      background: rgba(0, 0, 0, 0.85);
-    }
-  </style>
-
-  <script is:inline define:vars={{ photos }}>
-    (function () {
-      const dialog = document.getElementById("lightbox");
-      const img = document.getElementById("lightbox-img");
-      const caption = document.getElementById("lightbox-caption");
-      const count = document.getElementById("lightbox-count");
-      if (!dialog || !img || !photos || !photos.length) return;
-
-      let current = 0;
-      function show(idx) {
-        current = (idx + photos.length) % photos.length;
-        const p = photos[current];
-        img.src = p.full;
-        img.alt = p.caption || "照片";
-        caption.textContent = p.caption || "";
-        count.textContent = current + 1 + " / " + photos.length;
-      }
-      function close() { if (dialog.open) dialog.close(); }
-
-      document.querySelectorAll("[data-gallery-index]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          show(Number(btn.getAttribute("data-gallery-index")));
-          dialog.showModal();
-        });
-      });
-      document.getElementById("lightbox-prev")?.addEventListener("click", function (e) {
-        e.stopPropagation(); show(current - 1);
-      });
-      document.getElementById("lightbox-next")?.addEventListener("click", function (e) {
-        e.stopPropagation(); show(current + 1);
-      });
-      document.getElementById("lightbox-close")?.addEventListener("click", close);
-      dialog.addEventListener("click", function (e) { if (e.target === dialog) close(); });
-      document.addEventListener("keydown", function (e) {
-        if (!dialog.open) return;
-        if (e.key === "ArrowLeft") show(current - 1);
-        else if (e.key === "ArrowRight") show(current + 1);
-      });
-    })();
-  </script>
 </Layout>
