@@ -50,9 +50,14 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		<div class="viewer-stage" id="viewer-stage">
 			<div class="cube-scene" id="cube-scene"></div>
 		</div>
-		<button class="viewer-close" id="viewer-close" type="button" aria-label="关闭照片" title="关闭">
-			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+		<button class="viewer-more" id="viewer-more" type="button" aria-label="更多操作" aria-haspopup="menu" aria-expanded="false" title="更多">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" /></svg>
 		</button>
+		<div class="viewer-menu" id="viewer-menu" role="menu" hidden>
+			<button class="viewer-menu-item" id="menu-save" role="menuitem" type="button">保存图片</button>
+			<button class="viewer-menu-item" id="menu-share" role="menuitem" type="button">分享</button>
+			<button class="viewer-menu-item" id="menu-close" role="menuitem" type="button">关闭</button>
+		</div>
 	</dialog>
 
 	<script>
@@ -205,8 +210,58 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 
 		cards.forEach((card, index) => card.addEventListener("click", () => openFromThumbnail(index)));
 
-		document.getElementById("viewer-close")?.addEventListener("click", closeToThumbnail);
-		dialog?.addEventListener("click", (event) => { if (event.target === dialog) closeToThumbnail(); });
+		const moreBtn = document.getElementById("viewer-more");
+		const moreMenu = document.getElementById("viewer-menu");
+		function setMenu(open: boolean) {
+			if (!moreMenu || !moreBtn) return;
+			moreMenu.hidden = !open;
+			moreBtn.setAttribute("aria-expanded", String(open));
+			if (open) stopProgress();
+			else startProgress();
+		}
+		moreBtn?.addEventListener("click", (event) => {
+			event.stopPropagation();
+			if (moreMenu) setMenu(moreMenu.hidden);
+		});
+		document.getElementById("menu-save")?.addEventListener("click", async (event) => {
+			event.stopPropagation();
+			setMenu(false);
+			const src = photos[current]?.src;
+			if (!src) return;
+			try {
+				const res = await fetch(src, { mode: "cors" });
+				const blob = await res.blob();
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = `${albumTitle}-${pad(current + 1)}.jpg`;
+				a.click();
+				setTimeout(() => URL.revokeObjectURL(url), 1000);
+			} catch {
+				window.open(src, "_blank");
+			}
+		});
+		document.getElementById("menu-share")?.addEventListener("click", async (event) => {
+			event.stopPropagation();
+			setMenu(false);
+			try {
+				if (navigator.share) await navigator.share({ title: albumTitle, text: `${albumTitle} · ${albumLocation}`, url: location.href });
+				else if (navigator.clipboard) await navigator.clipboard.writeText(location.href);
+			} catch {
+				// 用户取消分享时无需提示。
+			}
+		});
+		document.getElementById("menu-close")?.addEventListener("click", (event) => {
+			event.stopPropagation();
+			setMenu(false);
+			closeToThumbnail();
+		});
+		dialog?.addEventListener("click", (event) => {
+			if (!moreMenu) return;
+			const target = event.target as HTMLElement;
+			if (!moreMenu.hidden && !target.closest("#viewer-menu") && !target.closest("#viewer-more")) setMenu(false);
+			if (event.target === dialog) closeToThumbnail();
+		});
 		dialog?.addEventListener("close", () => {
 			const returnFocus = cards[current];
 			requestAnimationFrame(() => returnFocus?.focus({ preventScroll: true }));
@@ -334,9 +389,13 @@ const dateText = new Intl.DateTimeFormat("zh-CN", {
 		:global(.face-caption) { position: absolute; z-index: 3; right: 0; bottom: 0; left: 0; padding: 4.5rem 1.1rem max(1.6rem, env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgb(0 0 0 / 72%)); text-align: left; }
 		:global(.face-caption h2) { margin: 0; font-size: 1.05rem; font-weight: 500; line-height: 1.5; }
 		:global(.face-edge) { position: absolute; z-index: 4; top: 0; right: 0; bottom: 0; width: 3px; background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 28%), rgb(255 255 255 / 5%)); pointer-events: none; }
-		.viewer-close { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
-		.viewer-close:hover { background: rgb(255 255 255 / 16%); }
-		.viewer-close svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
+		.viewer-more { position: absolute; z-index: 20; top: max(0.9rem, env(safe-area-inset-top)); right: 0.85rem; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 999px; background: rgb(0 0 0 / 25%); color: white; cursor: pointer; }
+		.viewer-more:hover { background: rgb(255 255 255 / 16%); }
+		.viewer-more svg { width: 1.2rem; height: 1.2rem; fill: currentColor; }
+		.viewer-menu { position: absolute; z-index: 21; top: max(3.5rem, calc(env(safe-area-inset-top) + 2.6rem)); right: 0.85rem; min-width: 8.5rem; padding: 0.35rem; border: 1px solid rgb(255 255 255 / 14%); border-radius: 12px; background: rgb(28 28 30 / 94%); box-shadow: 0 8px 30px rgb(0 0 0 / 45%); backdrop-filter: blur(12px); }
+		.viewer-menu[hidden] { display: none; }
+		.viewer-menu-item { display: block; width: 100%; padding: 0.62rem 0.8rem; border: 0; border-radius: 8px; background: transparent; color: #fff; font: inherit; font-size: 0.88rem; text-align: left; cursor: pointer; }
+		.viewer-menu-item:hover, .viewer-menu-item:focus-visible { background: rgb(255 255 255 / 12%); }
 
 		@media (max-width: 767px) {
 			.album-header { padding: 1.8rem 0 1.4rem; }
