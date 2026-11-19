@@ -1,0 +1,156 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/main.astro";
+
+const albums = (await getCollection("gallery")).sort(
+	(a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const categories = [
+	{ label: "全部图集", value: "all" },
+	{ label: "旅行", value: "travel" },
+	{ label: "城市", value: "city" },
+	{ label: "日常", value: "daily" },
+];
+const dateText = (date: Date) =>
+	new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })
+		.format(date)
+		.replaceAll("/", ".");
+---
+
+<Layout
+	title="画廊"
+	description="一组组照片，收好旅行、街巷与日常的片刻。姜一一的照片图集。"
+>
+	<main class="album-page mx-auto w-full max-w-5xl px-6 pb-24">
+		<header class="album-intro">
+			<p class="album-eyebrow">PHOTO ALBUMS · 2026</p>
+			<h1>把路过的风景，收进记忆</h1>
+			<p class="album-lede">一组照片，一段路程。慢慢收集沿途的风景。</p>
+		</header>
+
+		<div class="album-toolbar">
+			<div class="album-filters" role="group" aria-label="按类型筛选图集">
+				{categories.map((category, index) => (
+					<button
+						type="button"
+						class="album-filter"
+						data-album-filter={category.value}
+						aria-pressed={index === 0 ? "true" : "false"}
+					>
+						{category.label}
+					</button>
+				))}
+			</div>
+			<p class="album-count" id="album-count" aria-live="polite">{albums.length} 个图集</p>
+		</div>
+
+		<section class="album-grid" aria-label="照片图集">
+			{albums.map((album, index) => {
+				const cover = album.data.cover || album.data.photos[0].src;
+				return (
+					<a
+						class="album-card"
+						href={`/gallery/${album.slug}/`}
+						data-album-card
+						data-category={album.data.category}
+						aria-label={`打开图集：${album.data.title}，共 ${album.data.photos.length} 张照片`}
+					>
+						<div class="album-cover">
+							<img src={cover} alt={album.data.title} loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+							<span class="album-photo-count">{album.data.photos.length} 张照片</span>
+						</div>
+						<div class="album-card-copy">
+							<div>
+								<h2>{album.data.title}</h2>
+								<p class="album-card-meta">{album.data.location} <span aria-hidden="true">·</span> {dateText(album.data.date)}</p>
+							</div>
+							<span class="album-card-arrow" aria-hidden="true">↗</span>
+						</div>
+						{album.data.description && <p class="album-card-description">{album.data.description}</p>}
+					</a>
+				);
+			})}
+		</section>
+
+		<p class="album-empty" id="album-empty" hidden>这个分类还没有图集。</p>
+	</main>
+
+	<script>
+		const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-album-card]"));
+		const filters = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-album-filter]"));
+		const count = document.getElementById("album-count");
+		const grid = document.querySelector<HTMLElement>(".album-grid");
+		const empty = document.getElementById("album-empty");
+
+		filters.forEach((button) => {
+			button.addEventListener("click", () => {
+				const filter = button.dataset.albumFilter || "all";
+				filters.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+				cards.forEach((card) => {
+					card.hidden = filter !== "all" && card.dataset.category !== filter;
+				});
+				const visible = cards.filter((card) => !card.hidden).length;
+				if (count) count.textContent = `${visible} 个图集`;
+				if (empty) empty.hidden = visible > 0;
+				if (grid) grid.hidden = visible === 0;
+			});
+		});
+	</script>
+
+	<style>
+		.album-page { color: #171717; }
+		.album-intro { padding: 4.5rem 0 2rem; text-align: center; }
+		.album-eyebrow { margin: 0 0 0.9rem; color: #a3a3a3; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3em; }
+		.album-intro h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.15rem); font-weight: 500; letter-spacing: 0.045em; line-height: 1.3; }
+		.album-lede { margin: 0.85rem 0 0; color: #8b8b8b; font-size: 1rem; letter-spacing: 0.04em; }
+		.album-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.5rem 0 1rem; }
+		.album-filters { display: flex; gap: 0.65rem; overflow-x: auto; padding: 0.15rem 0; scrollbar-width: none; }
+		.album-filters::-webkit-scrollbar { display: none; }
+		.album-filter { flex: 0 0 auto; border: 1px solid #dedede; border-radius: 999px; padding: 0.42rem 1rem; background: transparent; color: #666; font: inherit; font-size: 0.82rem; transition: color 180ms ease, background 180ms ease, border-color 180ms ease; }
+		.album-filter:hover { border-color: #8a8a8a; color: #171717; }
+		.album-filter[aria-pressed="true"] { border-color: #171717; background: #171717; color: white; }
+		.album-count { flex: 0 0 auto; margin: 0; color: #9a9a9a; font-size: 0.76rem; }
+		.album-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.2rem 1rem; }
+		.album-grid[hidden] { display: none; }
+		.album-card { display: block; min-width: 0; color: inherit; text-decoration: none; }
+		.album-card[hidden] { display: none; }
+		.album-cover { position: relative; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid rgb(0 0 0 / 5%); border-radius: 15px; background: #e5e5e5; }
+		.album-cover::after { position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgb(0 0 0 / 48%)); content: ""; }
+		.album-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+		.album-card:hover .album-cover img { transform: scale(1.04); }
+		.album-photo-count { position: absolute; z-index: 1; right: 0.8rem; bottom: 0.75rem; border: 1px solid rgb(255 255 255 / 32%); border-radius: 999px; padding: 0.28rem 0.6rem; background: rgb(0 0 0 / 24%); color: white; font-size: 0.68rem; backdrop-filter: blur(8px); }
+		.album-card-copy { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 0.8rem 0.1rem 0; }
+		.album-card-copy h2 { margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: 0.02em; }
+		.album-card-meta { margin: 0.35rem 0 0; color: #929292; font-size: 0.73rem; }
+		.album-card-arrow { color: #a3a3a3; font-size: 1.05rem; transition: transform 180ms ease, color 180ms ease; }
+		.album-card:hover .album-card-arrow { transform: translate(2px, -2px); color: #171717; }
+		.album-card-description { display: -webkit-box; overflow: hidden; margin: 0.55rem 0 0; color: #777; font-size: 0.78rem; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+		.album-empty { padding: 4rem 1rem; color: #888; text-align: center; }
+		:global(html.dark) .album-page { color: #f5f5f5; }
+		:global(html.dark) .album-filter { border-color: #404040; color: #bdbdbd; }
+		:global(html.dark) .album-filter:hover { border-color: #777; color: white; }
+		:global(html.dark) .album-filter[aria-pressed="true"] { border-color: white; background: white; color: #171717; }
+		:global(html.dark) .album-cover { border-color: rgb(255 255 255 / 7%); }
+		:global(html.dark) .album-card:hover .album-card-arrow { color: white; }
+		@media (max-width: 767px) {
+			.album-intro { padding: 3rem 0 1rem; }
+			.album-intro h1 { max-width: 19rem; margin: 0 auto; font-size: clamp(1.9rem, 8vw, 2.5rem); line-height: 1.35; }
+			.album-lede { font-size: 0.88rem; }
+			.album-toolbar { align-items: flex-start; flex-direction: column; gap: 0.55rem; margin-top: 1rem; }
+			.album-filter { padding: 0.38rem 0.85rem; font-size: 0.78rem; }
+			.album-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.7rem; }
+			.album-cover { aspect-ratio: 3 / 2; border-radius: 12px; }
+			.album-card-copy { gap: 0.4rem; padding-top: 0.65rem; }
+			.album-card-copy h2 { font-size: 0.9rem; }
+			.album-card-meta { font-size: 0.67rem; }
+			.album-card-description { display: none; }
+		}
+		@media (max-width: 390px) {
+			.album-grid { grid-template-columns: minmax(0, 1fr); gap: 1.4rem; }
+			.album-cover { aspect-ratio: 1.5 / 1; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			.album-filter, .album-cover img, .album-card-arrow { transition: none; }
+		}
+	</style>
+</Layout>

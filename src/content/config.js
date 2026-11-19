@@ -42,6 +42,25 @@ const postCollection = defineCollection({
 		})),
 });
 
+
+const galleryCollection = defineCollection({
+	type: "content",
+	schema: z.object({
+		title: z.string(),
+		date: z.coerce.date(),
+		location: z.string(),
+		description: z.string().optional(),
+		cover: z.string().optional(),
+		category: z.enum(["travel", "city", "daily"]).default("travel"),
+		photos: z.array(z.object({
+			src: z.string().min(1),
+			alt: z.string().default(""),
+			caption: z.string().optional(),
+		})).min(1),
+	}),
+});
+
 export const collections = {
 	post: postCollection,
+	gallery: galleryCollection,
 };
