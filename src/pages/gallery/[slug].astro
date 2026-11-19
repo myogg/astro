@@ -76,46 +76,120 @@ const backHref = "/gallery/";
     }
   </section>
 
-  <dialog
-    id="lightbox"
-    class="m-auto max-w-[94vw] max-h-[92vh] p-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-700 dark:bg-neutral-950"
-  >
-    <div class="relative">
-      <img id="lightbox-img" src="" alt="" class="block max-w-[92vw] max-h-[78vh] object-contain" />
-      <button
-        id="lightbox-close"
-        type="button"
-        aria-label="关闭"
-        class="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white text-xl leading-none hover:bg-black/70"
-      >×</button>
-      <button
-        id="lightbox-prev"
-        type="button"
-        aria-label="上一张"
-        class="absolute top-1/2 left-3 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white text-2xl leading-none hover:bg-black/70"
-      >‹</button>
-      <button
-        id="lightbox-next"
-        type="button"
-        aria-label="下一张"
-        class="absolute top-1/2 right-3 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white text-2xl leading-none hover:bg-black/70"
-      >›</button>
+  <dialog id="lightbox" class="lb" aria-label="照片大图">
+    <div class="lb-stage" id="lb-stage">
+      <img id="lightbox-img" src="" alt="" draggable="false" />
+      <button id="lightbox-prev" type="button" aria-label="上一张" class="lb-nav lb-prev">‹</button>
+      <button id="lightbox-next" type="button" aria-label="下一张" class="lb-nav lb-next">›</button>
     </div>
-    <div class="flex items-center justify-between gap-4 px-5 py-3">
-      <span id="lightbox-caption" class="text-sm text-neutral-700 dark:text-neutral-200"></span>
-      <span id="lightbox-count" class="shrink-0 text-xs tabular-nums text-neutral-400 dark:text-neutral-500"></span>
+    <div class="lb-bar">
+      <span id="lightbox-caption" class="lb-caption"></span>
+      <span id="lightbox-count" class="lb-count"></span>
     </div>
+    <button id="lightbox-close" type="button" aria-label="关闭" class="lb-close">×</button>
   </dialog>
 
   <style>
-    #lightbox::backdrop {
-      background: rgba(0, 0, 0, 0.85);
+    .lb {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: #000;
+      overflow: hidden;
+      color: #fff;
     }
+    .lb-stage {
+      position: absolute;
+      inset: 0;
+      box-sizing: border-box;
+      padding: 10px 6px 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: pan-y;
+    }
+    .lb-stage img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      transition: opacity 0.15s ease;
+    }
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .lb-prev { left: 8px; }
+    .lb-next { right: 8px; }
+    .lb-close {
+      position: absolute;
+      top: max(10px, env(safe-area-inset-top));
+      right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 3;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .lb-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .lb-caption { font-size: 14px; }
+    .lb-count { font-size: 12px; opacity: 0.7; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  </style>
+  <style is:global>
+    #lightbox::backdrop { background: #000; }
   </style>
 
   <script is:inline define:vars={{ photos }}>
     (function () {
       const dialog = document.getElementById("lightbox");
+      const stage = document.getElementById("lb-stage");
       const img = document.getElementById("lightbox-img");
       const caption = document.getElementById("lightbox-caption");
       const count = document.getElementById("lightbox-count");
@@ -125,12 +199,20 @@ const backHref = "/gallery/";
       function show(idx) {
         current = (idx + photos.length) % photos.length;
         const p = photos[current];
-        img.src = p.full;
-        img.alt = p.caption || "照片";
+        img.style.opacity = "0";
+        const pre = new Image();
+        pre.onload = pre.onerror = function () {
+          img.src = p.full;
+          img.alt = p.caption || "照片";
+          img.style.opacity = "1";
+        };
+        pre.src = p.full;
         caption.textContent = p.caption || "";
         count.textContent = current + 1 + " / " + photos.length;
       }
       function close() { if (dialog.open) dialog.close(); }
+      function next() { show(current + 1); }
+      function prev() { show(current - 1); }
 
       document.querySelectorAll("[data-gallery-index]").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -138,18 +220,49 @@ const backHref = "/gallery/";
           dialog.showModal();
         });
       });
-      document.getElementById("lightbox-prev")?.addEventListener("click", function (e) {
-        e.stopPropagation(); show(current - 1);
-      });
-      document.getElementById("lightbox-next")?.addEventListener("click", function (e) {
-        e.stopPropagation(); show(current + 1);
-      });
+      document.getElementById("lightbox-prev")?.addEventListener("click", function (e) { e.stopPropagation(); prev(); });
+      document.getElementById("lightbox-next")?.addEventListener("click", function (e) { e.stopPropagation(); next(); });
       document.getElementById("lightbox-close")?.addEventListener("click", close);
-      dialog.addEventListener("click", function (e) { if (e.target === dialog) close(); });
+
+      // 点击图片左右两侧切换（中间保留，避免误触）
+      let didSwipe = false;
+      stage.addEventListener("click", function (e) {
+        if (didSwipe) { didSwipe = false; return; }
+        if (e.target.closest("button")) return;
+        const x = e.clientX;
+        const w = window.innerWidth;
+        if (x < w * 0.32) prev();
+        else if (x > w * 0.68) next();
+      });
+
+      // 触摸左右滑动切换
+      let startX = 0, startY = 0, moveX = 0;
+      stage.addEventListener("touchstart", function (e) {
+        if (e.touches.length !== 1) return;
+        didSwipe = false;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        moveX = 0;
+      }, { passive: true });
+      stage.addEventListener("touchmove", function (e) {
+        if (!e.touches.length) return;
+        moveX = e.touches[0].clientX - startX;
+      }, { passive: true });
+      stage.addEventListener("touchend", function (e) {
+        const dx = moveX;
+        const dy = Math.abs((e.changedTouches[0] && e.changedTouches[0].clientY || startY) - startY);
+        if (Math.abs(dx) > 45 && Math.abs(dx) > dy) {
+          didSwipe = true;
+          if (dx < 0) next(); else prev();
+        }
+        moveX = 0;
+      }, { passive: true });
+
       document.addEventListener("keydown", function (e) {
         if (!dialog.open) return;
-        if (e.key === "ArrowLeft") show(current - 1);
-        else if (e.key === "ArrowRight") show(current + 1);
+        if (e.key === "ArrowLeft") prev();
+        else if (e.key === "ArrowRight") next();
+        else if (e.key === "Escape") close();
       });
     })();
   </script>
