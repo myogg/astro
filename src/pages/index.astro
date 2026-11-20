@@ -91,6 +91,20 @@ import Layout from "../layouts/main.astro";
   <Separator text="突然的一些小想法" />
   <Writings />
 
+  <style is:inline>
+    @keyframes hero-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    #hero-avatar {
+      animation: hero-float 3.6s ease-in-out infinite;
+      will-change: transform;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #hero-avatar { animation: none; }
+    }
+  </style>
+
   <script is:inline>
     (() => {
       const trigger = document.getElementById("hero-avatar");
