@@ -71,8 +71,8 @@ html.dark {
   }
 }
 
-/* Article page typography and layout adapted from myogg/astro-t9tio.
-   Scoped to the article template; the homepage and other pages stay unchanged. */
+/* Article page typography and layout matched to myogg/astro-t9tio.
+   All selectors are scoped to this template; the site header and homepage are untouched. */
 :root {
   --article-font-sans: "Inter", "OPPO Sans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
   --article-font-display: "Inter", "Noto Sans SC", "OPPO Sans", "PingFang SC", sans-serif;
@@ -96,9 +96,7 @@ html.dark {
   line-height: 1.5;
 }
 
-html.dark .post-page .post-meta {
-  color: #a3a3a3;
-}
+html.dark .post-page .post-meta { color: #a3a3a3; }
 
 .post-page .post-title {
   margin: 64px 0 0;
@@ -111,9 +109,7 @@ html.dark .post-page .post-meta {
   text-align: center;
 }
 
-html.dark .post-page .post-title {
-  color: #f5f5f5;
-}
+html.dark .post-page .post-title { color: #f5f5f5; }
 
 .post-page .post-summary {
   max-width: 34em;
@@ -126,9 +122,7 @@ html.dark .post-page .post-title {
   line-height: 1.6;
 }
 
-html.dark .post-page .post-summary {
-  color: #a3a3a3;
-}
+html.dark .post-page .post-summary { color: #a3a3a3; }
 
 .post-page .post-actions {
   margin-top: 36px;
@@ -136,11 +130,11 @@ html.dark .post-page .post-summary {
   border-top: 1px solid #e6e8eb;
 }
 
-html.dark .post-page .post-actions {
-  border-top-color: #262626;
-}
+html.dark .post-page .post-actions { border-top-color: #262626; }
 
-#article-content.prose {
+/* Source theme uses .markdown-body, not Tailwind Typography's .prose.
+   This avoids the target site's global 19px / 1.9 / 2em paragraph overrides. */
+#article-content.markdown-body {
   max-width: 680px;
   color: #24292e;
   font-family: var(--article-font-sans);
@@ -152,64 +146,41 @@ html.dark .post-page .post-actions {
   word-wrap: break-word;
 }
 
-html.dark #article-content.prose {
-  color: #d4d4d4;
-}
+html.dark #article-content.markdown-body { color: #d4d4d4; }
 
-#article-content.prose :where(p, li, blockquote) {
+#article-content.markdown-body :where(p, li, blockquote) {
   font-family: var(--article-font-sans);
   font-weight: 400;
   letter-spacing: -0.01em;
 }
 
-#article-content.prose p,
-#article-content.prose ul,
-#article-content.prose ol,
-#article-content.prose blockquote,
-#article-content.prose pre,
-#article-content.prose table {
+#article-content.markdown-body :where(p, ul, ol, blockquote, pre, table) {
   margin-top: 0;
   margin-bottom: 24px;
 }
 
-#article-content.prose :where(h1, h2, h3, h4, h5, h6) {
+#article-content.markdown-body :where(h1, h2, h3, h4, h5, h6) {
   color: inherit;
   font-family: var(--article-font-display);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   line-height: 1.25;
   margin-top: 24px;
   margin-bottom: 16px;
 }
 
-#article-content.prose h1 {
-  font-size: 32px;
-}
-
-#article-content.prose h2 {
+#article-content.markdown-body h1 { font-size: 32px; }
+#article-content.markdown-body h2 {
   border-bottom: 1px solid #eaecef;
   font-size: 24px;
   padding-bottom: 0.3em;
 }
+#article-content.markdown-body h3 { font-size: 20px; }
+#article-content.markdown-body h4 { font-size: 16px; }
+#article-content.markdown-body h5 { font-size: 14px; }
+#article-content.markdown-body h6 { color: #6a737d; font-size: 12px; }
 
-#article-content.prose h3 {
-  font-size: 20px;
-}
-
-#article-content.prose h4 {
-  font-size: 16px;
-}
-
-#article-content.prose h5 {
-  font-size: 14px;
-}
-
-#article-content.prose h6 {
-  color: #6a737d;
-  font-size: 12px;
-}
-
-#article-content.prose blockquote {
+#article-content.markdown-body blockquote {
   border-left: 0.25em solid #dfe2e5;
   color: #6a737d;
   font-size: 14px;
@@ -217,40 +188,33 @@ html.dark #article-content.prose {
   padding: 0 1em;
 }
 
-#article-content.prose code,
-#article-content.prose pre {
+#article-content.markdown-body code,
+#article-content.markdown-body pre {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-#article-content.prose pre {
+#article-content.markdown-body pre {
   overflow-x: auto;
   border-radius: 6px;
   padding: 16px;
 }
 
-#article-content.prose img {
-  border-radius: 12px;
-}
+#article-content.markdown-body img { border-radius: 12px; }
 
 @media (max-width: 768px) {
-  .post-page .post-header {
-    padding-top: 36px;
-  }
-
+  .post-page .post-header { padding-top: 36px; }
   .post-page .post-title {
-    margin-top: 40px;
+    margin-top: 64px;
     font-size: 28px;
     line-height: 1.2;
   }
-
-  #article-content.prose,
-  #article-content.prose :where(p, li),
+  #article-content.markdown-body,
+  #article-content.markdown-body :where(p, li),
   .post-page .post-summary {
     font-size: 17px;
     line-height: 1.85;
   }
-
-  #article-content.prose h2 {
+  #article-content.markdown-body h2 {
     font-size: 24px;
     line-height: 1.3;
   }
