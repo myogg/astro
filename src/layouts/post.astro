@@ -26,16 +26,16 @@ const { frontmatter, shareImage, audioId, audioSlug } = Astro.props;
       >
       </div>
       <div class="w-full max-w-2xl mx-auto">
-        <h1
-          class="article-title text-[34px] font-bold text-left mb-4 md:mb-6 dark:text-neutral-100"
-        >
-          {frontmatter.title}
-        </h1>
         <time
           class="block text-sm text-neutral-500 dark:text-neutral-400 mb-5"
         >
           {formatDisplayDate(frontmatter.date)}
         </time>
+        <h1
+          class="article-title text-[34px] font-bold text-left mb-4 md:mb-6 dark:text-neutral-100"
+        >
+          {frontmatter.title}
+        </h1>
         <div
           id="tts-player"
           data-tts-id={audioId}
