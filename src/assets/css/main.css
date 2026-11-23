@@ -70,3 +70,36 @@ html.dark {
     transform: translate3d(0, 10, 0)
   }
 }
+
+/* Article typography adapted from myogg/astro-t9tio.
+   Keep the font treatment scoped to article pages only. */
+:root {
+  --article-font-sans: "Inter", "OPPO Sans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --article-font-display: "Inter", "Noto Sans SC", "OPPO Sans", "PingFang SC", sans-serif;
+}
+
+.article-title {
+  font-family: var(--article-font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+#article-content.prose {
+  font-family: var(--article-font-sans);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+#article-content.prose :where(p, li, blockquote) {
+  font-family: var(--article-font-sans);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+#article-content.prose :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--article-font-display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
