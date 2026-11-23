@@ -40,6 +40,14 @@ const canonical = Astro.url.href;
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
 
+    <!-- Article fonts: Inter + OPPO Sans for body, Noto Sans SC for headings. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.loli.net" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@800;900&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/oppo-sans@1.0.0/dist/oppo-sans.css" />
+
     <!-- Used to add dark mode right away, adding here prevents any flicker -->
     <script is:inline>
       if (typeof Storage !== 'undefined') {
