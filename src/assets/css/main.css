@@ -201,6 +201,20 @@ html.dark #article-content.markdown-body { color: #d4d4d4; }
 
 #article-content.markdown-body img { border-radius: 12px; }
 
+/* 正文链接：默认继承正文色导致看不出可点击，这里显式着色并加下划线 */
+#article-content.markdown-body a {
+  color: #0969da;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+#article-content.markdown-body a:hover {
+  color: #0550ae;
+  text-decoration-thickness: 2px;
+}
+html.dark #article-content.markdown-body a { color: #58a6ff; }
+html.dark #article-content.markdown-body a:hover { color: #79c0ff; }
+
 @media (max-width: 768px) {
   .post-page .post-header { padding-top: 36px; }
   .post-page .post-title {
